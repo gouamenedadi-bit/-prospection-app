@@ -23,7 +23,7 @@ export const authOptions: NextAuthOptions = {
           const user = await prisma.stockiste.findUnique({ where: { email } });
           if (user && await bcrypt.compare(password, user.password)) {
             return {
-              id: user.id,
+              id: String(user.id),
               name: user.name,
               email: user.email,
               role: "stockiste"
@@ -33,7 +33,7 @@ export const authOptions: NextAuthOptions = {
           const user = await prisma.partenaire.findUnique({ where: { email } });
           if (user && await bcrypt.compare(password, user.password)) {
             return {
-              id: user.id,
+              id: String(user.id),
               name: `${user.firstName} ${user.lastName}`,
               email: user.email,
               role: "partenaire"
