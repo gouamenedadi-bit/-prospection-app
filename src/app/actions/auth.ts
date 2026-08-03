@@ -18,10 +18,19 @@ export async function registerStockiste(formData: FormData) {
     return { error: "Tous les champs obligatoires doivent être remplis." };
   }
 
+  if (password.length < 6) {
+    return { error: "Le mot de passe doit contenir au moins 6 caractères." };
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return { error: "L'adresse email n'est pas valide." };
+  }
+
   try {
     const existing = await prisma.stockiste.findUnique({ where: { email } });
     if (existing) {
-      return { error: "Cet email est déjà utilisé." };
+      return { error: "Cet email est déjà utilisé par un autre compte." };
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -38,9 +47,9 @@ export async function registerStockiste(formData: FormData) {
       },
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("Erreur d'inscription:", error);
-    return { error: "Une erreur est survenue lors de l'inscription." };
+    return { error: `Une erreur technique est survenue : ${error.message || "Erreur base de données"}` };
   }
 
   redirect("/login");
@@ -60,10 +69,19 @@ export async function registerPartenaire(formData: FormData) {
     return { error: "Tous les champs obligatoires doivent être remplis." };
   }
 
+  if (password.length < 6) {
+    return { error: "Le mot de passe doit contenir au moins 6 caractères." };
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return { error: "L'adresse email n'est pas valide." };
+  }
+
   try {
     const existing = await prisma.partenaire.findUnique({ where: { email } });
     if (existing) {
-      return { error: "Cet email est déjà utilisé." };
+      return { error: "Cet email est déjà utilisé par un autre compte." };
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -81,9 +99,9 @@ export async function registerPartenaire(formData: FormData) {
       },
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("Erreur d'inscription:", error);
-    return { error: "Une erreur est survenue lors de l'inscription." };
+    return { error: `Une erreur technique est survenue : ${error.message || "Erreur base de données"}` };
   }
 
   redirect("/login");
