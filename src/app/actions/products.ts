@@ -1,0 +1,77 @@
+"use server";
+
+import { prisma } from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
+
+export async function getProducts() {
+  try {
+    const products = await prisma.produit.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+    return { success: true, data: products };
+  } catch (error) {
+    console.error("Erreur lors de la récupération des produits:", error);
+    return { success: false, error: "Impossible de récupérer les produits." };
+  }
+}
+
+export async function createProduct(data: {
+  name: string;
+  partnerPrice: number;
+  publicPrice: number;
+  description: string;
+  posology?: string | null;
+  pv?: number | null;
+  image?: string | null;
+}) {
+  try {
+    const { image, ...restData } = data;
+    const product = await prisma.produit.create({
+      data: {
+        ...restData,
+        image,
+      },
+    });
+    revalidatePath("/admin");
+    revalidatePath("/stockiste/products");
+    revalidatePath("/partner/products");
+    return { success: true, data: product };
+  } catch (error: any) {
+    console.error("Erreur lors de la création du produit:", error);
+    return { success: false, error: error.message || "Impossible de créer le produit." };
+  }
+}
+
+export async function updateProduct(id: number, data: {
+  name: string;
+  partnerPrice: number;
+  publicPrice: number;
+  description: string;
+  posology?: string | null;
+  pv?: number | null;
+  image?: string | null;
+}) {
+  try {
+    const { image, ...restData } = data;
+    const product = await prisma.produit.update({
+      where: { id: Number(id) },
+      data: {
+        ...restData,
+        image,
+      },
+    });
+    revalidatePath("/admin");
+    revalidatePath("/stockiste/products");
+    revalidatePath("/partner/products");
+    return { success: true, data: product };
+  } catch (error: any) {
+    console.error("Erreur lors de la mise à jour du produit:", error);
+    try {
+      require('fs').writeFileSync('debug-error.log', error.message + '\\n' + error.stack + '\\n' + JSON.stringify(error, null, 2));
+    } catch(e) {}
+    if (error.code === 'P2025') {
+      return { success: false, error: "Le produit a été rechargé en arrière-plan. Veuillez actualiser la page complètement (F5) avant de modifier." };
+    }
+    return { success: false, error: error.message || "Erreur inconnue." };
+  }
+}

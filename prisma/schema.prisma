@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+}
+
+model Stockiste {
+  id           Int         @id @default(autoincrement())
+  name         String
+  phone        String
+  email        String      @unique
+  password     String
+  city         String
+  commune      String
+  neighborhood String?
+  latitude     Float?
+  longitude    Float?
+  
+  formations   Formation[]
+  inventories  Inventory[]
+  
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
+model Partenaire {
+  id          Int      @id @default(autoincrement())
+  firstName   String
+  lastName    String
+  phone       String
+  email       String   @unique
+  password    String
+  sponsorCode String?
+  city        String
+  commune     String
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Produit {
+  id           Int      @id @default(autoincrement())
+  name         String
+  description  String?
+  partnerPrice Float
+  publicPrice  Float
+  image        String?
+  posology     String?
+  pv           Float?
+  inventories  Inventory[]
+
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Formation {
+  id          Int       @id @default(autoincrement())
+  title       String
+  date        DateTime
+  time        String
+  trainer     String
+  image       String?
+  
+  stockisteId Int
+  stockiste   Stockiste @relation(fields: [stockisteId], references: [id])
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Inventory {
+  id          Int       @id @default(autoincrement())
+  quantity    Int       @default(0)
+  
+  stockisteId Int
+  produitId   Int
+  
+  stockiste   Stockiste @relation(fields: [stockisteId], references: [id], onDelete: Cascade)
+  produit     Produit   @relation(fields: [produitId], references: [id], onDelete: Cascade)
+  
+  @@unique([stockisteId, produitId])
+}
