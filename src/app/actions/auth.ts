@@ -47,9 +47,10 @@ export async function registerStockiste(formData: FormData) {
       },
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Erreur d'inscription:", error);
-    return { error: `Une erreur technique est survenue : ${error.message || "Erreur base de données"}` };
+    const errorMessage = error instanceof Error ? error.message : "Erreur base de données";
+    return { error: `Une erreur technique est survenue : ${errorMessage}` };
   }
 
   redirect("/login");
@@ -99,9 +100,10 @@ export async function registerPartenaire(formData: FormData) {
       },
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Erreur d'inscription:", error);
-    return { error: `Une erreur technique est survenue : ${error.message || "Erreur base de données"}` };
+    const errorMessage = error instanceof Error ? error.message : "Erreur base de données";
+    return { error: `Une erreur technique est survenue : ${errorMessage}` };
   }
 
   redirect("/login");
