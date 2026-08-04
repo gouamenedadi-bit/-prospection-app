@@ -75,3 +75,18 @@ export async function updateProduct(id: number, data: {
     return { success: false, error: error.message || "Erreur inconnue." };
   }
 }
+
+export async function deleteProduct(id: number) {
+  try {
+    const product = await prisma.produit.delete({
+      where: { id: Number(id) },
+    });
+    revalidatePath("/admin");
+    revalidatePath("/stockiste/products");
+    revalidatePath("/partner/products");
+    return { success: true, data: product };
+  } catch (error: any) {
+    console.error("Erreur lors de la suppression du produit:", error);
+    return { success: false, error: error.message || "Impossible de supprimer le produit." };
+  }
+}
