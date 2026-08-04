@@ -2,14 +2,19 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import path from "path";
 
-// Initialize Supabase client
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-// Utiliser la clé ANON ou SERVICE_ROLE selon ce qui est dispo
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
-const supabase = createClient(supabaseUrl, supabaseKey);
-
 export async function POST(req: NextRequest) {
   try {
+    // Initialize Supabase client inside the handler so it doesn't break Vercel static build
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+    
+    if (!supabaseUrl || !supabaseKey) {
+      console.error("Supabase credentials missing");
+      return NextResponse.json({ success: false, error: "Configuration de stockage manquante" }, { status: 500 });
+    }
+    
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
     const data = await req.formData();
     const file: File | null = data.get("file") as unknown as File;
 
