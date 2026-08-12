@@ -19,6 +19,24 @@ export const authOptions: NextAuthOptions = {
 
         const { email, password, role } = credentials;
 
+        if (role === "admin") {
+          const adminEmail = process.env.ADMIN_EMAIL;
+          const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH;
+          if (!adminEmail || !adminPasswordHash) {
+            console.error("ADMIN_EMAIL / ADMIN_PASSWORD_HASH non configurés");
+            return null;
+          }
+          if (email === adminEmail && await bcrypt.compare(password, adminPasswordHash)) {
+            return {
+              id: "admin",
+              name: "Administrateur",
+              email: adminEmail,
+              role: "admin"
+            };
+          }
+          return null;
+        }
+
         if (role === "stockiste") {
           const user = await prisma.stockiste.findUnique({ where: { email } });
           if (user && await bcrypt.compare(password, user.password)) {
@@ -48,7 +66,6 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        // @ts-ignore
         token.role = user.role;
         token.id = user.id;
       }
@@ -56,9 +73,7 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token }) {
       if (session.user) {
-        // @ts-ignore
         session.user.role = token.role;
-        // @ts-ignore
         session.user.id = token.id;
       }
       return session;

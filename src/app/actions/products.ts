@@ -2,6 +2,15 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+
+async function requireAdmin() {
+  const session = await getServerSession(authOptions);
+  if (session?.user?.role !== "admin") {
+    throw new Error("Non autorisé.");
+  }
+}
 
 export async function getProducts() {
   try {
@@ -25,6 +34,7 @@ export async function createProduct(data: {
   image?: string | null;
 }) {
   try {
+    await requireAdmin();
     const { image, ...restData } = data;
     const product = await prisma.produit.create({
       data: {
@@ -52,6 +62,7 @@ export async function updateProduct(id: number, data: {
   image?: string | null;
 }) {
   try {
+    await requireAdmin();
     const { image, ...restData } = data;
     const product = await prisma.produit.update({
       where: { id: Number(id) },
@@ -66,9 +77,6 @@ export async function updateProduct(id: number, data: {
     return { success: true, data: product };
   } catch (error: any) {
     console.error("Erreur lors de la mise à jour du produit:", error);
-    try {
-      require('fs').writeFileSync('debug-error.log', error.message + '\\n' + error.stack + '\\n' + JSON.stringify(error, null, 2));
-    } catch(e) {}
     if (error.code === 'P2025') {
       return { success: false, error: "Le produit a été rechargé en arrière-plan. Veuillez actualiser la page complètement (F5) avant de modifier." };
     }
@@ -78,6 +86,7 @@ export async function updateProduct(id: number, data: {
 
 export async function deleteProduct(id: number) {
   try {
+    await requireAdmin();
     const product = await prisma.produit.delete({
       where: { id: Number(id) },
     });

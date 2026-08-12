@@ -1,6 +1,15 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+
+async function requireOwnStockiste(id: number | string) {
+  const session = await getServerSession(authOptions);
+  if (session?.user?.role !== "stockiste" || String(session.user.id) !== String(id)) {
+    throw new Error("Non autorisé.");
+  }
+}
 
 export async function getAllStockistes() {
   try {
@@ -25,6 +34,7 @@ export async function getAllStockistes() {
 
 export async function getStockisteProfile(id: number | string) {
   try {
+    await requireOwnStockiste(id);
     const sId = typeof id === "string" ? parseInt(id) : id;
     const stockiste = await prisma.stockiste.findUnique({
       where: { id: sId },
@@ -47,6 +57,7 @@ export async function getStockisteProfile(id: number | string) {
 
 export async function updateStockisteProfile(id: number | string, data: any) {
   try {
+    await requireOwnStockiste(id);
     const sId = typeof id === "string" ? parseInt(id) : id;
     const stockiste = await prisma.stockiste.update({
       where: { id: sId },

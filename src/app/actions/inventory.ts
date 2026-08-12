@@ -1,10 +1,20 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+
+async function requireOwnStockiste(id: number | string) {
+  const session = await getServerSession(authOptions);
+  if (session?.user?.role !== "stockiste" || String(session.user.id) !== String(id)) {
+    throw new Error("Non autorisé.");
+  }
+}
 
 // Met à jour la quantité d'un produit pour un stockiste donné
 export async function updateStock(stockisteId: number | string, produitId: number | string, quantity: number) {
   try {
+    await requireOwnStockiste(stockisteId);
     const sId = typeof stockisteId === "string" ? parseInt(stockisteId) : stockisteId;
     const pId = typeof produitId === "string" ? parseInt(produitId) : produitId;
     
@@ -33,6 +43,7 @@ export async function updateStock(stockisteId: number | string, produitId: numbe
 }
 
 // Récupère tout l'inventaire d'un stockiste, en incluant les infos des produits
+// Lecture publique : les partenaires consultent le stock des stockistes avant achat.
 export async function getStockisteInventory(stockisteId: number | string) {
   try {
     const sId = typeof stockisteId === "string" ? parseInt(stockisteId) : stockisteId;

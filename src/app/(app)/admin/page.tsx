@@ -1,9 +1,13 @@
 "use client";
 
 import { useState, useEffect, useTransition } from "react";
+import { useSession, signIn, signOut } from "next-auth/react";
 import { getProducts, createProduct, updateProduct, deleteProduct } from "@/app/actions/products";
 
 export default function AdminDashboard() {
+  const { data: session, status } = useSession();
+  const isAuthenticated = status === "authenticated" && session?.user?.role === "admin";
+
   const [activeTab, setActiveTab] = useState("products");
   
   // Products state
@@ -127,164 +131,75 @@ export default function AdminDashboard() {
     setIsAdding(true);
   };
 
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loginForm, setLoginForm] = useState({ email: "", password: "" });
+  const [loginError, setLoginError] = useState("");
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (loginForm.email && loginForm.password) {
-      setIsAuthenticated(true);
+    setIsLoggingIn(true);
+    setLoginError("");
+    const res = await signIn("credentials", {
+      redirect: false,
+      email: loginForm.email,
+      password: loginForm.password,
+      role: "admin",
+    });
+    if (res?.error) {
+      setLoginError("Email ou mot de passe incorrect.");
     }
+    setIsLoggingIn(false);
   };
 
-  const [loginStep, setLoginStep] = useState("login"); // "login", "forgot_password", "reset_code", "new_password"
-  const [resetEmail, setResetEmail] = useState("");
-  const [resetCode, setResetCode] = useState("");
-  const [newPassword, setNewPassword] = useState("");
+  if (status === "loading") {
+    return <div className="flex justify-center py-20 text-gray-500">Chargement...</div>;
+  }
 
   if (!isAuthenticated) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <style dangerouslySetInnerHTML={{__html: `nav { pointer-events: none; opacity: 0.4; filter: grayscale(100%); }`}} />
         <div className="bg-white p-8 rounded-xl shadow-md border border-gray-100 w-full max-w-md animate-in fade-in zoom-in duration-300">
-          
-          {loginStep === "login" && (
-            <>
-              <div className="text-center mb-6">
-                <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                </div>
-                <h2 className="text-2xl font-bold text-gray-900 font-heading">Accès Administrateur</h2>
-                <p className="text-sm text-gray-500 mt-1">Veuillez vous connecter pour continuer</p>
-              </div>
-              
-              <form onSubmit={handleLogin} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-1">Email / Login</label>
-                  <input 
-                    type="email" 
-                    required 
-                    value={loginForm.email}
-                    onChange={e => setLoginForm({...loginForm, email: e.target.value})}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-gray-900 focus:border-gray-900"
-                    placeholder="admin@example.com"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-1">Mot de passe</label>
-                  <input 
-                    type="password" 
-                    required 
-                    value={loginForm.password}
-                    onChange={e => setLoginForm({...loginForm, password: e.target.value})}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-gray-900 focus:border-gray-900"
-                    placeholder="••••••••"
-                  />
-                </div>
-                <div className="flex justify-end">
-                  <button type="button" onClick={() => setLoginStep("forgot_password")} className="text-xs font-bold text-forest hover:underline">Mot de passe oublié ?</button>
-                </div>
-                <button type="submit" className="w-full bg-gray-900 text-white font-bold py-3 rounded-lg hover:bg-gray-800 transition-colors mt-2">
-                  Se connecter
-                </button>
-              </form>
-            </>
-          )}
+          <div className="text-center mb-6">
+            <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-3">
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 font-heading">Accès Administrateur</h2>
+            <p className="text-sm text-gray-500 mt-1">Veuillez vous connecter pour continuer</p>
+          </div>
 
-          {loginStep === "forgot_password" && (
-            <>
-              <div className="text-center mb-6">
-                <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                </div>
-                <h2 className="text-xl font-bold text-gray-900 font-heading">Mot de passe oublié</h2>
-                <p className="text-sm text-gray-500 mt-1">Entrez votre email pour recevoir un code de réinitialisation.</p>
+          <form onSubmit={handleLogin} className="space-y-4">
+            {loginError && (
+              <div className="p-3 bg-red-50 text-red-600 text-sm rounded-lg text-center font-semibold">
+                {loginError}
               </div>
-              
-              <form onSubmit={(e) => { e.preventDefault(); setLoginStep("reset_code"); }} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-1">Adresse Email</label>
-                  <input 
-                    type="email" 
-                    required 
-                    value={resetEmail}
-                    onChange={e => setResetEmail(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="votre@email.com"
-                  />
-                </div>
-                <button type="submit" className="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition-colors mt-2">
-                  Envoyer le code
-                </button>
-                <div className="text-center mt-4">
-                  <button type="button" onClick={() => setLoginStep("login")} className="text-sm font-bold text-gray-500 hover:text-gray-900">Retour à la connexion</button>
-                </div>
-              </form>
-            </>
-          )}
-
-          {loginStep === "reset_code" && (
-            <>
-              <div className="text-center mb-6">
-                <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                </div>
-                <h2 className="text-xl font-bold text-gray-900 font-heading">Code de vérification</h2>
-                <p className="text-sm text-gray-500 mt-1">Un code a été envoyé à <strong>{resetEmail || "votre email"}</strong>.</p>
-              </div>
-              
-              <form onSubmit={(e) => { e.preventDefault(); setLoginStep("new_password"); }} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-1">Code à 6 chiffres</label>
-                  <input 
-                    type="text" 
-                    required 
-                    maxLength={6}
-                    value={resetCode}
-                    onChange={e => setResetCode(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 text-center tracking-widest text-lg font-bold"
-                    placeholder="000000"
-                  />
-                </div>
-                <button type="submit" className="w-full bg-green-600 text-white font-bold py-3 rounded-lg hover:bg-green-700 transition-colors mt-2">
-                  Vérifier le code
-                </button>
-                <div className="text-center mt-4">
-                  <button type="button" onClick={() => setLoginStep("forgot_password")} className="text-sm font-bold text-gray-500 hover:text-gray-900">Renvoyer le code</button>
-                </div>
-              </form>
-            </>
-          )}
-
-          {loginStep === "new_password" && (
-            <>
-              <div className="text-center mb-6">
-                <div className="w-16 h-16 bg-forest/20 text-forest rounded-full flex items-center justify-center mx-auto mb-3">
-                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
-                </div>
-                <h2 className="text-xl font-bold text-gray-900 font-heading">Nouveau mot de passe</h2>
-                <p className="text-sm text-gray-500 mt-1">Veuillez définir votre nouveau mot de passe.</p>
-              </div>
-              
-              <form onSubmit={(e) => { e.preventDefault(); setLoginStep("login"); setLoginForm({...loginForm, password: ""}); }} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-1">Nouveau mot de passe</label>
-                  <input 
-                    type="password" 
-                    required 
-                    value={newPassword}
-                    onChange={e => setNewPassword(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-forest focus:border-forest"
-                    placeholder="••••••••"
-                  />
-                </div>
-                <button type="submit" className="w-full bg-forest text-white font-bold py-3 rounded-lg hover:bg-forest-deep transition-colors mt-2">
-                  Enregistrer et se connecter
-                </button>
-              </form>
-            </>
-          )}
-
+            )}
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-1">Email</label>
+              <input
+                type="email"
+                required
+                value={loginForm.email}
+                onChange={e => setLoginForm({...loginForm, email: e.target.value})}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-gray-900 focus:border-gray-900"
+                placeholder="admin@example.com"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-1">Mot de passe</label>
+              <input
+                type="password"
+                required
+                value={loginForm.password}
+                onChange={e => setLoginForm({...loginForm, password: e.target.value})}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-gray-900 focus:border-gray-900"
+                placeholder="••••••••"
+              />
+            </div>
+            <button type="submit" disabled={isLoggingIn} className="w-full bg-gray-900 text-white font-bold py-3 rounded-lg hover:bg-gray-800 transition-colors mt-2 disabled:opacity-50">
+              {isLoggingIn ? "Connexion..." : "Se connecter"}
+            </button>
+          </form>
         </div>
       </div>
     );
@@ -301,6 +216,12 @@ export default function AdminDashboard() {
         </div>
         <h2 className="text-xl font-bold font-heading relative z-10">Super Panel Admin</h2>
         <p className="text-xs text-gray-400 mt-1 relative z-10">Gestion exclusive des produits et de la plateforme</p>
+        <button
+          onClick={() => signOut({ callbackUrl: '/' })}
+          className="mt-3 text-xs font-bold text-red-400 hover:text-red-300 relative z-10 underline"
+        >
+          Se déconnecter
+        </button>
       </div>
 
       {/* Tabs */}
