@@ -3,6 +3,7 @@
 import { useState, useEffect, useTransition } from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { getProducts, createProduct, updateProduct, deleteProduct } from "@/app/actions/products";
+import { getPendingPayments, validatePayment } from "@/app/actions/subscription";
 
 export default function AdminDashboard() {
   const { data: session, status } = useSession();
@@ -45,11 +46,36 @@ export default function AdminDashboard() {
     { id: 3, name: "Issa T.", phone: "0102030405", role: "Partenaire", date: "30/07/2026", status: "En attente" },
   ];
 
-  const payments = [
-    { id: "TRX-1092", amount: "23 000 FCFA", buyer: "Issa T.", stockiste: "Kouassi Marc", method: "Orange Money", date: "30/07/2026", status: "Validé" },
-    { id: "TRX-1093", amount: "8 500 FCFA", buyer: "Aya K.", stockiste: "Fatou D.", method: "Wave", date: "31/07/2026", status: "Validé" },
-    { id: "TRX-1094", amount: "15 000 FCFA", buyer: "Jean P.", stockiste: "Kouassi Marc", method: "MTN Money", date: "31/07/2026", status: "Échoué" },
-  ];
+  // Abonnements en attente de validation
+  const [pendingPayments, setPendingPayments] = useState<any[]>([]);
+  const [isLoadingPayments, setIsLoadingPayments] = useState(true);
+  const [validatingId, setValidatingId] = useState<number | null>(null);
+
+  const loadPendingPayments = async () => {
+    setIsLoadingPayments(true);
+    const res = await getPendingPayments();
+    if (res.success && res.data) {
+      setPendingPayments(res.data);
+    }
+    setIsLoadingPayments(false);
+  };
+
+  useEffect(() => {
+    if (isAuthenticated && activeTab === "payments") {
+      loadPendingPayments();
+    }
+  }, [isAuthenticated, activeTab]);
+
+  const handleValidatePayment = async (id: number) => {
+    setValidatingId(id);
+    const res = await validatePayment(id);
+    if (res.success) {
+      await loadPendingPayments();
+    } else {
+      alert(res.error || "Erreur lors de la validation.");
+    }
+    setValidatingId(null);
+  };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
@@ -392,26 +418,40 @@ export default function AdminDashboard() {
         {/* TAB: PAIEMENTS */}
         {activeTab === "payments" && (
           <div className="space-y-4 animate-in fade-in duration-300">
-            <h3 className="font-bold text-gray-800 text-lg border-b border-gray-100 pb-2">Historique des paiements</h3>
-            <div className="space-y-3">
-              {payments.map((payment) => (
-                <div key={payment.id} className="p-3 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <p className="font-bold text-sm text-gray-800">{payment.amount}</p>
-                      <p className="text-[10px] text-gray-500 mt-0.5 font-medium">{payment.buyer} ➔ {payment.stockiste}</p>
+            <h3 className="font-bold text-gray-800 text-lg border-b border-gray-100 pb-2">Abonnements en attente de validation</h3>
+            {isLoadingPayments ? (
+              <div className="text-center py-8 text-gray-500">Chargement des paiements...</div>
+            ) : pendingPayments.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">Aucun paiement en attente.</div>
+            ) : (
+              <div className="space-y-3">
+                {pendingPayments.map((payment) => (
+                  <div key={payment.id} className="p-3 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <p className="font-bold text-sm text-gray-800">{payment.amount} FCFA — {payment.planLabel}</p>
+                        <p className="text-[10px] text-gray-500 mt-0.5 font-medium">
+                          {payment.accountName} ({payment.accountType === "stockiste" ? "Stockiste" : "Partenaire"})
+                        </p>
+                      </div>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-700">
+                        En attente
+                      </span>
                     </div>
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${payment.status === 'Validé' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                      {payment.status}
-                    </span>
+                    <div className="flex justify-between items-center text-[10px] font-semibold text-gray-400 border-t border-gray-100 pt-2 mt-1">
+                      <span>{new Date(payment.createdAt).toLocaleDateString("fr-FR")}</span>
+                      <button
+                        onClick={() => handleValidatePayment(payment.id)}
+                        disabled={validatingId === payment.id}
+                        className="bg-forest text-white text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-forest-deep transition-colors disabled:opacity-50"
+                      >
+                        {validatingId === payment.id ? "Validation..." : "Valider le paiement"}
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex justify-between items-center text-[10px] font-semibold text-gray-400 border-t border-gray-100 pt-2 mt-1">
-                    <span className="bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded">{payment.method}</span>
-                    <span>{payment.date}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>

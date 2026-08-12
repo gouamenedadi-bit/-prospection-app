@@ -4,6 +4,11 @@ import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { TRIAL_DAYS } from "@/lib/subscription";
+
+function trialExpiryDate() {
+  return new Date(Date.now() + TRIAL_DAYS * 24 * 60 * 60 * 1000);
+}
 
 export async function registerStockiste(formData: FormData) {
   const name = formData.get("name") as string;
@@ -44,6 +49,7 @@ export async function registerStockiste(formData: FormData) {
         commune,
         neighborhood,
         password: hashedPassword,
+        subscriptionExpiresAt: trialExpiryDate(),
       },
     });
 
@@ -97,6 +103,7 @@ export async function registerPartenaire(formData: FormData) {
         city,
         commune,
         password: hashedPassword,
+        subscriptionExpiresAt: trialExpiryDate(),
       },
     });
 

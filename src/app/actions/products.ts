@@ -2,15 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-
-async function requireAdmin() {
-  const session = await getServerSession(authOptions);
-  if (session?.user?.role !== "admin") {
-    throw new Error("Non autorisé.");
-  }
-}
+import { requireAdmin } from "@/lib/authz";
 
 export async function getProducts() {
   try {
