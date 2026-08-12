@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 
 export default function Presentation() {
   const [toastVisible, setToastVisible] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
@@ -48,6 +49,7 @@ body{
   -webkit-font-smoothing:antialiased;
   overflow-x:hidden;
 }
+.presentation-page{width:100%;}
 .wrap{max-width:1160px;margin:0 auto;padding:0 32px;}
 h1,h2,h3{font-family:'Fraunces',serif;font-weight:650;line-height:1.05;margin:0;letter-spacing:-0.01em;}
 em{font-style:italic;color:var(--gold);}
@@ -110,7 +112,23 @@ a{color:inherit;}
   box-shadow:0 8px 16px rgba(23,59,44,0.25);
   background:var(--forest-deep);
 }
-@media (max-width:760px){.nav-links{display:none;}}
+.nav-burger{display:none;background:none;border:none;cursor:pointer;padding:6px;color:var(--forest);align-items:center;justify-content:center;}
+.mobile-menu{
+  position:absolute;top:100%;left:0;right:0;background:var(--cream);border-bottom:1px solid var(--line);
+  box-shadow:0 16px 28px -16px rgba(23,59,44,0.25);display:flex;flex-direction:column;
+  max-height:0;overflow:hidden;transition:max-height .3s ease;
+}
+.mobile-menu.open{max-height:420px;}
+.mobile-menu a{
+  padding:14px 24px;font-weight:700;font-size:15px;color:var(--ink);text-decoration:none;
+  border-top:1px solid var(--line);
+}
+.mobile-menu a:first-child{border-top:none;}
+@media (max-width:920px){
+  .nav-links{display:none;}
+  .nav-burger{display:inline-flex;}
+}
+@media (min-width:921px){.mobile-menu{display:none;}}
 
 .hero{
   background:radial-gradient(circle at 18% -10%, #1F4F3A 0%, var(--forest) 45%, var(--forest-deep) 100%);
@@ -357,7 +375,7 @@ footer{padding:64px 0 36px;}
       <nav className="nav">
   <div className="nav-inner">
     <div className="brand">
-      <span className="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#D98B2B" stroke-width="2"><path d="M12 21s7-7.5 7-12a7 7 0 1 0-14 0c0 4.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.4" fill="#D98B2B" stroke="none"/></svg></span>
+      <span className="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#D98B2B" strokeWidth="2"><path d="M12 21s7-7.5 7-12a7 7 0 1 0-14 0c0 4.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.4" fill="#D98B2B" stroke="none"/></svg></span>
       Prospections Longrich
     </div>
     <div className="nav-links">
@@ -367,7 +385,27 @@ footer{padding:64px 0 36px;}
       <a href="/abonnement">Abonnement</a>
       <a href="/login" style={{ color: 'var(--gold)' }}>Se connecter</a>
     </div>
+    <button
+      type="button"
+      className="nav-burger"
+      aria-label={mobileMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+      aria-expanded={mobileMenuOpen}
+      onClick={() => setMobileMenuOpen(v => !v)}
+    >
+      {mobileMenuOpen ? (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      ) : (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      )}
+    </button>
     <a href="/register" className="nav-cta text-center" style={{ textDecoration: 'none' }}>Inscription</a>
+  </div>
+  <div className={`mobile-menu${mobileMenuOpen ? ' open' : ''}`}>
+    <a href="#fonctionnalites" onClick={() => setMobileMenuOpen(false)}>Fonctionnalités</a>
+    <a href="#comment" onClick={() => setMobileMenuOpen(false)}>Comment ça marche</a>
+    <a href="#avis" onClick={() => setMobileMenuOpen(false)}>Avis</a>
+    <a href="/abonnement" onClick={() => setMobileMenuOpen(false)}>Abonnement</a>
+    <a href="/login" style={{ color: 'var(--gold)' }} onClick={() => setMobileMenuOpen(false)}>Se connecter</a>
   </div>
 </nav>
 
@@ -395,7 +433,7 @@ footer{padding:64px 0 36px;}
 
     <div className="hero-visual">
       <div className="float-card fc1">
-        <span className="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 13l4 4L19 7"/></svg></span>
+        <span className="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M5 13l4 4L19 7"/></svg></span>
         <div>Prospection vérifié<small>Cocody, Abidjan</small></div>
       </div>
       <div className="phone">
@@ -427,7 +465,7 @@ footer{padding:64px 0 36px;}
         </div>
       </div>
       <div className="float-card fc2">
-        <span className="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="20" r="1.4" fill="currentColor" stroke="none"/><circle cx="18" cy="20" r="1.4" fill="currentColor" stroke="none"/><path d="M2.5 3h2.6l2.3 12.2a1.8 1.8 0 0 0 1.8 1.5h8.5a1.8 1.8 0 0 0 1.8-1.4L21.8 7H6.3"/></svg></span>
+        <span className="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="9" cy="20" r="1.4" fill="currentColor" stroke="none"/><circle cx="18" cy="20" r="1.4" fill="currentColor" stroke="none"/><path d="M2.5 3h2.6l2.3 12.2a1.8 1.8 0 0 0 1.8 1.5h8.5a1.8 1.8 0 0 0 1.8-1.4L21.8 7H6.3"/></svg></span>
         <div>Paiement validé<small>Orange Money · 8 500 FCFA</small></div>
       </div>
     </div>
@@ -452,15 +490,15 @@ footer{padding:64px 0 36px;}
         <div className="f-visual">
           <div className="mini-card">
             <div className="mv-row">
-              <div className="mv-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-7.5 7-12a7 7 0 1 0-14 0c0 4.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.4"/></svg></div>
+              <div className="mv-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 21s7-7.5 7-12a7 7 0 1 0-14 0c0 4.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.4"/></svg></div>
               <div><div className="mv-line1">Longrich Cocody Centre</div><div className="mv-line2">Angré 8e Tranche — 1,2 km</div></div>
             </div>
             <div className="mv-row">
-              <div className="mv-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-7.5 7-12a7 7 0 1 0-14 0c0 4.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.4"/></svg></div>
+              <div className="mv-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 21s7-7.5 7-12a7 7 0 1 0-14 0c0 4.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.4"/></svg></div>
               <div><div className="mv-line1">Longrich Yopougon Liberté</div><div className="mv-line2">Maroc — 4,8 km</div></div>
             </div>
             <div className="mv-row">
-              <div className="mv-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-7.5 7-12a7 7 0 1 0-14 0c0 4.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.4"/></svg></div>
+              <div className="mv-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 21s7-7.5 7-12a7 7 0 1 0-14 0c0 4.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.4"/></svg></div>
               <div><div className="mv-line1">Longrich Bouaké Nimbo</div><div className="mv-line2">Air France — Bouaké</div></div>
             </div>
           </div>
@@ -476,17 +514,17 @@ footer{padding:64px 0 36px;}
         <div className="f-visual">
           <div className="mini-card">
             <div className="mv-row">
-              <div className="mv-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></div>
+              <div className="mv-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></div>
               <div><div className="mv-line1">Cordyceps Militaris</div><div className="mv-line2">60 gélules</div></div>
               <span className="mv-price">75 000 FCFA</span>
             </div>
             <div className="mv-row">
-              <div className="mv-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></div>
+              <div className="mv-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></div>
               <div><div className="mv-line1">Le Calcium</div><div className="mv-line2">160 comprimés</div></div>
               <span className="mv-price">11 000 FCFA</span>
             </div>
             <div className="mv-row">
-              <div className="mv-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></div>
+              <div className="mv-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></div>
               <div><div className="mv-line1">Vitamine C</div><div className="mv-line2">60 comprimés</div></div>
               <span className="mv-price">10 500 FCFA</span>
             </div>
@@ -509,7 +547,7 @@ footer{padding:64px 0 36px;}
               </div>
             </div>
             <div className="mv-row">
-              <div className="mv-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="13" rx="2"/><circle cx="8.5" cy="9.5" r="1.8"/><circle cx="13" cy="9.5" r="1.8"/><circle cx="17.5" cy="9.5" r="1.8"/></svg></div>
+              <div className="mv-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="4" y="4" width="16" height="13" rx="2"/><circle cx="8.5" cy="9.5" r="1.8"/><circle cx="13" cy="9.5" r="1.8"/><circle cx="17.5" cy="9.5" r="1.8"/></svg></div>
               <div><div className="mv-line1">Arthro SupReviver</div><div className="mv-line2">60 comprimés</div></div>
               <span className="mv-price">20 000 FCFA</span>
             </div>
@@ -540,7 +578,7 @@ footer{padding:64px 0 36px;}
         <div className="f-visual">
           <div className="mini-card">
             <div className="mv-grade">
-              <div className="mv-grade-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8.5" r="5.5"/><path d="M8.5 13L7 21l5-2.6L17 21l-1.5-8"/></svg></div>
+              <div className="mv-grade-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="8.5" r="5.5"/><path d="M8.5 13L7 21l5-2.6L17 21l-1.5-8"/></svg></div>
               <div className="mv-grade-name">Pré-Diamant 1</div>
               <div className="mv-grade-pv">165 PV requis</div>
               <div className="mv-track"><i></i></div>
@@ -625,7 +663,7 @@ footer{padding:64px 0 36px;}
   <div className="wrap">
     <div className="foot-top">
       <div className="foot-brand">
-        <div className="brand"><span className="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#D98B2B" stroke-width="2"><path d="M12 21s7-7.5 7-12a7 7 0 1 0-14 0c0 4.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.4" fill="#D98B2B" stroke="none"/></svg></span>Prospections Longrich</div>
+        <div className="brand"><span className="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#D98B2B" strokeWidth="2"><path d="M12 21s7-7.5 7-12a7 7 0 1 0-14 0c0 4.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.4" fill="#D98B2B" stroke="none"/></svg></span>Prospections Longrich</div>
         <p>L'application des partenaires et prospections Longrich en Côte d'Ivoire — localisation, catalogue, bien-être et paiement, réunis.</p>
       </div>
       <div className="foot-divider"></div>

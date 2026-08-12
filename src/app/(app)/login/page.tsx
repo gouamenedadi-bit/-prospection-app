@@ -30,12 +30,7 @@ export default function LoginIndex() {
       setError("Email ou mot de passe incorrect.");
       setIsLoading(false);
     } else {
-      // Redirect to correct dashboard
-      if (activeTab === "partenaire") {
-        router.push("/dashboard/partner");
-      } else {
-        router.push("/dashboard/stockiste");
-      }
+      router.push("/dashboard");
     }
   };
 
