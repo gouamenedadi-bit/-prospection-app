@@ -1,6 +1,11 @@
 import { getProducts } from "@/app/actions/products";
 import ProductsListClient from "./ProductsListClient";
 
+// Toujours refléter les données en base (le catalogue peut être modifié
+// directement en base ou via l'admin), plutôt que de rester figé sur le
+// rendu statique généré au dernier build.
+export const dynamic = "force-dynamic";
+
 export default async function StockisteProducts() {
   const { data: productsList } = await getProducts();
   const products = (productsList || []).sort((a, b) => a.name.localeCompare(b.name));
