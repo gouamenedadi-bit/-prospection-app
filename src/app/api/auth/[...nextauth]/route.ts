@@ -3,6 +3,12 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
 
+// Défensif contre les valeurs d'env var collées avec des guillemets ou des espaces superflus.
+function cleanEnvValue(value: string | undefined): string {
+  if (!value) return "";
+  return value.trim().replace(/^["']+/, "").replace(/["']+$/, "").trim();
+}
+
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -20,13 +26,23 @@ export const authOptions: NextAuthOptions = {
         const { email, password, role } = credentials;
 
         if (role === "admin") {
-          const adminEmail = process.env.ADMIN_EMAIL?.trim();
-          const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH?.trim();
+          const adminEmail = cleanEnvValue(process.env.ADMIN_EMAIL);
+          const adminPasswordHash = cleanEnvValue(process.env.ADMIN_PASSWORD_HASH);
           if (!adminEmail || !adminPasswordHash) {
             console.error("ADMIN_EMAIL / ADMIN_PASSWORD_HASH non configurés");
             return null;
           }
-          if (email.trim() === adminEmail && await bcrypt.compare(password, adminPasswordHash)) {
+          const emailsMatch = email.trim() === adminEmail;
+          const passwordMatch = await bcrypt.compare(password, adminPasswordHash);
+          if (!emailsMatch || !passwordMatch) {
+            console.error("DEBUG admin login mismatch:", JSON.stringify({
+              emailsMatch,
+              passwordMatch,
+              adminEmailLength: adminEmail.length,
+              adminHashLength: adminPasswordHash.length,
+            }));
+          }
+          if (emailsMatch && passwordMatch) {
             return {
               id: "admin",
               name: "Administrateur",
