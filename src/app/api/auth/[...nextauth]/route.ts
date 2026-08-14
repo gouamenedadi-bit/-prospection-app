@@ -32,17 +32,7 @@ export const authOptions: NextAuthOptions = {
             console.error("ADMIN_EMAIL / ADMIN_PASSWORD_HASH non configurés");
             return null;
           }
-          const emailsMatch = email.trim() === adminEmail;
-          const passwordMatch = await bcrypt.compare(password, adminPasswordHash);
-          if (!emailsMatch || !passwordMatch) {
-            console.error("DEBUG admin login mismatch:", JSON.stringify({
-              emailsMatch,
-              passwordMatch,
-              adminEmailLength: adminEmail.length,
-              adminHashLength: adminPasswordHash.length,
-            }));
-          }
-          if (emailsMatch && passwordMatch) {
+          if (email.trim() === adminEmail && await bcrypt.compare(password, adminPasswordHash)) {
             return {
               id: "admin",
               name: "Administrateur",
