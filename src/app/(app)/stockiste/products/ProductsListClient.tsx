@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import ExpandableText from "@/components/ExpandableText";
 
 export default function ProductsListClient({ products }: { products: any[] }) {
   const [search, setSearch] = useState("");
@@ -58,14 +59,26 @@ export default function ProductsListClient({ products }: { products: any[] }) {
                 </div>
               </div>
               
-              <div className="bg-blue-50 px-3 py-2 rounded-lg border border-blue-100 mt-1">
-                <span className="text-xs text-blue-600 uppercase font-bold block mb-1">Posologie / Utilisation</span>
-                <span className="text-sm text-gray-800 font-bold leading-relaxed">{product.posology}</span>
-              </div>
-              
-              <div className="px-1 mt-2">
-                <span className="text-sm text-gray-800 font-medium italic block leading-relaxed">{product.description}</span>
-              </div>
+              {product.posology && (
+                <div className="bg-blue-50 px-3 py-2 rounded-lg border border-blue-100 mt-1">
+                  <span className="text-xs text-blue-600 uppercase font-bold block mb-1">Posologie / Utilisation</span>
+                  <ExpandableText
+                    text={product.posology}
+                    maxLength={100}
+                    className="text-sm text-gray-800 font-bold leading-relaxed"
+                  />
+                </div>
+              )}
+
+              {product.description && (
+                <div className="px-1 mt-2">
+                  <ExpandableText
+                    text={product.description}
+                    maxLength={120}
+                    className="text-sm text-gray-800 font-medium italic leading-relaxed"
+                  />
+                </div>
+              )}
             </div>
           </div>
         ))}
