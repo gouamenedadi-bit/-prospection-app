@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import ExpandableText from "@/components/ExpandableText";
 
 export default function ProductsListClient({ products }: { products: any[] }) {
+  const router = useRouter();
   const [search, setSearch] = useState("");
 
   const filteredProducts = products.filter(product => 
@@ -31,7 +33,16 @@ export default function ProductsListClient({ products }: { products: any[] }) {
 
       <div className="space-y-4">
         {filteredProducts.map((product, i) => (
-          <div key={i} className="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row items-center sm:items-start gap-4 transition-all transform hover:scale-[1.02] hover:shadow-md duration-300 cursor-pointer">
+          <div
+            key={i}
+            onClick={() => router.push(`/stockiste/products/${product.id}`)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") router.push(`/stockiste/products/${product.id}`);
+            }}
+            className="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row items-center sm:items-start gap-4 transition-all transform hover:scale-[1.02] hover:shadow-md duration-300 cursor-pointer"
+          >
             {/* Photo du produit */}
             <div className="w-24 h-24 bg-gray-100 rounded-lg shadow-inner flex items-center justify-center flex-shrink-0 border border-black/5 overflow-hidden">
               {product.image ? (

@@ -16,6 +16,19 @@ export async function getProducts() {
   }
 }
 
+export async function getProductById(id: number) {
+  try {
+    const product = await prisma.produit.findUnique({ where: { id } });
+    if (!product) {
+      return { success: false, error: "Produit introuvable." };
+    }
+    return { success: true, data: product };
+  } catch (error) {
+    console.error("Erreur lors de la récupération du produit:", error);
+    return { success: false, error: "Impossible de récupérer le produit." };
+  }
+}
+
 export async function createProduct(data: {
   name: string;
   partnerPrice: number;
