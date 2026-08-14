@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { pathologiesList } from "@/data/pathologies";
 import { getProducts } from "@/app/actions/products";
 
 export default function HealthWellness() {
+  const router = useRouter();
   const [openId, setOpenId] = useState<string | null>(null);
   const [dbProducts, setDbProducts] = useState<any[]>([]);
 
@@ -16,12 +18,12 @@ export default function HealthWellness() {
     });
   }, []);
 
-  const getProductImage = (prodName: string) => {
+  const getMatchedProduct = (prodName: string) => {
     if (!dbProducts.length) return null;
     const search = prodName.toLowerCase();
-    
+
     let match = dbProducts.find(p => p.name.toLowerCase() === search || p.name.toLowerCase().includes(search) || search.includes(p.name.toLowerCase()));
-    
+
     if (!match) {
       if (search.includes("nutriv")) {
          match = dbProducts.find(p => p.name.toLowerCase().includes("nutrivrich") && (search.includes("rose") ? p.name.toLowerCase().includes("rose") : p.name.toLowerCase().includes("nutritive")));
@@ -47,7 +49,7 @@ export default function HealthWellness() {
          match = dbProducts.find(p => p.name.toLowerCase().includes("odorant"));
       }
     }
-    return match?.image || null;
+    return match || null;
   };
 
   const toggleAccordion = (id: string) => {
@@ -104,9 +106,18 @@ export default function HealthWellness() {
                 <h4 className="font-bold text-gray-800 mb-3 text-base">Produits prescrits :</h4>
                 <div className="space-y-3">
                   {pathology.products.map((prod, idx) => {
-                    const imageUrl = getProductImage(prod.name);
+                    const matched = getMatchedProduct(prod.name);
+                    const imageUrl = matched?.image || null;
+                    const isClickable = Boolean(matched);
                     return (
-                    <div key={idx} className="bg-white p-3 rounded-lg border border-gray-200 flex gap-3 shadow-sm hover:shadow-md transition-shadow">
+                    <div
+                      key={idx}
+                      onClick={isClickable ? () => router.push(`/stockiste/products/${matched.id}`) : undefined}
+                      role={isClickable ? "button" : undefined}
+                      tabIndex={isClickable ? 0 : undefined}
+                      onKeyDown={isClickable ? (e) => { if (e.key === "Enter") router.push(`/stockiste/products/${matched.id}`); } : undefined}
+                      className={`bg-white p-3 rounded-lg border border-gray-200 flex gap-3 shadow-sm hover:shadow-md transition-shadow ${isClickable ? "cursor-pointer hover:border-forest/40" : ""}`}
+                    >
                       <div className="w-16 h-16 bg-gray-100 rounded flex items-center justify-center flex-shrink-0 border border-gray-200 overflow-hidden">
                         {imageUrl ? (
                           <img src={imageUrl} alt={prod.name} className="w-full h-full object-contain" />
@@ -127,6 +138,9 @@ export default function HealthWellness() {
                           <span className="text-xs block text-blue-800 font-bold uppercase mb-1">Mode d'utilisation:</span>
                           <span className="text-sm text-gray-900 font-medium leading-relaxed block">{prod.dosage}</span>
                         </div>
+                        {isClickable && (
+                          <span className="text-xs font-bold text-forest mt-2 inline-block underline">Voir la fiche produit →</span>
+                        )}
                       </div>
                     </div>
                     );
