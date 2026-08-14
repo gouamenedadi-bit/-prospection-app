@@ -112,10 +112,10 @@ export default function HealthWellness() {
                     return (
                     <div
                       key={idx}
-                      onClick={isClickable ? () => router.push(`/stockiste/products/${matched.id}`) : undefined}
+                      onClick={isClickable ? () => router.push(`/stockiste/products/${matched.id}?from=health`) : undefined}
                       role={isClickable ? "button" : undefined}
                       tabIndex={isClickable ? 0 : undefined}
-                      onKeyDown={isClickable ? (e) => { if (e.key === "Enter") router.push(`/stockiste/products/${matched.id}`); } : undefined}
+                      onKeyDown={isClickable ? (e) => { if (e.key === "Enter") router.push(`/stockiste/products/${matched.id}?from=health`); } : undefined}
                       className={`bg-white p-3 rounded-lg border border-gray-200 flex gap-3 shadow-sm hover:shadow-md transition-shadow ${isClickable ? "cursor-pointer hover:border-forest/40" : ""}`}
                     >
                       <div className="w-16 h-16 bg-gray-100 rounded flex items-center justify-center flex-shrink-0 border border-gray-200 overflow-hidden">

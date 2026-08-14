@@ -4,8 +4,15 @@ import { getProductById } from "@/app/actions/products";
 
 export const dynamic = "force-dynamic";
 
-export default async function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function ProductDetailPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ from?: string }>;
+}) {
   const { id } = await params;
+  const { from } = await searchParams;
   const res = await getProductById(Number(id));
 
   if (!res.success || !res.data) {
@@ -13,12 +20,14 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   }
 
   const product = res.data;
+  const backHref = from === "health" ? "/health" : "/stockiste/products";
+  const backLabel = from === "health" ? "Retour à Soins & Bien-être" : "Retour au catalogue";
 
   return (
     <div className="space-y-4 pb-8">
-      <Link href="/stockiste/products" className="inline-flex items-center gap-1.5 text-sm font-bold text-forest hover:text-forest-deep">
+      <Link href={backHref} className="inline-flex items-center gap-1.5 text-sm font-bold text-forest hover:text-forest-deep">
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-        Retour au catalogue
+        {backLabel}
       </Link>
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
