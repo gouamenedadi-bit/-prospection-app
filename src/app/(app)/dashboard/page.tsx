@@ -18,7 +18,6 @@ export default function Home() {
       {/* Quick Actions */}
       <div>
         <div className="flex flex-col gap-2 mb-3">
-          <h3 className="font-semibold text-ink font-heading m-0">Accès Rapide</h3>
           <div className="flex items-center justify-between">
             <a
               href={settingsHref}
