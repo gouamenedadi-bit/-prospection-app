@@ -19,7 +19,7 @@ export default function Home() {
       <div>
         <div className="flex flex-col gap-2 mb-3">
           <h3 className="font-semibold text-ink font-heading m-0">Accès Rapide</h3>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between">
             <a
               href={settingsHref}
               className="text-ink-soft hover:text-forest text-base font-bold flex items-center gap-1.5 transition-colors bg-cream-deep px-2 py-1.5 rounded-lg whitespace-nowrap"
