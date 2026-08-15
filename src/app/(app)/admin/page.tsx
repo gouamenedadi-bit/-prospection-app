@@ -10,9 +10,10 @@ export default function AdminDashboard() {
   const isAuthenticated = status === "authenticated" && session?.user?.role === "admin";
 
   const [activeTab, setActiveTab] = useState("products");
-  
+
   // Products state
   const [products, setProducts] = useState<any[]>([]);
+  const [productSearch, setProductSearch] = useState("");
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [isAdding, setIsAdding] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -285,6 +286,21 @@ export default function AdminDashboard() {
               </button>
             </div>
 
+            {!editingProduct && (
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+                <input
+                  type="text"
+                  value={productSearch}
+                  onChange={(e) => setProductSearch(e.target.value)}
+                  placeholder="Rechercher un produit..."
+                  className="w-full pl-9 pr-3 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:ring-forest focus:border-forest outline-none"
+                />
+              </div>
+            )}
+
             {isLoading ? (
               <div className="text-center py-8 text-gray-500">Chargement des produits...</div>
             ) : editingProduct ? (
@@ -355,7 +371,9 @@ export default function AdminDashboard() {
               </form>
             ) : (
               <div className="space-y-3 h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-                {products.map((product) => (
+                {products
+                  .filter((product) => product.name.toLowerCase().includes(productSearch.toLowerCase()))
+                  .map((product) => (
                   <div key={product.id} className="flex items-center justify-between p-3 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors">
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center text-gray-400 overflow-hidden">
@@ -384,6 +402,11 @@ export default function AdminDashboard() {
                     </div>
                   </div>
                 ))}
+                {products.filter((product) => product.name.toLowerCase().includes(productSearch.toLowerCase())).length === 0 && (
+                  <div className="text-center py-8 text-gray-500 text-sm">
+                    Aucun produit ne correspond à "<span className="font-semibold text-gray-700">{productSearch}</span>".
+                  </div>
+                )}
               </div>
             )}
           </div>
