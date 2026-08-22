@@ -4,6 +4,7 @@ import { useState, useEffect, useTransition } from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { getProducts, createProduct, updateProduct, deleteProduct } from "@/app/actions/products";
 import { getPendingPayments, validatePayment } from "@/app/actions/subscription";
+import { getAllUsers } from "@/app/actions/adminUsers";
 
 export default function AdminDashboard() {
   const { data: session, status } = useSession();
@@ -31,21 +32,28 @@ export default function AdminDashboard() {
     loadProducts();
   }, []);
 
-  // Fake data for demonstration
-  const stats = {
-    totalUsers: 128,
-    newUsers: 12,
-    totalStockistes: 14,
-    totalPartenaires: 114,
-    newPartenaires: 8,
-    totalRevenue: "485 000 FCFA"
-  };
+  // Utilisateurs réels (Stockistes + Partenaires)
+  const [allUsers, setAllUsers] = useState<any[]>([]);
+  const [isLoadingUsers, setIsLoadingUsers] = useState(true);
 
-  const users = [
-    { id: 1, name: "Kouassi Marc", phone: "0708091011", role: "Stockiste", date: "28/07/2026", status: "Actif" },
-    { id: 2, name: "Aya K.", phone: "0504030201", role: "Partenaire", date: "29/07/2026", status: "Actif" },
-    { id: 3, name: "Issa T.", phone: "0102030405", role: "Partenaire", date: "30/07/2026", status: "En attente" },
-  ];
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    setIsLoadingUsers(true);
+    getAllUsers().then((res) => {
+      if (res.success && res.data) {
+        setAllUsers(res.data);
+      }
+      setIsLoadingUsers(false);
+    });
+  }, [isAuthenticated]);
+
+  const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+  const stats = {
+    newUsers: allUsers.filter((u) => new Date(u.createdAt) >= startOfMonth).length,
+    totalStockistes: allUsers.filter((u) => u.role === "Stockiste").length,
+    totalPartenaires: allUsers.filter((u) => u.role === "Partenaire").length,
+    newPartenaires: allUsers.filter((u) => u.role === "Partenaire" && new Date(u.createdAt) >= startOfMonth).length,
+  };
 
   // Abonnements en attente de validation
   const [pendingPayments, setPendingPayments] = useState<any[]>([]);
@@ -415,26 +423,34 @@ export default function AdminDashboard() {
         {/* TAB: UTILISATEURS */}
         {activeTab === "users" && (
           <div className="space-y-4 animate-in fade-in duration-300">
-            <h3 className="font-bold text-gray-800 text-lg border-b border-gray-100 pb-2">Utilisateurs inscrits</h3>
-            <div className="space-y-3">
-              {users.map((user) => (
-                <div key={user.id} className="p-3 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <p className="font-bold text-sm text-gray-800">{user.name}</p>
-                      <p className="text-xs text-gray-500 mt-0.5">{user.phone}</p>
+            <h3 className="font-bold text-gray-800 text-lg border-b border-gray-100 pb-2">Utilisateurs inscrits ({allUsers.length})</h3>
+            {isLoadingUsers ? (
+              <div className="text-center py-8 text-gray-500">Chargement des utilisateurs...</div>
+            ) : allUsers.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">Aucun utilisateur inscrit pour le moment.</div>
+            ) : (
+              <div className="space-y-3">
+                {allUsers.map((user) => (
+                  <div key={user.id} className="p-3 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <p className="font-bold text-sm text-gray-800">{user.name}</p>
+                        <p className="text-xs text-gray-500 mt-0.5">{user.phone}</p>
+                      </div>
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${user.role === 'Stockiste' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}`}>
+                        {user.role}
+                      </span>
                     </div>
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${user.role === 'Stockiste' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}`}>
-                      {user.role}
-                    </span>
+                    <div className="flex justify-between items-center text-[10px] font-semibold text-gray-400 border-t border-gray-100 pt-2 mt-1">
+                      <span>Inscrit le {new Date(user.createdAt).toLocaleDateString("fr-FR")}</span>
+                      <span className={user.isActive ? "text-green-500" : "text-orange-500"}>
+                        • {user.isActive ? "Actif" : "Abonnement expiré"}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex justify-between items-center text-[10px] font-semibold text-gray-400 border-t border-gray-100 pt-2 mt-1">
-                    <span>Inscrit le {user.date}</span>
-                    <span className={`${user.status === 'Actif' ? 'text-green-500' : 'text-orange-500'}`}>• {user.status}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
