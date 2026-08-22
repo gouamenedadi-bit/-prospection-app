@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
     const filename = `${uniqueSuffix}${ext}`;
     
     // Upload to Supabase Storage bucket named "produits"
-    const { data: uploadData, error } = await supabase.storage
+    const { error } = await supabase.storage
       .from("produits")
       .upload(filename, buffer, {
         contentType: file.type || "image/jpeg",

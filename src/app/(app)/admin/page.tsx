@@ -36,18 +36,27 @@ export default function AdminDashboard() {
   const [allUsers, setAllUsers] = useState<any[]>([]);
   const [isLoadingUsers, setIsLoadingUsers] = useState(true);
 
-  useEffect(() => {
-    if (!isAuthenticated) return;
+  const loadUsers = async () => {
     setIsLoadingUsers(true);
-    getAllUsers().then((res) => {
-      if (res.success && res.data) {
-        setAllUsers(res.data);
-      }
-      setIsLoadingUsers(false);
-    });
+    const res = await getAllUsers();
+    if (res.success && res.data) {
+      setAllUsers(res.data);
+    }
+    setIsLoadingUsers(false);
+  };
+
+  // Chargé une première fois (pour le tableau de stats, toujours visible),
+  // puis rechargé à chaque entrée sur l'onglet Utilisateurs pour rester à jour.
+  useEffect(() => {
+    if (isAuthenticated) loadUsers();
   }, [isAuthenticated]);
 
-  const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+  useEffect(() => {
+    if (isAuthenticated && activeTab === "users") loadUsers();
+  }, [isAuthenticated, activeTab]);
+
+  const now = new Date();
+  const startOfMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
   const stats = {
     newUsers: allUsers.filter((u) => new Date(u.createdAt) >= startOfMonth).length,
     totalStockistes: allUsers.filter((u) => u.role === "Stockiste").length,

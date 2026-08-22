@@ -2,7 +2,6 @@
 
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { TRIAL_DAYS } from "@/lib/subscription";
 

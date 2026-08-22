@@ -13,7 +13,7 @@ export async function POST(request: Request) {
       status: 'success', 
       message: 'Notification envoyée avec succès.' 
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ status: 'error', message: 'Erreur d\'envoi' }, { status: 500 });
   }
 }

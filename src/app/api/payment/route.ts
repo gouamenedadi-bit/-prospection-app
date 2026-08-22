@@ -12,7 +12,7 @@ export async function POST(request: Request) {
       message: 'Paiement initialisé',
       paymentUrl: 'https://payment.mockup.url/checkout' 
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ status: 'error', message: 'Erreur lors du paiement' }, { status: 500 });
   }
 }
