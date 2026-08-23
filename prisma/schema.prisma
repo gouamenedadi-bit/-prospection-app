@@ -59,6 +59,16 @@ model Payment {
   updatedAt DateTime @updatedAt
 }
 
+model Avis {
+  id          Int      @id @default(autoincrement())
+  accountType String   // "stockiste" | "partenaire"
+  accountId   Int
+  rating      Int
+  comment     String?
+
+  createdAt DateTime @default(now())
+}
+
 model Produit {
   id           Int      @id @default(autoincrement())
   name         String

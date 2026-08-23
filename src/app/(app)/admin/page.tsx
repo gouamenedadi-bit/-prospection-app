@@ -5,6 +5,7 @@ import { useSession, signIn, signOut } from "next-auth/react";
 import { getProducts, createProduct, updateProduct, deleteProduct } from "@/app/actions/products";
 import { getPendingPayments, validatePayment } from "@/app/actions/subscription";
 import { getAllUsers } from "@/app/actions/adminUsers";
+import { getAllAvis } from "@/app/actions/avis";
 
 export default function AdminDashboard() {
   const { data: session, status } = useSession();
@@ -82,6 +83,21 @@ export default function AdminDashboard() {
     if (isAuthenticated && activeTab === "payments") {
       loadPendingPayments();
     }
+  }, [isAuthenticated, activeTab]);
+
+  // Avis des utilisateurs
+  const [allAvis, setAllAvis] = useState<any[]>([]);
+  const [isLoadingAvis, setIsLoadingAvis] = useState(true);
+
+  useEffect(() => {
+    if (!isAuthenticated || activeTab !== "avis") return;
+    setIsLoadingAvis(true);
+    getAllAvis().then((res) => {
+      if (res.success && res.data) {
+        setAllAvis(res.data);
+      }
+      setIsLoadingAvis(false);
+    });
   }, [isAuthenticated, activeTab]);
 
   const handleValidatePayment = async (id: number) => {
@@ -273,7 +289,8 @@ export default function AdminDashboard() {
         {[
           { id: "products", label: "Gestion des Produits" },
           { id: "users", label: "Utilisateurs" },
-          { id: "payments", label: "Paiements" }
+          { id: "payments", label: "Paiements" },
+          { id: "avis", label: "Avis" }
         ].map((tab) => (
           <button
             key={tab.id}
@@ -496,6 +513,44 @@ export default function AdminDashboard() {
                         {validatingId === payment.id ? "Validation..." : "Valider le paiement"}
                       </button>
                     </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* TAB: AVIS */}
+        {activeTab === "avis" && (
+          <div className="space-y-4 animate-in fade-in duration-300">
+            <h3 className="font-bold text-gray-800 text-lg border-b border-gray-100 pb-2">Avis des utilisateurs ({allAvis.length})</h3>
+            {isLoadingAvis ? (
+              <div className="text-center py-8 text-gray-500">Chargement des avis...</div>
+            ) : allAvis.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">Aucun avis pour le moment.</div>
+            ) : (
+              <div className="space-y-3">
+                {allAvis.map((avis) => (
+                  <div key={avis.id} className="p-3 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors">
+                    <div className="flex justify-between items-start mb-1">
+                      <div>
+                        <p className="font-bold text-sm text-gray-800">{avis.accountName}</p>
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${avis.accountType === 'stockiste' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}`}>
+                          {avis.accountType === "stockiste" ? "Stockiste" : "Partenaire"}
+                        </span>
+                      </div>
+                      <div className="flex gap-0.5 flex-shrink-0">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <svg key={star} className={`w-4 h-4 ${star <= avis.rating ? "text-gold" : "text-gray-200"}`} fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 21.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+                          </svg>
+                        ))}
+                      </div>
+                    </div>
+                    {avis.comment && <p className="text-xs text-gray-600 mt-1.5">{avis.comment}</p>}
+                    <p className="text-[10px] font-semibold text-gray-400 border-t border-gray-100 pt-2 mt-2">
+                      {new Date(avis.createdAt).toLocaleDateString("fr-FR")}
+                    </p>
                   </div>
                 ))}
               </div>

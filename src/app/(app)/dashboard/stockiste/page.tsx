@@ -6,6 +6,9 @@ import { useRouter } from "next/navigation";
 import { getProducts } from "@/app/actions/products";
 import { getStockisteInventory, updateStock } from "@/app/actions/inventory";
 import { getStockisteProfile, updateStockisteProfile } from "@/app/actions/stockistes";
+import AvisForm from "@/components/AvisForm";
+
+const LOW_STOCK_THRESHOLD = 5;
 
 export default function StockisteDashboard() {
   const { data: session, status } = useSession();
@@ -21,6 +24,7 @@ export default function StockisteDashboard() {
 
   // Initialize products with quantity 0 by default
   const [products, setProducts] = useState<any[]>([]);
+  const [lowStockItems, setLowStockItems] = useState<any[]>([]);
 
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editForm, setEditForm] = useState({ name: "", quantity: 0, pv: "" as string|number, partnerPrice: "", publicPrice: "", posology: "", description: "", imageUrl: "" });
@@ -65,9 +69,19 @@ export default function StockisteDashboard() {
           ...p,
           quantity: inventoryMap.get(p.id) || 0
         })).sort((a: any, b: any) => a.name.localeCompare(b.name));
-        
+
         setProducts(loadedProducts);
       }
+
+      // Produits réellement suivis en stock (Inventory existant) et bas (<= seuil)
+      if (inventoryRes.success && inventoryRes.data) {
+        setLowStockItems(
+          inventoryRes.data
+            .filter((inv: any) => inv.quantity <= LOW_STOCK_THRESHOLD)
+            .sort((a: any, b: any) => a.quantity - b.quantity)
+        );
+      }
+
       setIsLoadingProducts(false);
     }
     
@@ -269,11 +283,36 @@ export default function StockisteDashboard() {
           </form>
         )}
 
+        {activeTab === "profil" && (
+          <div className="mt-6 pt-6 border-t border-gray-100 animate-in fade-in duration-300">
+            <h3 className="font-bold text-gray-800 text-lg text-center mb-1">Donnez votre avis</h3>
+            <p className="text-xs text-gray-500 mb-4 text-center">Aidez-nous à améliorer Prospections Longrich.</p>
+            <AvisForm />
+          </div>
+        )}
+
         {/* TAB: PRODUITS */}
         {activeTab === "produits" && (
           <div className="space-y-4 animate-in fade-in duration-300">
             <h3 className="font-bold text-gray-800 text-lg border-b border-gray-100 pb-2 mb-4">Gérer mon Stock</h3>
-            
+
+            {lowStockItems.length > 0 && editingIndex === null && (
+              <div className="bg-orange-50 border border-orange-200 rounded-xl p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <svg className="w-5 h-5 text-orange-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                  <h4 className="font-bold text-orange-800 text-sm">Stock faible — pensez à réapprovisionner</h4>
+                </div>
+                <ul className="space-y-1">
+                  {lowStockItems.map((inv: any) => (
+                    <li key={inv.id} className="text-xs text-orange-700 flex justify-between">
+                      <span>{inv.produit?.name}</span>
+                      <span className="font-bold">{inv.quantity === 0 ? "Rupture" : `${inv.quantity} restant${inv.quantity > 1 ? "s" : ""}`}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             {editingIndex !== null ? (
               <form onSubmit={handleSaveProduct} className="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-3 mb-4 animate-in zoom-in-95 duration-200">
                 <h4 className="font-bold text-gray-700 text-sm mb-2">Modifier la quantité</h4>
