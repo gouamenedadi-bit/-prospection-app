@@ -4,20 +4,12 @@ import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { getMySubscriptionStatus, initiatePayment } from "@/app/actions/subscription";
-import { PlanId } from "@/lib/subscription";
 
-const PLAN_OPTIONS: { id: PlanId; duration: string; price: string; popular?: boolean }[] = [
-  { id: "1m", duration: "1 mois", price: "500 FCFA" },
-  { id: "2m", duration: "2 mois", price: "1 000 FCFA" },
-  { id: "3m", duration: "3 mois", price: "1 500 FCFA" },
-  { id: "6m", duration: "6 mois", price: "3 000 FCFA", popular: true },
-  { id: "12m", duration: "1 an", price: "5 000 FCFA" },
-];
+const PLAN = { duration: "1 an", price: "2 000 FCFA" };
 
 export default function AbonnementPage() {
   const router = useRouter();
   const { status } = useSession();
-  const [selectedPlan, setSelectedPlan] = useState<PlanId | null>(null);
   const [subStatus, setSubStatus] = useState<{ isExpired: boolean; daysLeft: number; expiresAt: string } | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [manualInstructions, setManualInstructions] = useState<{ amount: number; planLabel: string; supportContact: string } | null>(null);
@@ -34,8 +26,6 @@ export default function AbonnementPage() {
   }, [status]);
 
   const handlePay = async () => {
-    if (!selectedPlan) return;
-
     if (status !== "authenticated") {
       router.push("/login");
       return;
@@ -43,7 +33,7 @@ export default function AbonnementPage() {
 
     setError("");
     setIsProcessing(true);
-    const res = await initiatePayment(selectedPlan);
+    const res = await initiatePayment("12m");
     setIsProcessing(false);
 
     if (!res.success) {
@@ -101,53 +91,17 @@ export default function AbonnementPage() {
         </div>
       ) : (
         <div className="pt-2">
-          <h3 className="text-xl font-bold text-ink font-heading text-center mb-6">Choisissez votre forfait</h3>
           {error && <div className="mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-lg text-center font-semibold">{error}</div>}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {PLAN_OPTIONS.map((plan) => (
-              <div
-                key={plan.id}
-                onClick={() => setSelectedPlan(plan.id)}
-                className={`relative bg-white rounded-xl p-6 cursor-pointer transition-all duration-300 border-2 ${
-                  selectedPlan === plan.id ? "border-forest shadow-md transform scale-105" : "border-line shadow-sm hover:border-forest/50 hover:shadow-md"
-                }`}
-              >
-                {plan.popular && (
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gold text-forest-deep text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full shadow-sm">
-                    Le plus populaire
-                  </div>
-                )}
-                <div className="text-center">
-                  <div className="text-gray-500 font-semibold mb-2">Forfait</div>
-                  <div className="text-3xl font-bold text-forest font-heading mb-4">{plan.duration}</div>
-                  <div className="text-2xl font-bold text-ink">{plan.price}</div>
-                </div>
-                {selectedPlan === plan.id && (
-                  <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 w-6 h-6 bg-forest text-white rounded-full flex items-center justify-center shadow-md">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {selectedPlan && !manualInstructions && (
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-line shadow-[0_-10px_20px_rgba(0,0,0,0.05)] z-50 animate-in slide-in-from-bottom-full duration-300">
-          <div className="max-w-3xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div>
-              <p className="text-sm font-semibold text-gray-500">Forfait sélectionné</p>
-              <p className="font-bold text-forest text-lg">
-                {PLAN_OPTIONS.find((p) => p.id === selectedPlan)?.duration} - {PLAN_OPTIONS.find((p) => p.id === selectedPlan)?.price}
-              </p>
-            </div>
+          <div className="bg-white rounded-xl p-8 border-2 border-forest shadow-md max-w-sm mx-auto text-center">
+            <div className="text-gray-500 font-semibold mb-2">Forfait unique</div>
+            <div className="text-3xl font-bold text-forest font-heading mb-4">{PLAN.duration}</div>
+            <div className="text-3xl font-bold text-ink mb-6">{PLAN.price}</div>
             <button
               onClick={handlePay}
               disabled={isProcessing}
-              className="w-full sm:w-auto bg-forest text-white px-8 py-3 rounded-xl font-bold shadow-md hover:bg-forest-deep transition-all disabled:opacity-50"
+              className="w-full bg-forest text-white px-8 py-3 rounded-xl font-bold shadow-md hover:bg-forest-deep transition-all disabled:opacity-50"
             >
-              {isProcessing ? "Traitement..." : status === "authenticated" ? "Procéder au paiement" : "Se connecter pour s'abonner"}
+              {isProcessing ? "Traitement..." : status === "authenticated" ? "S'abonner maintenant" : "Se connecter pour s'abonner"}
             </button>
           </div>
         </div>

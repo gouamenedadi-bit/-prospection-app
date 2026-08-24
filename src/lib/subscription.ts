@@ -2,14 +2,10 @@ import { prisma } from "@/lib/prisma";
 
 export const TRIAL_DAYS = 14;
 
-export type PlanId = "1m" | "2m" | "3m" | "6m" | "12m";
+export type PlanId = "12m";
 
 export const PLANS: Record<PlanId, { label: string; days: number; amount: number }> = {
-  "1m": { label: "1 mois", days: 30, amount: 500 },
-  "2m": { label: "2 mois", days: 60, amount: 1000 },
-  "3m": { label: "3 mois", days: 90, amount: 1500 },
-  "6m": { label: "6 mois", days: 180, amount: 3000 },
-  "12m": { label: "1 an", days: 365, amount: 5000 },
+  "12m": { label: "1 an", days: 365, amount: 2000 },
 };
 
 type AccountType = "stockiste" | "partenaire";
