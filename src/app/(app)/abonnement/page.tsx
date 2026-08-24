@@ -16,7 +16,7 @@ export default function AbonnementPage() {
   const [manualInstructions, setManualInstructions] = useState<{ amount: number; planLabel: string; supportContact: string } | null>(null);
   const [error, setError] = useState("");
   const [showOperatorChoice, setShowOperatorChoice] = useState(false);
-  const [selectedOperator, setSelectedOperator] = useState<"orange" | "mtn" | null>(null);
+  const [selectedOperator, setSelectedOperator] = useState<"orange" | "mtn" | "wave" | "visa" | null>(null);
 
   useEffect(() => {
     if (status === "authenticated") {
@@ -117,6 +117,26 @@ export default function AbonnementPage() {
             >
               <span className="w-10 h-10 rounded-full bg-yellow-100 text-yellow-700 flex items-center justify-center font-bold flex-shrink-0">M</span>
               <span className="font-bold text-ink">MTN Money</span>
+            </button>
+            <button
+              onClick={() => setSelectedOperator("wave")}
+              className={`w-full flex items-center gap-3 p-4 rounded-xl border-2 transition-all ${
+                selectedOperator === "wave" ? "border-forest bg-palm-light" : "border-line hover:border-forest/40"
+              }`}
+            >
+              <span className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold flex-shrink-0">W</span>
+              <span className="font-bold text-ink">Wave</span>
+            </button>
+            <button
+              onClick={() => setSelectedOperator("visa")}
+              className={`w-full flex items-center gap-3 p-4 rounded-xl border-2 transition-all ${
+                selectedOperator === "visa" ? "border-forest bg-palm-light" : "border-line hover:border-forest/40"
+              }`}
+            >
+              <span className="w-10 h-10 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center flex-shrink-0">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"></rect><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2 10h20"></path></svg>
+              </span>
+              <span className="font-bold text-ink">Carte Visa</span>
             </button>
           </div>
 
