@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { getMySubscriptionStatus, initiatePayment } from "@/app/actions/subscription";
 
 const PLAN = { duration: "1 an", price: "2 000 FCFA" };
@@ -14,6 +15,8 @@ export default function AbonnementPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [manualInstructions, setManualInstructions] = useState<{ amount: number; planLabel: string; supportContact: string } | null>(null);
   const [error, setError] = useState("");
+  const [showOperatorChoice, setShowOperatorChoice] = useState(false);
+  const [selectedOperator, setSelectedOperator] = useState<"orange" | "mtn" | null>(null);
 
   useEffect(() => {
     if (status === "authenticated") {
@@ -25,12 +28,15 @@ export default function AbonnementPage() {
     }
   }, [status]);
 
-  const handlePay = async () => {
+  const handleSubscribeClick = () => {
     if (status !== "authenticated") {
-      router.push("/login");
+      setShowOperatorChoice(true);
       return;
     }
+    handlePay();
+  };
 
+  const handlePay = async () => {
     setError("");
     setIsProcessing(true);
     const res = await initiatePayment("12m");
@@ -89,6 +95,47 @@ export default function AbonnementPage() {
           <p className="text-xs text-ink-soft/70">Votre compte sera débloqué sous 24h après validation.</p>
           <button onClick={() => setManualInstructions(null)} className="text-forest font-semibold text-sm underline">Retour</button>
         </div>
+      ) : showOperatorChoice ? (
+        <div className="bg-white rounded-xl p-6 border border-line shadow-sm max-w-sm mx-auto space-y-5">
+          <h3 className="text-lg font-bold text-ink font-heading text-center">Choisissez votre moyen de paiement</h3>
+
+          <div className="space-y-3">
+            <button
+              onClick={() => setSelectedOperator("orange")}
+              className={`w-full flex items-center gap-3 p-4 rounded-xl border-2 transition-all ${
+                selectedOperator === "orange" ? "border-forest bg-palm-light" : "border-line hover:border-forest/40"
+              }`}
+            >
+              <span className="w-10 h-10 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center font-bold flex-shrink-0">O</span>
+              <span className="font-bold text-ink">Orange Money</span>
+            </button>
+            <button
+              onClick={() => setSelectedOperator("mtn")}
+              className={`w-full flex items-center gap-3 p-4 rounded-xl border-2 transition-all ${
+                selectedOperator === "mtn" ? "border-forest bg-palm-light" : "border-line hover:border-forest/40"
+              }`}
+            >
+              <span className="w-10 h-10 rounded-full bg-yellow-100 text-yellow-700 flex items-center justify-center font-bold flex-shrink-0">M</span>
+              <span className="font-bold text-ink">MTN Money</span>
+            </button>
+          </div>
+
+          <div className="flex gap-3 pt-2">
+            <button
+              onClick={() => router.push("/")}
+              className="flex-1 bg-cream-deep text-ink-soft py-3 rounded-xl font-bold hover:bg-line transition-all"
+            >
+              Annuler
+            </button>
+            <button
+              onClick={() => router.push("/login")}
+              disabled={!selectedOperator}
+              className="flex-1 bg-forest text-white py-3 rounded-xl font-bold shadow-md hover:bg-forest-deep transition-all disabled:opacity-40"
+            >
+              Valider
+            </button>
+          </div>
+        </div>
       ) : (
         <div className="pt-2">
           {error && <div className="mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-lg text-center font-semibold">{error}</div>}
@@ -97,12 +144,18 @@ export default function AbonnementPage() {
             <div className="text-3xl font-bold text-forest font-heading mb-4">{PLAN.duration}</div>
             <div className="text-3xl font-bold text-ink mb-6">{PLAN.price}</div>
             <button
-              onClick={handlePay}
+              onClick={handleSubscribeClick}
               disabled={isProcessing}
               className="w-full bg-forest text-white px-8 py-3 rounded-xl font-bold shadow-md hover:bg-forest-deep transition-all disabled:opacity-50"
             >
               {isProcessing ? "Traitement..." : status === "authenticated" ? "S'abonner maintenant" : "Se connecter pour s'abonner"}
             </button>
+          </div>
+
+          <div className="text-center mt-6">
+            <Link href="/" className="text-sm font-bold text-gray-500 hover:text-gray-900">
+              ← Retour à la page de présentation
+            </Link>
           </div>
         </div>
       )}
