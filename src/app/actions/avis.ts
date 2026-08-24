@@ -29,6 +29,36 @@ export async function submitAvis(data: { rating: number; comment?: string }) {
   }
 }
 
+export async function getPublicAvis() {
+  try {
+    const avis = await prisma.avis.findMany({
+      where: { rating: { gte: 4 }, comment: { not: null } },
+      orderBy: { createdAt: "desc" },
+      take: 6,
+    });
+
+    const enriched = await Promise.all(
+      avis.map(async (a) => {
+        if (a.accountType === "stockiste") {
+          const s = await prisma.stockiste.findUnique({ where: { id: a.accountId }, select: { name: true, city: true } });
+          if (!s) return null;
+          const parts = s.name.trim().split(/\s+/);
+          const displayName = parts.length > 1 ? `${parts[0]} ${parts[parts.length - 1][0]}.` : parts[0];
+          return { rating: a.rating, comment: a.comment, displayName, role: `Stockiste à ${s.city}` };
+        }
+        const p = await prisma.partenaire.findUnique({ where: { id: a.accountId }, select: { firstName: true, lastName: true, city: true } });
+        if (!p) return null;
+        return { rating: a.rating, comment: a.comment, displayName: `${p.firstName} ${p.lastName[0]}.`, role: `Partenaire à ${p.city}` };
+      })
+    );
+
+    return { success: true, data: enriched.filter((a): a is NonNullable<typeof a> => a !== null) };
+  } catch (error) {
+    console.error("Erreur getPublicAvis:", error);
+    return { success: false, error: "Impossible de récupérer les avis." };
+  }
+}
+
 export async function getAllAvis() {
   try {
     await requireAdmin();
