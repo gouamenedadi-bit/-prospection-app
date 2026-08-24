@@ -1,8 +1,10 @@
-const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const RESEND_FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "Prospections Longrich <onboarding@resend.dev>";
+import { cleanEnvValue } from "@/lib/env";
 
 export async function sendEmail({ to, subject, html }: { to: string; subject: string; html: string }) {
-  if (!RESEND_API_KEY) {
+  const apiKey = cleanEnvValue(process.env.RESEND_API_KEY);
+  const fromEmail = cleanEnvValue(process.env.RESEND_FROM_EMAIL) || "Prospections Longrich <onboarding@resend.dev>";
+
+  if (!apiKey) {
     console.log(`[email non envoyé - RESEND_API_KEY absente] À: ${to} | Sujet: ${subject}\n${html}`);
     return { success: false, configured: false };
   }
@@ -11,10 +13,10 @@ export async function sendEmail({ to, subject, html }: { to: string; subject: st
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${RESEND_API_KEY}`,
+        Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ from: RESEND_FROM_EMAIL, to, subject, html }),
+      body: JSON.stringify({ from: fromEmail, to, subject, html }),
     });
 
     if (!res.ok) {

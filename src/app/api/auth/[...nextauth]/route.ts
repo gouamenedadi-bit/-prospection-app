@@ -2,12 +2,7 @@ import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
-
-// Défensif contre les valeurs d'env var collées avec des guillemets ou des espaces superflus.
-function cleanEnvValue(value: string | undefined): string {
-  if (!value) return "";
-  return value.trim().replace(/^["']+/, "").replace(/["']+$/, "").trim();
-}
+import { cleanEnvValue } from "@/lib/env";
 
 export const authOptions: NextAuthOptions = {
   providers: [
