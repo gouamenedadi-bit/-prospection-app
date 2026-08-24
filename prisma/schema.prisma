@@ -69,6 +69,17 @@ model Avis {
   createdAt DateTime @default(now())
 }
 
+model PasswordResetToken {
+  id          Int       @id @default(autoincrement())
+  accountType String    // "stockiste" | "partenaire"
+  accountId   Int
+  tokenHash   String    @unique
+  expiresAt   DateTime
+  usedAt      DateTime?
+
+  createdAt DateTime @default(now())
+}
+
 model Produit {
   id           Int      @id @default(autoincrement())
   name         String

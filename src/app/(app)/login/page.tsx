@@ -91,7 +91,12 @@ export default function LoginIndex() {
           </div>
           
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-1">Mot de passe</label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-sm font-bold text-gray-700">Mot de passe</label>
+              <Link href="/forgot-password" className="text-xs font-bold text-gray-500 hover:text-forest">
+                Mot de passe oublié ?
+              </Link>
+            </div>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}

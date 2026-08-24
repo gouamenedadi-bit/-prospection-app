@@ -6,7 +6,7 @@ import { useSession, signOut } from "next-auth/react";
 import { getMySubscriptionStatus } from "@/app/actions/subscription";
 import BottomNav from "@/components/BottomNav";
 
-const EXEMPT_PATHS = ["/login", "/register", "/register/partner", "/register/stockiste", "/abonnement", "/admin"];
+const EXEMPT_PATHS = ["/login", "/register", "/register/partner", "/register/stockiste", "/abonnement", "/admin", "/forgot-password", "/reset-password"];
 
 export default function AppLayout({
   children,
