@@ -5,7 +5,6 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { getPartenaireProfile, updatePartenaireProfile } from "@/app/actions/partenaires";
 import ReorderableList from "@/components/ReorderableList";
-import AvisForm from "@/components/AvisForm";
 import {
   QUICK_ACCESS_DEFAULT_ORDER,
   loadQuickAccessOrder,
@@ -205,11 +204,6 @@ export default function PartnerSettings() {
         </button>
       </div>
 
-      <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-        <h3 className="text-lg font-bold text-gray-800 text-center">Donnez votre avis</h3>
-        <p className="text-xs text-gray-500 mt-1 mb-4 text-center">Aidez-nous à améliorer Prospections Longrich.</p>
-        <AvisForm />
-      </div>
     </div>
   );
 }

@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { getProducts } from "@/app/actions/products";
 import { getStockisteInventory, updateStock } from "@/app/actions/inventory";
 import { getStockisteProfile, updateStockisteProfile } from "@/app/actions/stockistes";
-import AvisForm from "@/components/AvisForm";
 
 const LOW_STOCK_THRESHOLD = 5;
 
@@ -281,14 +280,6 @@ export default function StockisteDashboard() {
               Mettre à jour
             </button>
           </form>
-        )}
-
-        {activeTab === "profil" && (
-          <div className="mt-6 pt-6 border-t border-gray-100 animate-in fade-in duration-300">
-            <h3 className="font-bold text-gray-800 text-lg text-center mb-1">Donnez votre avis</h3>
-            <p className="text-xs text-gray-500 mb-4 text-center">Aidez-nous à améliorer Prospections Longrich.</p>
-            <AvisForm />
-          </div>
         )}
 
         {/* TAB: PRODUITS */}
