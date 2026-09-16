@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useTransition } from "react";
+import Link from "next/link";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { getProducts, createProduct, updateProduct, deleteProduct } from "@/app/actions/products";
 import { getPendingPayments, validatePayment } from "@/app/actions/subscription";
@@ -247,7 +248,12 @@ export default function AdminDashboard() {
               />
             </div>
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">Mot de passe</label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-sm font-bold text-gray-700">Mot de passe</label>
+                <Link href="/admin/forgot-password" className="text-xs font-bold text-gray-500 hover:text-gray-900">
+                  Mot de passe oublié ?
+                </Link>
+              </div>
               <div className="relative">
                 <input
                   type={showAdminPassword ? "text" : "password"}

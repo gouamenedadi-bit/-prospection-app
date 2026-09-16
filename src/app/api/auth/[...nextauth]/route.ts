@@ -2,7 +2,6 @@ import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
-import { cleanEnvValue } from "@/lib/env";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -21,17 +20,12 @@ export const authOptions: NextAuthOptions = {
         const { email, password, role } = credentials;
 
         if (role === "admin") {
-          const adminEmail = cleanEnvValue(process.env.ADMIN_EMAIL);
-          const adminPasswordHash = cleanEnvValue(process.env.ADMIN_PASSWORD_HASH);
-          if (!adminEmail || !adminPasswordHash) {
-            console.error("ADMIN_EMAIL / ADMIN_PASSWORD_HASH non configurés");
-            return null;
-          }
-          if (email.trim() === adminEmail && await bcrypt.compare(password, adminPasswordHash)) {
+          const admin = await prisma.admin.findUnique({ where: { email: email.trim() } });
+          if (admin && await bcrypt.compare(password, admin.password)) {
             return {
-              id: "admin",
+              id: String(admin.id),
               name: "Administrateur",
-              email: adminEmail,
+              email: admin.email,
               role: "admin"
             };
           }
