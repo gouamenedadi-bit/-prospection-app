@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { getMySubscriptionStatus, initiatePayment } from "@/app/actions/subscription";
+import ContactList from "@/components/ContactList";
 
 const PLAN = { duration: "1 an", price: "2 000", currency: "FCFA" };
 
@@ -120,7 +121,10 @@ export default function AbonnementPage() {
             </li>
             <li className="flex gap-3">
               <span className="w-6 h-6 shrink-0 rounded-full bg-forest text-cream text-xs font-bold flex items-center justify-center">2</span>
-              <span>Contactez <strong>{manualInstructions.supportContact}</strong> avec la référence du transfert.</span>
+              <div className="flex-1 min-w-0 space-y-2.5">
+                <span className="block">Envoyez la référence du transfert à l&apos;un de ces numéros, par appel ou WhatsApp :</span>
+                <ContactList message="Bonjour, je viens de payer mon abonnement Prospections Longrich (1 an, 2 000 FCFA). Référence du transfert : " />
+              </div>
             </li>
             <li className="flex gap-3">
               <span className="w-6 h-6 shrink-0 rounded-full bg-forest text-cream text-xs font-bold flex items-center justify-center">3</span>
@@ -194,6 +198,14 @@ export default function AbonnementPage() {
               </button>
             </div>
           </div>
+
+          <section className="card p-5 space-y-3 rise-in" style={{ ["--i" as string]: 2 } as React.CSSProperties} aria-labelledby="aide-titre">
+            <div>
+              <h3 id="aide-titre" className="font-heading text-lg text-ink">Besoin d&apos;aide pour payer ?</h3>
+              <p className="text-sm text-ink-soft mt-0.5">Le support Prospections Longrich vous répond par appel ou sur WhatsApp.</p>
+            </div>
+            <ContactList message="Bonjour, j'ai une question sur l'abonnement Prospections Longrich." />
+          </section>
 
           <p className="text-center">
             <Link href="/" className="text-sm font-semibold text-ink-soft hover:text-ink">Retour à la présentation</Link>
