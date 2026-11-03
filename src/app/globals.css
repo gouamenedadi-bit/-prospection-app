@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+/* desk: grand écran (≥ 1024 px) ET colonne de navigation affichée (personne connectée). */
+@custom-variant desk {
+  @media (width >= 64rem) {
+    [data-desk="true"] & { @slot; }
+  }
+}
+
 :root {
   --background: #F6F2E7; /* cream */
   --foreground: #20231F; /* ink */
@@ -17,6 +24,8 @@
   --color-gold-deep: #8A5512;
   --color-clay: #B5552B;
   --color-clay-light: #FBE7DE;
+  --color-rouge: #B3261E;       /* noms des pathologies (page Soins) */
+  --color-rouge-light: #FCEBE8;
   --color-cream: #F6F2E7;
   --color-cream-deep: #EFE8D6;
   --color-ink: #20231F;
@@ -80,6 +89,41 @@ body {
   /* Cachet PV (signature du catalogue) */
   .pv-stamp { @apply inline-flex items-baseline gap-0.5 px-1.5 py-0.5 rounded-md border border-dashed border-gold bg-gold-light text-gold-deep font-mono text-[11px] font-semibold leading-none whitespace-nowrap; }
 }
+
+/* ─────────── Page Soins : cartes de pathologies ─────────── */
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes unfold {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+/* Entrée en cascade : chaque carte reçoit son délai via --i */
+.rise-in { animation: rise-in 420ms cubic-bezier(.2,.7,.2,1) both; animation-delay: calc(min(var(--i, 0), 14) * 35ms); }
+.unfold { animation: unfold 260ms cubic-bezier(.2,.7,.2,1) both; animation-delay: calc(var(--i, 0) * 60ms); }
+
+.patho-card {
+  position: relative;
+  transition: transform 220ms cubic-bezier(.2,.7,.2,1), box-shadow 220ms ease, border-color 220ms ease;
+}
+/* Filet rouge sur le bord gauche : apparaît au survol et quand la carte est ouverte */
+.patho-card::before {
+  content: "";
+  position: absolute; left: 0; top: 14px; bottom: 14px; width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--color-rouge);
+  transform: scaleY(0); transform-origin: center;
+  transition: transform 260ms cubic-bezier(.2,.7,.2,1);
+}
+.patho-card:hover, .patho-card[data-open="true"] {
+  box-shadow: 0 2px 4px rgb(15 42 31 / 0.04), 0 14px 32px -14px rgb(179 38 30 / 0.28);
+  border-color: rgb(179 38 30 / 0.22);
+}
+.patho-card:hover { transform: translateY(-2px); }
+.patho-card:hover::before, .patho-card[data-open="true"]::before { transform: scaleY(1); }
+.patho-card:hover .patho-chevron { transform: translateY(2px); }
+.patho-card[data-open="true"] .patho-chevron { transform: rotate(180deg); }
 
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { scrollbar-width: none; }

@@ -13,7 +13,7 @@ export default function QuickAccessGrid() {
   const items = orderedQuickAccessItems(order);
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
+    <div className="grid grid-cols-2 desk:grid-cols-3 gap-3 desk:gap-4">
       {items.map((item) => (
         <a
           key={item.id}

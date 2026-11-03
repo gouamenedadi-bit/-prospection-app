@@ -93,9 +93,9 @@ export default function StockistesList() {
       />
 
       {/* Ordinateur : carte à gauche (fixe pendant le défilement), recherche et liste à droite */}
-      <div className="space-y-4 lg:space-y-0 lg:grid lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:gap-6 lg:items-start">
+      <div className="space-y-4 desk:space-y-0 desk:grid desk:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] desk:gap-6 desk:items-start">
         {/* Carte */}
-        <div ref={mapBoxRef} className="card overflow-hidden relative h-[280px] lg:h-[calc(100vh-15rem)] lg:min-h-[420px] lg:sticky lg:top-8">
+        <div ref={mapBoxRef} className="card overflow-hidden relative h-[280px] desk:h-[calc(100vh-15rem)] desk:min-h-[420px] desk:sticky desk:top-8">
           <Map
             ref={mapRef}
             initialViewState={{

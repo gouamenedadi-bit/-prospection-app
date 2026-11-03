@@ -38,7 +38,7 @@ export default function AppLayout({
   const desk = status === "authenticated";
 
   return (
-    <div className={`w-full ${desk ? "lg:flex lg:min-h-screen" : ""}`}>
+    <div data-desk={desk} className={`w-full ${desk ? "lg:flex lg:min-h-screen" : ""}`}>
     {desk && <SideNav />}
     <div className={`w-full max-w-md bg-cream min-h-screen sm:shadow-[0_0_0_1px_rgb(225_218_196),0_20px_60px_-20px_rgb(15_42_31/0.25)] flex flex-col relative overflow-x-clip mx-auto ${desk ? "lg:max-w-none lg:mx-0 lg:flex-1 lg:min-w-0 lg:shadow-none" : ""}`}>
       {/* Header */}
@@ -53,7 +53,7 @@ export default function AppLayout({
       </header>
 
       {/* Main Content */}
-      <main className={`flex-1 overflow-y-auto px-4 pt-5 pb-6 bg-cream ${desk ? "lg:px-12 lg:pt-11 lg:pb-16" : ""}`}>
+      <main className={`flex-1 px-4 pt-5 pb-6 bg-cream ${desk ? "lg:px-12 lg:pt-11 lg:pb-16" : ""}`}>
         <div className={desk ? "lg:max-w-[920px]" : ""}>
         {isBlocked ? (
           <div className="flex flex-col items-center justify-center min-h-[70vh] text-center space-y-5 px-2">
