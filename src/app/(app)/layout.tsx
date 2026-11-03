@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { getMySubscriptionStatus } from "@/app/actions/subscription";
 import BottomNav from "@/components/BottomNav";
+import SideNav from "@/components/SideNav";
 
 const EXEMPT_PATHS = ["/login", "/register", "/register/partner", "/register/stockiste", "/abonnement", "/admin", "/forgot-password", "/reset-password"];
 
@@ -32,11 +33,16 @@ export default function AppLayout({
   }, [status, pathname]);
 
   const isBlocked = !isExempt && subStatus?.isExpired;
+  // Sur ordinateur, une personne connectée a une colonne de navigation à gauche.
+  // Déconnecté (connexion, inscription…), on garde la colonne centrée façon téléphone.
+  const desk = status === "authenticated";
 
   return (
-    <div className="w-full max-w-md bg-cream min-h-screen sm:shadow-[0_0_0_1px_rgb(225_218_196),0_20px_60px_-20px_rgb(15_42_31/0.25)] flex flex-col relative overflow-x-clip mx-auto">
+    <div className={`w-full ${desk ? "lg:flex lg:min-h-screen" : ""}`}>
+    {desk && <SideNav />}
+    <div className={`w-full max-w-md bg-cream min-h-screen sm:shadow-[0_0_0_1px_rgb(225_218_196),0_20px_60px_-20px_rgb(15_42_31/0.25)] flex flex-col relative overflow-x-clip mx-auto ${desk ? "lg:max-w-none lg:mx-0 lg:flex-1 lg:min-w-0 lg:shadow-none" : ""}`}>
       {/* Header */}
-      <header className="bg-forest text-cream px-4 h-14 sticky top-0 z-50 flex items-center justify-between">
+      <header className={`bg-forest text-cream px-4 h-14 sticky top-0 z-50 flex items-center justify-between ${desk ? "lg:hidden" : ""}`}>
         <a href="/dashboard" className="flex items-center gap-2.5 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold">
           <span className="w-8 h-8 rounded-lg bg-gold text-forest-deep flex items-center justify-center font-heading text-lg leading-none" aria-hidden="true">L</span>
           <span className="leading-tight">
@@ -47,7 +53,8 @@ export default function AppLayout({
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto px-4 pt-5 pb-6 bg-cream">
+      <main className={`flex-1 overflow-y-auto px-4 pt-5 pb-6 bg-cream ${desk ? "lg:px-12 lg:pt-11 lg:pb-16" : ""}`}>
+        <div className={desk ? "lg:max-w-[920px]" : ""}>
         {isBlocked ? (
           <div className="flex flex-col items-center justify-center min-h-[70vh] text-center space-y-5 px-2">
             <div className="w-16 h-16 bg-gold-light text-gold-deep rounded-2xl flex items-center justify-center">
@@ -90,10 +97,12 @@ export default function AppLayout({
             {children}
           </>
         )}
+        </div>
       </main>
 
-      {/* Bottom Navigation Bar */}
-      <BottomNav />
+      {/* Barre du bas : téléphone et tablette uniquement quand on a la colonne latérale */}
+      <BottomNav className={desk ? "lg:hidden" : ""} />
+    </div>
     </div>
   );
 }

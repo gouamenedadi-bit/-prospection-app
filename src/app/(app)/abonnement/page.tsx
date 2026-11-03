@@ -78,8 +78,8 @@ export default function AbonnementPage() {
   };
 
   return (
-    <div className="space-y-5 pb-4">
-      <style dangerouslySetInnerHTML={{ __html: `nav { display: none !important; }` }} />
+    <div className="space-y-5 pb-4 lg:max-w-2xl">
+      <style dangerouslySetInnerHTML={{ __html: `nav[data-bottom-nav], aside { display: none !important; }` }} />
 
       <header className="page-head">
         <p className="eyebrow">Abonnement</p>

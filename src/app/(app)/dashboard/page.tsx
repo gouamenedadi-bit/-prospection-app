@@ -16,13 +16,15 @@ export default function Home() {
       <section className="card-dark p-5 relative overflow-hidden">
         <div className="absolute -right-10 -top-10 w-40 h-40 rounded-full border-[18px] border-gold/15" aria-hidden="true" />
         <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-gold relative">
-          {isStockiste ? "Espace stockiste" : "Espace partenaire"}
+          {isAdmin ? "Espace administrateur" : isStockiste ? "Espace stockiste" : "Espace partenaire"}
         </p>
         <h2 className="font-heading text-[26px] leading-tight mt-1.5 relative">
           {firstName ? `Bonjour ${firstName}` : "Bienvenue"}
         </h2>
         <p className="text-sm text-cream/75 mt-1 relative max-w-[30ch]">
-          {isStockiste
+          {isAdmin
+            ? "Gérez le catalogue, les membres, les paiements et les avis."
+            : isStockiste
             ? "Gérez votre stock et restez visible auprès des partenaires de votre zone."
             : "Développez votre réseau et suivez vos performances en Côte d'Ivoire."}
         </p>

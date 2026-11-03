@@ -23,7 +23,7 @@ const PROFILES = [
 export default function RegisterIndex() {
   return (
     <div className="space-y-5">
-      <style dangerouslySetInnerHTML={{__html: `nav { display: none !important; }`}} />
+      <style dangerouslySetInnerHTML={{__html: `nav[data-bottom-nav] { display: none !important; }`}} />
       <header className="page-head">
         <p className="eyebrow">Inscription</p>
         <h2 className="page-title">Quel est votre profil ?</h2>

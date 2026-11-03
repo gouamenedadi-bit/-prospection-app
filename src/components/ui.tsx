@@ -49,8 +49,8 @@ export function AuthShell({
 }) {
   return (
     <div className="flex flex-col items-center justify-center min-h-[70vh] py-2">
-      {nav === "lock" && <style dangerouslySetInnerHTML={{ __html: `nav { pointer-events: none; opacity: 0.4; filter: grayscale(100%); }` }} />}
-      {nav === "hide" && <style dangerouslySetInnerHTML={{ __html: `nav { display: none !important; }` }} />}
+      {nav === "lock" && <style dangerouslySetInnerHTML={{ __html: `nav[data-bottom-nav] { pointer-events: none; opacity: 0.4; filter: grayscale(100%); }` }} />}
+      {nav === "hide" && <style dangerouslySetInnerHTML={{ __html: `nav[data-bottom-nav] { display: none !important; }` }} />}
       <div className="w-full card overflow-hidden motion-safe:animate-in motion-safe:fade-in motion-safe:duration-300">
         <div className="bg-forest-deep px-6 pt-7 pb-6 text-cream">
           <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-gold">{eyebrow}</p>

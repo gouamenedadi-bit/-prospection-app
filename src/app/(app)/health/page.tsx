@@ -94,7 +94,7 @@ export default function HealthWellness() {
         </div>
       )}
 
-      <div className="space-y-3">
+      <div className="space-y-3 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-3 lg:items-start">
         {sortedPathologies.map((pathology) => {
           const isOpen = openId === pathology.id;
           return (

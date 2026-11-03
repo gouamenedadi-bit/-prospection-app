@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Map, { Marker, Popup } from 'react-map-gl/mapbox';
+import { useState, useEffect, useRef } from "react";
+import Map, { Marker, Popup, MapRef } from 'react-map-gl/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { getAllStockistes } from "@/app/actions/stockistes";
 import { getStockisteInventory } from "@/app/actions/inventory";
@@ -20,6 +20,17 @@ function Pin({ active }: { active?: boolean }) {
 
 export default function StockistesList() {
   const [searchTerm, setSearchTerm] = useState("");
+  const mapRef = useRef<MapRef>(null);
+  const mapBoxRef = useRef<HTMLDivElement>(null);
+
+  // La carte doit suivre la taille de son cadre (passage téléphone → ordinateur, rotation…).
+  useEffect(() => {
+    const box = mapBoxRef.current;
+    if (!box || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(() => mapRef.current?.resize());
+    ro.observe(box);
+    return () => ro.disconnect();
+  }, []);
   const [selectedStockiste, setSelectedStockiste] = useState<any>(null);
 
   const [stockistes, setStockistes] = useState<any[]>([]);
@@ -81,10 +92,12 @@ export default function StockistesList() {
         lead="Trouvez le bureau de distribution le plus proche et consultez ses produits disponibles."
       />
 
-      <div className="space-y-4">
+      {/* Ordinateur : carte à gauche (fixe pendant le défilement), recherche et liste à droite */}
+      <div className="space-y-4 lg:space-y-0 lg:grid lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:gap-6 lg:items-start">
         {/* Carte */}
-        <div className="card overflow-hidden relative h-[280px]">
+        <div ref={mapBoxRef} className="card overflow-hidden relative h-[280px] lg:h-[calc(100vh-15rem)] lg:min-h-[420px] lg:sticky lg:top-8">
           <Map
+            ref={mapRef}
             initialViewState={{
               longitude: -4.0083,
               latitude: 5.3096, // Abidjan
@@ -128,6 +141,7 @@ export default function StockistesList() {
           </Map>
         </div>
 
+        <div className="space-y-4">
         {/* Recherche */}
         <div className="relative">
           <svg className="w-5 h-5 text-ink-soft/50 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
@@ -175,6 +189,7 @@ export default function StockistesList() {
             )}
           </div>
         )}
+        </div>
       </div>
 
       {/* Inventaire du stockiste */}

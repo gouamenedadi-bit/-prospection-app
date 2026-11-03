@@ -271,7 +271,7 @@ export default function AdminDashboard() {
   if (!isAuthenticated) {
     return (
       <div className="flex items-center justify-center min-h-[70vh] py-6">
-        <style dangerouslySetInnerHTML={{__html: `nav { pointer-events: none; opacity: 0.4; filter: grayscale(100%); }`}} />
+        <style dangerouslySetInnerHTML={{__html: `nav[data-bottom-nav] { pointer-events: none; opacity: 0.4; filter: grayscale(100%); }`}} />
         <div className="w-full bg-white rounded-2xl border border-line overflow-hidden motion-safe:animate-in motion-safe:fade-in motion-safe:duration-300">
           <div className="bg-forest-deep px-6 pt-7 pb-6 text-cream">
             <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-gold">Espace administrateur</p>
