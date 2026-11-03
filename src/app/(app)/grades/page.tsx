@@ -43,8 +43,11 @@ const BADGE: Record<string, string> = {
   forest: "bg-forest text-cream",
   cream: "bg-cream-deep text-ink",
 };
+const ACCENT: Record<string, string> = { gold: "accent-gold", forest: "accent-forest", cream: "accent-palm" };
+const DOT: Record<string, string> = { gold: "bg-gold", forest: "bg-forest", cream: "bg-palm" };
 
 export default function GradesCompensations() {
+  let order = 0; // position de chaque carte pour l'entrée en cascade
   return (
     <div>
       <PageHeader
@@ -53,24 +56,31 @@ export default function GradesCompensations() {
         lead="Le volume de points (PV) et les conditions sur vos pieds pour atteindre chaque grade."
       />
 
-      <div className="space-y-6">
+      <div className="space-y-8">
         {GROUPS.map((group) => (
           <section key={group.name}>
-            <h3 className="flex items-center gap-2 mb-2.5">
-              <span className={`w-2 h-2 rounded-full ${group.tone === "gold" ? "bg-gold" : group.tone === "forest" ? "bg-forest" : "bg-line"}`} aria-hidden="true" />
-              <span className="section-title">{group.name}</span>
+            <h3 className="flex items-center gap-2.5 mb-3">
+              <span className={`w-2.5 h-2.5 rounded-full ${DOT[group.tone]}`} aria-hidden="true" />
+              <span className="font-heading text-xl text-ink">{group.name}</span>
+              <span className="h-px flex-1 bg-line" aria-hidden="true" />
+              <span className="text-xs text-ink-soft">{group.grades.length} grades</span>
             </h3>
-            <ol className="card divide-y divide-line/70 overflow-hidden">
+            <ol className="space-y-2.5">
               {group.grades.map((g) => {
                 const noCondition = g.conditions === "Aucune";
+                const i = order++;
                 return (
-                  <li key={`${g.title}-${g.level}`} className="flex items-center gap-3.5 p-3.5">
-                    <div className={`w-14 h-14 shrink-0 rounded-xl flex flex-col items-center justify-center ${BADGE[group.tone]}`}>
+                  <li
+                    key={`${g.title}-${g.level}`}
+                    className={`card lift-card ${ACCENT[group.tone]} rise-in flex items-center gap-3.5 p-3.5 pl-4`}
+                    style={{ ["--i" as string]: i } as React.CSSProperties}
+                  >
+                    <div className={`lift-badge w-14 h-14 shrink-0 rounded-xl flex flex-col items-center justify-center shadow-sm ${BADGE[group.tone]}`}>
                       <span className="font-heading text-2xl leading-none">{g.level}</span>
                       {g.suffix && <span className="text-[8px] font-bold uppercase tracking-wider mt-0.5 opacity-80">{g.suffix}</span>}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-ink">
+                      <p className="font-heading text-[16px] font-semibold text-ink">
                         {g.title} {g.level}{g.suffix ? ` ${g.suffix}` : ""}
                       </p>
                       <p className={`text-xs mt-0.5 ${noCondition ? "text-ink-soft/70" : "text-ink-soft"}`}>

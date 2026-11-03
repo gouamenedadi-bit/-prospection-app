@@ -90,7 +90,7 @@ body {
   .pv-stamp { @apply inline-flex items-baseline gap-0.5 px-1.5 py-0.5 rounded-md border border-dashed border-gold bg-gold-light text-gold-deep font-mono text-[11px] font-semibold leading-none whitespace-nowrap; }
 }
 
-/* ─────────── Page Soins : cartes de pathologies ─────────── */
+/* ─────────── Cartes animées (Soins, Grades, Produits) ─────────── */
 @keyframes rise-in {
   from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -99,31 +99,53 @@ body {
   from { opacity: 0; transform: translateY(-6px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+@keyframes pop-in {
+  from { opacity: 0; transform: scale(.94); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.pop-in { animation: pop-in 520ms cubic-bezier(.2,.7,.2,1) both; animation-delay: 80ms; }
 /* Entrée en cascade : chaque carte reçoit son délai via --i */
 .rise-in { animation: rise-in 420ms cubic-bezier(.2,.7,.2,1) both; animation-delay: calc(min(var(--i, 0), 14) * 35ms); }
 .unfold { animation: unfold 260ms cubic-bezier(.2,.7,.2,1) both; animation-delay: calc(var(--i, 0) * 60ms); }
 
-.patho-card {
+/* Carte animée réutilisable : se soulève au survol, filet coloré à gauche.
+   La couleur vient de --accent (classes accent-*). data-open="true" garde l'état actif. */
+.lift-card {
+  --accent: var(--color-palm);
   position: relative;
   transition: transform 220ms cubic-bezier(.2,.7,.2,1), box-shadow 220ms ease, border-color 220ms ease;
 }
-/* Filet rouge sur le bord gauche : apparaît au survol et quand la carte est ouverte */
-.patho-card::before {
+.accent-rouge  { --accent: var(--color-rouge); }
+.accent-gold   { --accent: var(--color-gold); }
+.accent-forest { --accent: var(--color-forest); }
+.accent-palm   { --accent: var(--color-palm); }
+.lift-card::before {
   content: "";
   position: absolute; left: 0; top: 14px; bottom: 14px; width: 3px;
   border-radius: 0 3px 3px 0;
-  background: var(--color-rouge);
+  background: var(--accent);
   transform: scaleY(0); transform-origin: center;
   transition: transform 260ms cubic-bezier(.2,.7,.2,1);
+  z-index: 1;
 }
-.patho-card:hover, .patho-card[data-open="true"] {
-  box-shadow: 0 2px 4px rgb(15 42 31 / 0.04), 0 14px 32px -14px rgb(179 38 30 / 0.28);
-  border-color: rgb(179 38 30 / 0.22);
+.lift-card:hover, .lift-card[data-open="true"] {
+  box-shadow: 0 2px 4px rgb(15 42 31 / 0.04), 0 14px 32px -14px color-mix(in srgb, var(--accent) 32%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 24%, transparent);
 }
-.patho-card:hover { transform: translateY(-2px); }
-.patho-card:hover::before, .patho-card[data-open="true"]::before { transform: scaleY(1); }
-.patho-card:hover .patho-chevron { transform: translateY(2px); }
-.patho-card[data-open="true"] .patho-chevron { transform: rotate(180deg); }
+.lift-card:hover { transform: translateY(-2px); }
+.lift-card:hover::before, .lift-card[data-open="true"]::before { transform: scaleY(1); }
+.lift-card .lift-chevron { transition: transform 300ms cubic-bezier(.2,.7,.2,1), background-color 200ms, color 200ms; }
+.lift-card:hover .lift-chevron { transform: translateY(2px); }
+.lift-card[data-open="true"] .lift-chevron { transform: rotate(180deg); }
+/* Flèche « › » qui glisse vers la droite au survol */
+.lift-card .lift-arrow { transition: transform 220ms cubic-bezier(.2,.7,.2,1), color 200ms; }
+.lift-card:hover .lift-arrow { transform: translateX(4px); color: var(--accent); }
+/* Image qui s'agrandit légèrement au survol */
+.lift-card .lift-img { transition: transform 400ms cubic-bezier(.2,.7,.2,1); }
+.lift-card:hover .lift-img { transform: scale(1.07); }
+/* Badge (grades) qui se redresse au survol */
+.lift-card .lift-badge { transition: transform 260ms cubic-bezier(.2,.7,.2,1); }
+.lift-card:hover .lift-badge { transform: scale(1.06) rotate(-3deg); }
 
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { scrollbar-width: none; }

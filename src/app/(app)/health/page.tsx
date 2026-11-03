@@ -153,7 +153,7 @@ export default function HealthWellness() {
                   <div
                     key={pathology.id}
                     data-open={isOpen}
-                    className="card patho-card overflow-hidden rise-in"
+                    className="card lift-card accent-rouge overflow-hidden rise-in"
                     style={{ ["--i" as string]: orderOf.get(pathology.id) ?? 0 } as React.CSSProperties}
                   >
                     <button
@@ -167,7 +167,7 @@ export default function HealthWellness() {
                         <p className="text-[13px] text-ink-soft mt-1 leading-relaxed">{pathology.description}</p>
                       </div>
                       <span
-                        className={`patho-chevron mt-0.5 w-8 h-8 shrink-0 rounded-full flex items-center justify-center transition-all duration-300 ${isOpen ? "bg-rouge text-white" : "bg-rouge-light text-rouge"}`}
+                        className={`lift-chevron mt-0.5 w-8 h-8 shrink-0 rounded-full flex items-center justify-center transition-all duration-300 ${isOpen ? "bg-rouge text-white" : "bg-rouge-light text-rouge"}`}
                         aria-hidden="true"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.25" d="M19 9l-7 7-7-7"></path></svg>
