@@ -4,6 +4,7 @@ import crypto from "crypto";
 import bcrypt from "bcrypt";
 import { prisma } from "@/lib/prisma";
 import { sendEmail } from "@/lib/email";
+import { escapeHtml, normalizeEmail } from "@/lib/normalize";
 
 const TOKEN_TTL_MS = 60 * 60 * 1000;
 
@@ -11,12 +12,13 @@ function hashToken(token: string) {
   return crypto.createHash("sha256").update(token).digest("hex");
 }
 
-export async function requestPasswordReset(email: string, role: "stockiste" | "partenaire") {
+export async function requestPasswordReset(rawEmail: string, role: "stockiste" | "partenaire") {
   try {
+    const byEmail = { email: { equals: normalizeEmail(rawEmail), mode: "insensitive" as const } };
     const account =
       role === "stockiste"
-        ? await prisma.stockiste.findUnique({ where: { email } })
-        : await prisma.partenaire.findUnique({ where: { email } });
+        ? await prisma.stockiste.findFirst({ where: byEmail })
+        : await prisma.partenaire.findFirst({ where: byEmail });
 
     if (account) {
       const token = crypto.randomBytes(32).toString("hex");
@@ -35,9 +37,9 @@ export async function requestPasswordReset(email: string, role: "stockiste" | "p
       const name = role === "stockiste" ? (account as { name: string }).name : (account as { firstName: string }).firstName;
 
       await sendEmail({
-        to: email,
+        to: account.email,
         subject: "Réinitialisation de votre mot de passe — Prospections Longrich",
-        html: `<p>Bonjour ${name},</p><p>Vous avez demandé à réinitialiser votre mot de passe sur Prospections Longrich.</p><p><a href="${resetUrl}">Cliquez ici pour choisir un nouveau mot de passe</a> (lien valable 1 heure).</p><p>Si vous n'êtes pas à l'origine de cette demande, ignorez cet email.</p>`,
+        html: `<p>Bonjour ${escapeHtml(name)},</p><p>Vous avez demandé à réinitialiser votre mot de passe sur Prospections Longrich.</p><p><a href="${resetUrl}">Cliquez ici pour choisir un nouveau mot de passe</a> (lien valable 1 heure).</p><p>Si vous n'êtes pas à l'origine de cette demande, ignorez cet email.</p>`,
       });
     }
 

@@ -17,7 +17,14 @@ export async function updateStock(stockisteId: number | string, produitId: numbe
     await requireOwnStockiste(stockisteId);
     const sId = typeof stockisteId === "string" ? parseInt(stockisteId) : stockisteId;
     const pId = typeof produitId === "string" ? parseInt(produitId) : produitId;
-    
+
+    if (!Number.isInteger(quantity) || quantity < 0 || quantity > 100000) {
+      return { success: false, error: "La quantité doit être un nombre entier positif." };
+    }
+    if (!Number.isInteger(pId)) {
+      return { success: false, error: "Produit invalide." };
+    }
+
     const inventory = await prisma.inventory.upsert({
       where: {
         stockisteId_produitId: {
@@ -38,7 +45,7 @@ export async function updateStock(stockisteId: number | string, produitId: numbe
     return { success: true, data: inventory };
   } catch (error: any) {
     console.error("Erreur lors de la mise à jour du stock:", error);
-    return { success: false, error: error.message || "Impossible de mettre à jour le stock" };
+    return { success: false, error: "Impossible de mettre à jour le stock." };
   }
 }
 
@@ -58,6 +65,6 @@ export async function getStockisteInventory(stockisteId: number | string) {
     return { success: true, data: inventory };
   } catch (error: any) {
     console.error("Erreur lors de la récupération de l'inventaire:", error);
-    return { success: false, error: error.message || "Impossible de récupérer l'inventaire" };
+    return { success: false, error: "Impossible de récupérer l'inventaire." };
   }
 }

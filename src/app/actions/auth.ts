@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
 import { redirect } from "next/navigation";
 import { TRIAL_DAYS } from "@/lib/subscription";
+import { normalizeEmail } from "@/lib/normalize";
 
 function trialExpiryDate() {
   return new Date(Date.now() + TRIAL_DAYS * 24 * 60 * 60 * 1000);
@@ -12,7 +13,7 @@ function trialExpiryDate() {
 export async function registerStockiste(formData: FormData) {
   const name = formData.get("name") as string;
   const phone = formData.get("phone") as string;
-  const email = formData.get("email") as string;
+  const email = normalizeEmail(formData.get("email"));
   const city = formData.get("city") as string;
   const commune = formData.get("commune") as string;
   const neighborhood = formData.get("neighborhood") as string;
@@ -32,7 +33,7 @@ export async function registerStockiste(formData: FormData) {
   }
 
   try {
-    const existing = await prisma.stockiste.findUnique({ where: { email } });
+    const existing = await prisma.stockiste.findFirst({ where: { email: { equals: email, mode: "insensitive" } } });
     if (existing) {
       return { error: "Cet email est déjà utilisé par un autre compte." };
     }
@@ -54,8 +55,7 @@ export async function registerStockiste(formData: FormData) {
 
   } catch (error: unknown) {
     console.error("Erreur d'inscription:", error);
-    const errorMessage = error instanceof Error ? error.message : "Erreur base de données";
-    return { error: `Une erreur technique est survenue : ${errorMessage}` };
+    return { error: "Une erreur technique est survenue. Merci de réessayer dans un instant." };
   }
 
   redirect("/login");
@@ -65,7 +65,7 @@ export async function registerPartenaire(formData: FormData) {
   const firstName = formData.get("firstName") as string;
   const lastName = formData.get("lastName") as string;
   const phone = formData.get("phone") as string;
-  const email = formData.get("email") as string;
+  const email = normalizeEmail(formData.get("email"));
   const sponsorCode = formData.get("sponsorCode") as string;
   const city = formData.get("city") as string;
   const commune = formData.get("commune") as string;
@@ -85,7 +85,7 @@ export async function registerPartenaire(formData: FormData) {
   }
 
   try {
-    const existing = await prisma.partenaire.findUnique({ where: { email } });
+    const existing = await prisma.partenaire.findFirst({ where: { email: { equals: email, mode: "insensitive" } } });
     if (existing) {
       return { error: "Cet email est déjà utilisé par un autre compte." };
     }
@@ -108,8 +108,7 @@ export async function registerPartenaire(formData: FormData) {
 
   } catch (error: unknown) {
     console.error("Erreur d'inscription:", error);
-    const errorMessage = error instanceof Error ? error.message : "Erreur base de données";
-    return { error: `Une erreur technique est survenue : ${errorMessage}` };
+    return { error: "Une erreur technique est survenue. Merci de réessayer dans un instant." };
   }
 
   redirect("/login");

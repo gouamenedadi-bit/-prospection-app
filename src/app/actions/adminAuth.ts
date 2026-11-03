@@ -4,6 +4,7 @@ import crypto from "crypto";
 import bcrypt from "bcrypt";
 import { prisma } from "@/lib/prisma";
 import { sendEmail } from "@/lib/email";
+import { normalizeEmail } from "@/lib/normalize";
 
 const TOKEN_TTL_MS = 60 * 60 * 1000;
 const ADMIN_ACCOUNT_TYPE = "admin";
@@ -14,7 +15,9 @@ function hashToken(token: string) {
 
 export async function requestAdminPasswordReset(email: string) {
   try {
-    const admin = await prisma.admin.findUnique({ where: { email: email.trim() } });
+    const admin = await prisma.admin.findFirst({
+      where: { email: { equals: normalizeEmail(email), mode: "insensitive" } },
+    });
 
     if (admin) {
       const token = crypto.randomBytes(32).toString("hex");
@@ -48,7 +51,7 @@ export async function requestAdminPasswordReset(email: string) {
 
 export async function resetAdminCredentials(token: string, newEmail: string, newPassword: string) {
   try {
-    const email = newEmail.trim();
+    const email = normalizeEmail(newEmail);
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return { success: false, error: "L'adresse email n'est pas valide." };

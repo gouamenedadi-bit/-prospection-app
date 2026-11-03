@@ -2,6 +2,7 @@ import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
+import { normalizeEmail } from "@/lib/normalize";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -17,10 +18,13 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        const { email, password, role } = credentials;
+        const { password, role } = credentials;
+        const email = normalizeEmail(credentials.email);
+        // Les comptes créés avant la normalisation peuvent avoir des majuscules en base.
+        const byEmail = { email: { equals: email, mode: "insensitive" as const } };
 
         if (role === "admin") {
-          const admin = await prisma.admin.findUnique({ where: { email: email.trim() } });
+          const admin = await prisma.admin.findFirst({ where: byEmail });
           if (admin && await bcrypt.compare(password, admin.password)) {
             return {
               id: String(admin.id),
@@ -33,7 +37,7 @@ export const authOptions: NextAuthOptions = {
         }
 
         if (role === "stockiste") {
-          const user = await prisma.stockiste.findUnique({ where: { email } });
+          const user = await prisma.stockiste.findFirst({ where: byEmail });
           if (user && await bcrypt.compare(password, user.password)) {
             return {
               id: String(user.id),
@@ -43,7 +47,7 @@ export const authOptions: NextAuthOptions = {
             };
           }
         } else if (role === "partenaire") {
-          const user = await prisma.partenaire.findUnique({ where: { email } });
+          const user = await prisma.partenaire.findFirst({ where: byEmail });
           if (user && await bcrypt.compare(password, user.password)) {
             return {
               id: String(user.id),
