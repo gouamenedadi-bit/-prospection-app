@@ -91,7 +91,7 @@ export default function StockistesList() {
               zoom: 11
             }}
             style={{ width: "100%", height: "100%", position: "absolute" }}
-            mapStyle="mapbox://styles/mapbox/light-v11"
+            mapStyle="mapbox://styles/mapbox/streets-v12"
             mapboxAccessToken={mapboxToken}
           >
             {filteredStockistes.map(stockiste => (

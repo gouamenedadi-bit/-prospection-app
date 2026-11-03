@@ -48,7 +48,7 @@ export default function MapPage() {
             latitude: 5.3096, // Abidjan
             zoom: 11
           }}
-          mapStyle="mapbox://styles/mapbox/light-v11"
+          mapStyle="mapbox://styles/mapbox/streets-v12"
           mapboxAccessToken={mapboxToken}
         >
           {filteredStockistes.map(stockiste => (
