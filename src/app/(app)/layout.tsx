@@ -34,34 +34,40 @@ export default function AppLayout({
   const isBlocked = !isExempt && subStatus?.isExpired;
 
   return (
-    <div className="w-full max-w-md bg-white min-h-screen shadow-lg flex flex-col relative overflow-hidden mx-auto">
+    <div className="w-full max-w-md bg-cream min-h-screen sm:shadow-[0_0_0_1px_rgb(225_218_196),0_20px_60px_-20px_rgb(15_42_31/0.25)] flex flex-col relative overflow-x-clip mx-auto">
       {/* Header */}
-      <header className="bg-forest text-white p-4 shadow-md sticky top-0 z-50 flex justify-center items-center">
-        <h1 className="text-xl font-bold font-heading text-center">Prospection Longrich</h1>
+      <header className="bg-forest text-cream px-4 h-14 sticky top-0 z-50 flex items-center justify-between">
+        <a href="/dashboard" className="flex items-center gap-2.5 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold">
+          <span className="w-8 h-8 rounded-lg bg-gold text-forest-deep flex items-center justify-center font-heading text-lg leading-none" aria-hidden="true">L</span>
+          <span className="leading-tight">
+            <span className="block font-heading text-[17px]">Prospection</span>
+            <span className="block font-mono text-[9px] uppercase tracking-[0.2em] text-gold">Longrich · Côte d&apos;Ivoire</span>
+          </span>
+        </a>
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto p-4 bg-cream">
+      <main className="flex-1 overflow-y-auto px-4 pt-5 pb-6 bg-cream">
         {isBlocked ? (
           <div className="flex flex-col items-center justify-center min-h-[70vh] text-center space-y-5 px-2">
-            <div className="w-16 h-16 bg-gold-light text-gold rounded-full flex items-center justify-center">
+            <div className="w-16 h-16 bg-gold-light text-gold-deep rounded-2xl flex items-center justify-center">
               <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
             </div>
             <div>
-              <h2 className="text-xl font-bold text-ink font-heading">Votre essai gratuit est terminé</h2>
+              <h2 className="font-heading text-2xl text-ink">Votre essai gratuit est terminé</h2>
               <p className="text-sm text-ink-soft mt-2 max-w-xs">
                 Vos 14 jours d'essai sont écoulés. Abonnez-vous pour continuer à utiliser Prospections Longrich.
               </p>
             </div>
             <button
               onClick={() => router.push("/abonnement")}
-              className="w-full bg-forest text-white font-bold py-3 rounded-xl shadow-md hover:bg-forest-deep transition-all"
+              className="btn-primary w-full"
             >
               Voir les forfaits
             </button>
             <button
               onClick={() => signOut({ callbackUrl: "/login" })}
-              className="text-xs font-bold text-red-500 hover:text-red-600"
+              className="btn-ghost text-xs"
             >
               Se déconnecter
             </button>
@@ -69,7 +75,7 @@ export default function AppLayout({
         ) : (
           <>
             {!isExempt && subStatus && !subStatus.isExpired && subStatus.daysLeft <= 3 && !bannerDismissed && (
-              <div className="mb-4 p-3 bg-gold-light border border-gold/30 rounded-xl flex items-center justify-between gap-3 text-sm">
+              <div className="mb-5 p-3 pl-4 bg-gold-light border border-gold/30 rounded-xl flex items-center justify-between gap-3 text-sm">
                 <span className="text-forest-deep font-semibold">
                   {subStatus.daysLeft <= 0
                     ? "Votre essai se termine aujourd'hui."

@@ -3,16 +3,19 @@
 import React, { useState, useTransition } from "react";
 import Link from "next/link";
 import { registerPartenaire } from "@/app/actions/auth";
+import { AuthShell, PasswordInput } from "@/components/ui";
+import { CITIES, COMMUNES } from "@/lib/places";
 
 export default function RegisterPartner() {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const [password, setPassword] = useState("");
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
     const formData = new FormData(e.currentTarget);
-    
+
     startTransition(async () => {
       const result = await registerPartenaire(formData);
       if (result?.error) {
@@ -22,126 +25,66 @@ export default function RegisterPartner() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-[70vh]">
-      <style dangerouslySetInnerHTML={{__html: `nav { display: none !important; }`}} />
-      <div className="bg-white p-8 rounded-xl shadow-md border border-gray-100 w-full max-w-xl animate-in fade-in zoom-in duration-300">
-        
-        <div className="text-center mb-6">
-          <div className="w-16 h-16 bg-gold/10 text-gold rounded-full flex items-center justify-center mx-auto mb-3">
-            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+    <AuthShell
+      nav="hide"
+      eyebrow="Inscription · Partenaire"
+      title="Créer votre compte"
+      lead="14 jours d'essai gratuit. Vous serez connecté dès l'inscription."
+      footer={<Link href="/register" className="font-semibold text-ink-soft hover:text-ink">Retour au choix du profil</Link>}
+    >
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {error && <div role="alert" className="alert-error">{error}</div>}
+
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label htmlFor="rp-last" className="label">Nom</label>
+            <input id="rp-last" name="lastName" type="text" required autoComplete="family-name" className="input" placeholder="Kouassi" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 font-heading">Inscription Partenaire</h2>
-          <p className="text-sm text-gray-500 mt-1">Rejoignez le réseau Longrich et suivez vos performances</p>
+          <div>
+            <label htmlFor="rp-first" className="label">Prénoms</label>
+            <input id="rp-first" name="firstName" type="text" required autoComplete="given-name" className="input" placeholder="Aya Marie" />
+          </div>
         </div>
 
-        {error && (
-          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg text-sm font-semibold">
-            {error}
-          </div>
-        )}
+        <div>
+          <label htmlFor="rp-phone" className="label">Téléphone</label>
+          <input id="rp-phone" name="phone" type="tel" required autoComplete="tel" inputMode="tel" className="input" placeholder="07 01 02 03 04" />
+        </div>
+        <div>
+          <label htmlFor="rp-email" className="label">Email</label>
+          <input id="rp-email" name="email" type="email" required autoComplete="email" className="input" placeholder="votre@email.com" />
+        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">Nom</label>
-              <input 
-                name="lastName"
-                type="text" 
-                required 
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-forest focus:border-forest"
-                placeholder="Votre nom"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">Prénoms</label>
-              <input 
-                name="firstName"
-                type="text" 
-                required 
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-forest focus:border-forest"
-                placeholder="Vos prénoms"
-              />
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">Téléphone</label>
-              <input 
-                name="phone"
-                type="tel" 
-                required 
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-forest focus:border-forest"
-                placeholder="0102030405"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">Email</label>
-              <input 
-                name="email"
-                type="email" 
-                required 
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-forest focus:border-forest"
-                placeholder="contact@exemple.com"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">Ville</label>
-              <select 
-                name="city"
-                className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-forest focus:border-forest"
-              >
-                {["Abengourou", "Abidjan", "Aboisso", "Afféry", "Agboville", "Agnibilékrou", "Assinie", "Bangolo", "Bingerville", "Bocanda", "Bondoukou", "Bouaflé", "Bouaké", "Bouna", "Boundiali", "Dabou", "Daloa", "Danané", "Daoukro", "Dimbokro", "Divo", "Duékoué", "Ferkessédougou", "Gagnoa", "Grand-Bassam", "Guiglo", "Issia", "Jacqueville", "Katiola", "Korhogo", "Man", "Mankono", "Odienné", "Ouangolodougou", "Oumé", "San-Pédro", "Sassandra", "Séguéla", "Sinfra", "Soubré", "Tabou", "Tengréla", "Tiassalé", "Touba", "Toumodi", "Yamoussoukro", "Zuénoula"].map(v => <option key={v} value={v}>{v}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">Commune</label>
-              <select 
-                name="commune"
-                className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-forest focus:border-forest"
-              >
-                {["Abobo", "Adjamé", "Anyama", "Attécoubé", "Bingerville", "Brofodoumé", "Cocody", "Koumassi", "Marcory", "Plateau", "Port-Bouët", "Songon", "Treichville", "Yopougon"].sort().map(c => <option key={c} value={c}>{c}</option>)}
-              </select>
-            </div>
-          </div>
-
+        <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-1">Code Parrain / Sponsor (Optionnel)</label>
-            <input 
-              name="sponsorCode"
-              type="text" 
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-forest focus:border-forest"
-              placeholder="Ex: CI0123456"
-            />
+            <label htmlFor="rp-city" className="label">Ville</label>
+            <select id="rp-city" name="city" className="input" defaultValue="Abidjan">
+              {CITIES.map(v => <option key={v} value={v}>{v}</option>)}
+            </select>
           </div>
-
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-1">Mot de passe</label>
-            <input 
-              name="password"
-              type="password" 
-              required 
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-forest focus:border-forest"
-              placeholder="••••••••"
-            />
+            <label htmlFor="rp-commune" className="label">Commune</label>
+            <select id="rp-commune" name="commune" className="input">
+              {COMMUNES.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
           </div>
+        </div>
 
-          <button 
-            type="submit" 
-            disabled={isPending}
-            className="w-full bg-forest text-white font-bold py-3 rounded-lg hover:bg-forest-deep transition-colors mt-4 shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isPending ? "Inscription en cours..." : "S'inscrire et se connecter"}
-          </button>
-          
-          <div className="text-center mt-4">
-            <Link href="/register" className="text-sm font-bold text-gray-500 hover:text-gray-900">Retour au choix du profil</Link>
-          </div>
-        </form>
-      </div>
-    </div>
+        <div>
+          <label htmlFor="rp-sponsor" className="label">Code parrain <span className="font-normal text-ink-soft/70">(facultatif)</span></label>
+          <input id="rp-sponsor" name="sponsorCode" type="text" className="input font-mono" placeholder="CI0123456" />
+        </div>
+
+        <div>
+          <label htmlFor="rp-password" className="label">Mot de passe</label>
+          <input type="hidden" name="password" value={password} />
+          <PasswordInput id="rp-password" value={password} onChange={setPassword} autoComplete="new-password" />
+        </div>
+
+        <button type="submit" disabled={isPending} className="btn-primary w-full mt-2">
+          {isPending ? "Création du compte…" : "Créer mon compte partenaire"}
+        </button>
+      </form>
+    </AuthShell>
   );
 }

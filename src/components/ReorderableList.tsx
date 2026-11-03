@@ -76,7 +76,7 @@ export default function ReorderableList({
               height: ROW_HEIGHT - 8,
             }}
             className={`flex items-center gap-3 px-3 rounded-xl border select-none cursor-grab active:cursor-grabbing relative ${
-              isDragging ? "bg-cream shadow-lg border-forest/30" : "bg-white border-line"
+              isDragging ? "bg-palm-light shadow-lg border-palm/30" : "bg-white border-line hover:border-palm/30"
             }`}
           >
             <span className="text-forest">{item.icon}</span>

@@ -4,10 +4,12 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { pathologiesList } from "@/data/pathologies";
 import { getProducts } from "@/app/actions/products";
+import { PageHeader } from "@/components/ui";
 
 export default function HealthWellness() {
   const router = useRouter();
   const [openId, setOpenId] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
   const [dbProducts, setDbProducts] = useState<any[]>([]);
 
   useEffect(() => {
@@ -56,100 +58,117 @@ export default function HealthWellness() {
     setOpenId(openId === id ? null : id);
   };
 
-  const sortedPathologies = [...pathologiesList].sort((a, b) => 
-    a.name.localeCompare(b.name, 'fr', { sensitivity: 'base' })
-  );
+  const fcfa = (v: unknown) => {
+    const n = Number(String(v).replace(/s/g, ""));
+    return Number.isFinite(n) && String(v).trim() !== "" ? n.toLocaleString("fr-FR") : String(v);
+  };
+
+  const q = query.trim().toLowerCase();
+  const sortedPathologies = [...pathologiesList]
+    .sort((a, b) => a.name.localeCompare(b.name, "fr", { sensitivity: "base" }))
+    .filter((p) => !q || p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q));
 
   return (
-    <div className="space-y-6">
-      <div className="bg-gradient-to-r from-forest to-forest-deep p-6 rounded-xl text-center shadow-md">
-        <h2 className="text-2xl font-bold text-white font-heading">Soins & Bien-être</h2>
-        <p className="text-sm text-white/90 mt-2">Découvrez les pathologies courantes et les recommandations de produits Longrich associés.</p>
-      </div>
+    <div>
+      <PageHeader
+        eyebrow="Guide conseil"
+        title="Soins & bien-être"
+        lead="Les pathologies courantes et les produits Longrich recommandés, avec leur posologie."
+      />
 
-      <div className="relative mb-6">
-        <input 
-          type="text" 
-          placeholder="Rechercher une maladie ou un symptôme..." 
-          className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-purple-500 focus:border-purple-500 shadow-sm"
+      <div className="relative mb-5">
+        <svg className="w-5 h-5 text-ink-soft/50 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        <input
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          aria-label="Rechercher une maladie ou un symptôme"
+          placeholder="Rechercher une maladie ou un symptôme"
+          className="input pl-11"
         />
-        <svg className="w-5 h-5 text-gray-400 absolute left-3 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
       </div>
 
-      <div className="space-y-4">
-        {sortedPathologies.map((pathology) => (
-          <div key={pathology.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 transform hover:scale-[1.01] hover:shadow-md">
-            {/* Accordion Header */}
-            <div 
-              onClick={() => toggleAccordion(pathology.id)}
-              className="p-4 flex items-center justify-between cursor-pointer hover:bg-purple-50 transition-colors"
-            >
-              <div className="flex flex-col">
-                <h3 className="font-black text-gray-800 text-lg">{pathology.name}</h3>
-                <p className="text-sm text-red-600 font-medium mt-1 leading-relaxed">{pathology.description}</p>
-              </div>
-              <div className="flex-shrink-0 ml-4">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center bg-purple-100 text-purple-700 transition-transform duration-300 ${openId === pathology.id ? 'rotate-180' : ''}`}>
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7"></path></svg>
-                </div>
-              </div>
-            </div>
+      {sortedPathologies.length === 0 && (
+        <div className="card p-6 text-center text-sm text-ink-soft">
+          Aucune pathologie ne correspond à « <span className="font-semibold text-ink">{query}</span> ». Essayez un autre mot, par exemple « tension » ou « fatigue ».
+        </div>
+      )}
 
-            {/* Accordion Content */}
-            {openId === pathology.id && (
-              <div className="p-4 bg-gray-50 border-t border-gray-100 animate-in slide-in-from-top-2 duration-300">
-                <div className="bg-purple-50 text-purple-900 p-4 rounded-xl mb-5 text-base border border-purple-200 shadow-sm">
-                  <span className="font-bold block mb-1">Posologie globale :</span>
-                  <span className="font-medium">{pathology.posology}</span>
+      <div className="space-y-3">
+        {sortedPathologies.map((pathology) => {
+          const isOpen = openId === pathology.id;
+          return (
+          <div key={pathology.id} className={`card overflow-hidden transition-colors ${isOpen ? "border-palm/30" : ""}`}>
+            <button
+              type="button"
+              onClick={() => toggleAccordion(pathology.id)}
+              aria-expanded={isOpen}
+              className="w-full p-4 flex items-start justify-between gap-3 text-left hover:bg-cream/60 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gold"
+            >
+              <div className="min-w-0">
+                <h3 className="font-bold text-ink text-[15px]">{pathology.name}</h3>
+                <p className="text-[13px] text-ink-soft mt-1 leading-relaxed">{pathology.description}</p>
+              </div>
+              <span className={`mt-0.5 w-7 h-7 shrink-0 rounded-full flex items-center justify-center transition-all duration-300 ${isOpen ? "bg-palm text-cream rotate-180" : "bg-palm-light text-palm"}`} aria-hidden="true">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.25" d="M19 9l-7 7-7-7"></path></svg>
+              </span>
+            </button>
+
+            {isOpen && (
+              <div className="px-4 pb-4 pt-1 space-y-4 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-200">
+                <div className="note">
+                  <span className="note-label">Posologie globale</span>
+                  <p className="text-sm text-ink leading-relaxed">{pathology.posology}</p>
                 </div>
-                
-                <h4 className="font-bold text-gray-800 mb-3 text-base">Produits prescrits :</h4>
-                <div className="space-y-3">
-                  {pathology.products.map((prod, idx) => {
-                    const matched = getMatchedProduct(prod.name);
-                    const imageUrl = matched?.image || null;
-                    const isClickable = Boolean(matched);
-                    return (
-                    <div
-                      key={idx}
-                      onClick={isClickable ? () => router.push(`/stockiste/products/${matched.id}?from=health`) : undefined}
-                      role={isClickable ? "button" : undefined}
-                      tabIndex={isClickable ? 0 : undefined}
-                      onKeyDown={isClickable ? (e) => { if (e.key === "Enter") router.push(`/stockiste/products/${matched.id}?from=health`); } : undefined}
-                      className={`bg-white p-3 rounded-lg border border-gray-200 flex gap-3 shadow-sm hover:shadow-md transition-shadow ${isClickable ? "cursor-pointer hover:border-forest/40" : ""}`}
-                    >
-                      <div className="w-16 h-16 bg-gray-100 rounded flex items-center justify-center flex-shrink-0 border border-gray-200 overflow-hidden">
-                        {imageUrl ? (
-                          <img src={imageUrl} alt={prod.name} className="w-full h-full object-contain" />
-                        ) : (
-                          <svg className="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex justify-between items-start">
-                          <h5 className="font-black text-gray-900 text-base leading-tight pr-2">{prod.name}</h5>
-                          <span className="bg-green-100 text-green-800 text-xs font-bold px-2 py-0.5 rounded-md whitespace-nowrap shadow-sm">{prod.pv} PV</span>
-                        </div>
-                        <div className="flex flex-wrap gap-2 mt-2.5">
-                          <span className="text-xs text-green-800 font-bold bg-green-100 px-2.5 py-1 rounded-md border border-green-200 shadow-sm">Partenaire: {prod.partner} F</span>
-                          <span className="text-xs text-gray-800 font-bold bg-gray-100 px-2.5 py-1 rounded-md border border-gray-300 shadow-sm">Public: {prod.public} F</span>
-                        </div>
-                        <div className="mt-3 bg-blue-50 p-2.5 rounded-lg border border-blue-100 shadow-sm">
-                          <span className="text-xs block text-blue-800 font-bold uppercase mb-1">Mode d'utilisation:</span>
-                          <span className="text-sm text-gray-900 font-medium leading-relaxed block">{prod.dosage}</span>
-                        </div>
-                        {isClickable && (
-                          <span className="text-xs font-bold text-forest mt-2 inline-block underline">Voir la fiche produit →</span>
-                        )}
-                      </div>
-                    </div>
-                    );
-                  })}
+
+                <div>
+                  <h4 className="text-xs font-semibold text-ink-soft mb-2">Produits recommandés · {pathology.products.length}</h4>
+                  <ul className="space-y-2">
+                    {pathology.products.map((prod, idx) => {
+                      const matched = getMatchedProduct(prod.name);
+                      const imageUrl = matched?.image || null;
+                      const isClickable = Boolean(matched);
+                      const go = () => router.push(`/stockiste/products/${matched.id}?from=health`);
+                      return (
+                        <li
+                          key={idx}
+                          onClick={isClickable ? go : undefined}
+                          role={isClickable ? "link" : undefined}
+                          tabIndex={isClickable ? 0 : undefined}
+                          onKeyDown={isClickable ? (e) => { if (e.key === "Enter") go(); } : undefined}
+                          className={`rounded-xl border border-line bg-white p-3 flex gap-3 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold ${isClickable ? "cursor-pointer hover:border-palm/40" : ""}`}
+                        >
+                          <div className="w-14 h-14 bg-cream rounded-lg flex items-center justify-center shrink-0 overflow-hidden">
+                            {imageUrl ? (
+                              <img src={imageUrl} alt="" className="w-full h-full object-contain" loading="lazy" />
+                            ) : (
+                              <svg className="w-5 h-5 text-ink-soft/30" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex justify-between items-start gap-2">
+                              <h5 className="font-semibold text-ink text-[13px] leading-snug">{prod.name}</h5>
+                              <span className="pv-stamp">{prod.pv}<span className="text-[9px] tracking-wider">PV</span></span>
+                            </div>
+                            <p className="font-mono text-[12px] mt-1.5 tabular-nums">
+                              <span className="text-forest font-semibold">{fcfa(prod.partner)} F</span>
+                              <span className="text-ink-soft"> partenaire · {fcfa(prod.public)} F public</span>
+                            </p>
+                            <p className="text-[12px] text-ink-soft mt-1.5 leading-relaxed">{prod.dosage}</p>
+                            {isClickable && (
+                              <span className="text-xs font-bold text-palm mt-2 inline-flex items-center gap-1">Voir la fiche produit <span aria-hidden="true">→</span></span>
+                            )}
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
                 </div>
               </div>
             )}
           </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

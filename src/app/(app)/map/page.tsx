@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Map, { Marker, Popup } from 'react-map-gl/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { PageHeader } from "@/components/ui";
 
 // Mock data for stockistes
 const STOCKISTES = [
@@ -18,52 +19,53 @@ export default function MapPage() {
   // Note: Un token Mapbox valide sera nécessaire en production.
   const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || "";
 
-  const filteredStockistes = STOCKISTES.filter(s => 
-    s.name.toLowerCase().includes(search.toLowerCase()) || 
-    s.city.toLowerCase().includes(search.toLowerCase()) || 
+  const filteredStockistes = STOCKISTES.filter(s =>
+    s.name.toLowerCase().includes(search.toLowerCase()) ||
+    s.city.toLowerCase().includes(search.toLowerCase()) ||
     s.commune.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
-    <div className="flex flex-col h-full space-y-4">
-      {/* Search Header */}
-      <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 z-10 relative">
-        <h2 className="text-xl font-bold text-gray-800 mb-3">Trouver un Stockiste</h2>
-        <div className="relative">
-          <input 
-            type="text" 
-            placeholder="Rechercher par ville, commune..." 
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-green-500 focus:border-green-500"
-          />
-          <svg className="w-5 h-5 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-        </div>
+    <div className="flex flex-col h-full">
+      <PageHeader eyebrow="Carte" title="Trouver un stockiste" />
+
+      <div className="relative mb-4">
+        <svg className="w-5 h-5 text-ink-soft/50 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        <input
+          type="search"
+          aria-label="Rechercher par ville ou commune"
+          placeholder="Ville ou commune"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="input pl-11"
+        />
       </div>
 
-      {/* Map Container */}
-      <div className="flex-1 rounded-xl overflow-hidden shadow-sm border border-gray-100 relative min-h-[400px]">
+      <div className="flex-1 card overflow-hidden relative min-h-[420px]">
         <Map
           initialViewState={{
             longitude: -4.0083,
-            latitude: 5.3096, // Abidjan center
+            latitude: 5.3096, // Abidjan
             zoom: 11
           }}
-          mapStyle="mapbox://styles/mapbox/streets-v12"
+          mapStyle="mapbox://styles/mapbox/light-v11"
           mapboxAccessToken={mapboxToken}
         >
           {filteredStockistes.map(stockiste => (
-            <Marker 
-              key={stockiste.id} 
-              longitude={stockiste.lng} 
-              latitude={stockiste.lat} 
+            <Marker
+              key={stockiste.id}
+              longitude={stockiste.lng}
+              latitude={stockiste.lat}
               anchor="bottom"
               onClick={e => {
                 e.originalEvent.stopPropagation();
                 setSelectedStockiste(stockiste);
               }}
             >
-              <div className="text-3xl cursor-pointer">📍</div>
+              <svg width="30" height="38" viewBox="0 0 30 38" className="cursor-pointer drop-shadow-md hover:scale-110 transition-transform" aria-hidden="true">
+                <path d="M15 37C15 37 28 23.5 28 14A13 13 0 0 0 2 14C2 23.5 15 37 15 37Z" fill="#173B2C" stroke="#F6F2E7" strokeWidth="2" />
+                <circle cx="15" cy="14" r="5" fill="#D98B2B" />
+              </svg>
             </Marker>
           ))}
 
@@ -76,13 +78,13 @@ export default function MapPage() {
               closeOnClick={false}
               className="text-sm"
             >
-              <div className="p-2">
-                <h3 className="font-bold text-green-700">{selectedStockiste.name}</h3>
-                <p className="text-gray-600 mt-1">{selectedStockiste.city}, {selectedStockiste.commune}</p>
-                <p className="text-gray-800 font-medium mt-2">📞 {selectedStockiste.phone}</p>
-                <button className="mt-3 w-full bg-green-100 text-green-800 py-1 rounded text-xs font-semibold hover:bg-green-200">
+              <div className="p-1">
+                <h3 className="font-bold text-forest">{selectedStockiste.name}</h3>
+                <p className="text-ink-soft mt-0.5">{selectedStockiste.city}, {selectedStockiste.commune}</p>
+                <p className="font-mono text-ink mt-1">{selectedStockiste.phone}</p>
+                <a href="/stockistes" className="mt-2 block text-center bg-palm-light text-palm py-1.5 rounded-lg text-xs font-bold hover:bg-palm hover:text-cream transition-colors">
                   Voir les produits
-                </button>
+                </a>
               </div>
             </Popup>
           )}

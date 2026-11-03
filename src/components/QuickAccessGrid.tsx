@@ -13,17 +13,17 @@ export default function QuickAccessGrid() {
   const items = orderedQuickAccessItems(order);
 
   return (
-    <div className="grid grid-cols-2 gap-4">
+    <div className="grid grid-cols-2 gap-3">
       {items.map((item) => (
         <a
           key={item.id}
           href={item.href}
-          className="bg-white p-4 rounded-xl shadow-sm border border-line flex flex-col items-center text-center hover:bg-cream transition-all transform hover:-translate-y-1 hover:shadow-md duration-300 group"
+          className="card group p-4 flex flex-col items-start gap-3 hover:border-palm/30 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
         >
-          <div className="w-12 h-12 bg-palm-light rounded-full flex items-center justify-center text-palm mb-2 transition-transform duration-300 group-hover:scale-110">
+          <div className="w-10 h-10 bg-palm-light rounded-xl flex items-center justify-center text-palm transition-colors group-hover:bg-palm group-hover:text-cream">
             {item.icon}
           </div>
-          <span className="text-sm font-bold text-ink">{item.label}</span>
+          <span className="text-sm font-bold text-ink leading-tight">{item.label}</span>
         </a>
       ))}
     </div>

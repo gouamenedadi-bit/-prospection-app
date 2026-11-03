@@ -1,5 +1,6 @@
 import { getProducts } from "@/app/actions/products";
 import ProductsListClient from "./ProductsListClient";
+import { PageHeader } from "@/components/ui";
 
 // Toujours refléter les données en base (le catalogue peut être modifié
 // directement en base ou via l'admin), plutôt que de rester figé sur le
@@ -11,12 +12,12 @@ export default async function StockisteProducts() {
   const products = (productsList || []).sort((a, b) => a.name.localeCompare(b.name));
 
   return (
-    <div className="space-y-6">
-      <div className="bg-gradient-to-r from-forest to-forest-deep p-6 rounded-xl text-center shadow-md mb-6">
-        <h2 className="text-2xl font-bold text-white font-heading">Catalogue des Produits</h2>
-        <p className="text-sm text-white/90 mt-2">Découvrez les PV, les prix partenaires et publics, ainsi que la posologie de chaque produit.</p>
-      </div>
-
+    <div>
+      <PageHeader
+        eyebrow={`Catalogue · ${products.length} produits`}
+        title="Produits Longrich"
+        lead="Points (PV), prix partenaire et prix public, et posologie de chaque produit."
+      />
       <ProductsListClient products={products} />
     </div>
   );

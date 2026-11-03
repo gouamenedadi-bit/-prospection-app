@@ -85,41 +85,30 @@ body{
 h1,h2,h3{font-family:'Fraunces',serif;font-weight:650;line-height:1.05;margin:0;letter-spacing:-0.01em;}
 em{font-style:italic;color:var(--gold);}
 a{color:inherit;}
-.eyebrow{
+.lp-eyebrow{
   font-size:12.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;
   display:inline-flex;align-items:center;gap:8px;
 }
-.eyebrow::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--gold);display:inline-block;}
+.lp-eyebrow::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--gold);display:inline-block;}
 
 .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1);}
 .reveal.in{opacity:1;transform:translateY(0);}
 @media (prefers-reduced-motion: reduce){.reveal{opacity:1;transform:none;transition:none;}}
 
-@keyframes marquee {
-  0% { transform: translateX(100vw); }
-  100% { transform: translateX(-100%); }
-}
+@media (prefers-reduced-motion: reduce){ .pin{animation:none;opacity:1;} .you::after{animation:none;} }
 
 .mini-card, .testi-card, .step, .phone-card {
   transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s ease;
 }
 .mini-card:hover, .testi-card:hover {
-  transform: translateY(-6px) scale(1.02);
-  box-shadow: 0 32px 64px -24px rgba(23,59,44,0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 28px 56px -28px rgba(23,59,44,0.35);
 }
-.step:hover {
-  transform: scale(1.03);
-  z-index: 10;
-  border-radius: 14px;
-}
+.step:hover { background:#1F4D37; }
 .phone {
   transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s ease;
 }
-.phone:hover {
-  transform: rotate(0deg) scale(1.08);
-  box-shadow: 0 60px 100px -30px rgba(0,0,0,0.8), 0 0 0 2px rgba(217,139,43,0.3);
-  z-index: 20;
-}
+.phone:hover { transform: rotate(2deg); }
 
 .nav{
   position:sticky;top:0;z-index:50;background:rgba(246,242,231,0.88);backdrop-filter:blur(10px);
@@ -133,16 +122,13 @@ a{color:inherit;}
 .brand-mark svg{width:18px;height:18px;}
 .nav-links{display:flex;gap:30px;font-size:14.5px;font-weight:600;color:var(--ink-soft);}
 .nav-links a{text-decoration:none;transition:all .2s ease;display:inline-block;}
-.nav-links a:hover{color:var(--palm);transform:translateY(-2px) scale(1.05);}
+.nav-links a:hover{color:var(--palm);}
 .nav-cta{
   background:var(--forest);color:#fff;border:none;padding:11px 20px;border-radius:30px;font-weight:700;font-size:13.5px;
   cursor:pointer;font-family:inherit;display:inline-block;transition:all .2s ease;
 }
-.nav-cta:hover{
-  transform:translateY(-2px) scale(1.05);
-  box-shadow:0 8px 16px rgba(23,59,44,0.25);
-  background:var(--forest-deep);
-}
+.nav-cta:hover{ background:var(--forest-deep); }
+a:focus-visible, button:focus-visible{ outline:2px solid var(--gold); outline-offset:3px; border-radius:8px; }
 .nav-burger{display:none;background:none;border:none;cursor:pointer;padding:6px;color:var(--forest);align-items:center;justify-content:center;}
 .mobile-menu{
   position:absolute;top:100%;left:0;right:0;background:var(--cream);border-bottom:1px solid var(--line);
@@ -183,15 +169,15 @@ a{color:inherit;}
 }
 .hero p.lede{font-size:18px;line-height:1.55;color:#D8E6DC;max-width:480px;margin:0 0 32px;}
 .hero-ctas{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:38px;}
-.btn{
+.lp-btn{
   display:inline-flex;align-items:center;gap:9px;border-radius:30px;font-weight:700;font-size:14.5px;
   padding:15px 26px;cursor:pointer;border:none;font-family:inherit;transition:transform .15s, box-shadow .15s;
 }
-.btn:active{transform:scale(.97);}
-.btn-gold{background:var(--gold);color:var(--forest-deep);box-shadow:0 10px 24px -8px rgba(217,139,43,0.55);}
-.btn-gold:hover{box-shadow:0 14px 28px -8px rgba(217,139,43,0.7);}
-.btn-ghost{background:rgba(255,255,255,0.08);color:#fff;border:1.5px solid rgba(255,255,255,0.28);}
-.btn-ghost:hover{background:rgba(255,255,255,0.16);}
+.lp-btn:active{transform:scale(.97);}
+.lp-btn-gold{background:var(--gold);color:var(--forest-deep);box-shadow:0 10px 24px -8px rgba(217,139,43,0.55);}
+.lp-btn-gold:hover{box-shadow:0 14px 28px -8px rgba(217,139,43,0.7);}
+.lp-btn-ghost{background:rgba(255,255,255,0.08);color:#fff;border:1.5px solid rgba(255,255,255,0.28);}
+.lp-btn-ghost:hover{background:rgba(255,255,255,0.16);}
 
 .hero-trust{display:flex;gap:28px;flex-wrap:wrap;padding-bottom:54px;border-top:1px solid rgba(255,255,255,0.14);padding-top:26px;}
 .trust-stat b{font-family:'Fraunces',serif;font-size:23px;font-weight:650;display:block;color:#fff;}
@@ -216,11 +202,11 @@ a{color:inherit;}
 .phone-map .road{position:absolute;background:#fff;}
 .phone-map .road.h{left:0;width:100%;height:6px;}
 .phone-map .road.v{top:0;height:100%;width:4px;}
-.phone-map .water{position:absolute;background:#AFD6E8;border-radius:50%;}
+.phone-map .water{position:absolute;background:#CFE3DA;border-radius:50%;}
 .pin{position:absolute;width:22px;height:22px;transform:translate(-50%,-100%);opacity:0;animation:dropPin .55s cubic-bezier(.2,1.4,.4,1) forwards;}
-.pin .h{width:22px;height:22px;border-radius:50% 50% 50% 0;background:#EA4335;transform:rotate(-45deg);border:1.5px solid rgba(255,255,255,0.85);box-shadow:0 3px 6px rgba(0,0,0,0.3);}
-.you{position:absolute;width:13px;height:13px;border-radius:50%;background:#4285F4;border:2px solid #fff;transform:translate(-50%,-50%);box-shadow:0 0 0 5px rgba(66,133,244,0.25);}
-.you::after{content:"";position:absolute;inset:-9px;border-radius:50%;border:2px solid rgba(66,133,244,0.5);animation:pulseRing 2.2s ease-out infinite;}
+.pin .h{width:22px;height:22px;border-radius:50% 50% 50% 0;background:var(--forest);transform:rotate(-45deg);border:2px solid #fff;box-shadow:0 3px 6px rgba(0,0,0,0.3);}
+.you{position:absolute;width:13px;height:13px;border-radius:50%;background:var(--gold);border:2px solid #fff;transform:translate(-50%,-50%);box-shadow:0 0 0 5px rgba(217,139,43,0.25);}
+.you::after{content:"";position:absolute;inset:-9px;border-radius:50%;border:2px solid rgba(217,139,43,0.5);animation:pulseRing 2.2s ease-out infinite;}
 @keyframes pulseRing{0%{transform:scale(.5);opacity:.9;}100%{transform:scale(2.1);opacity:0;}}
 @keyframes dropPin{0%{opacity:0;transform:translate(-50%,-180%) scale(.4);}70%{opacity:1;}100%{opacity:1;transform:translate(-50%,-100%) scale(1);}}
 .phone-card{background:#fff;border-radius:14px 14px 0 0;padding:14px 16px 18px;box-shadow:0 -8px 18px rgba(0,0,0,0.06);flex-shrink:0;}
@@ -234,7 +220,7 @@ a{color:inherit;}
 .tag-s{background:#F2EFE6;color:#8B8B82;}
 
 .float-card{
-  position:absolute;background:#fff;border-radius:14px;padding:11px 14px;box-shadow:0 16px 32px -10px rgba(0,0,0,0.35);
+  position:absolute;z-index:3;background:#fff;border-radius:14px;padding:11px 14px;box-shadow:0 16px 32px -10px rgba(0,0,0,0.35);
   display:flex;align-items:center;gap:10px;font-weight:800;font-size:12px;color:var(--forest);
 }
 .float-card .ic{width:30px;height:30px;border-radius:8px;background:var(--gold-light);color:var(--clay);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
@@ -287,7 +273,7 @@ section{padding:108px 0;}
 .how{background:var(--forest);color:#fff;}
 .how .section-head h2{color:#fff;}
 .how .section-head p{color:#B9CCBE;}
-.how .eyebrow{color:var(--gold);}
+.how .lp-eyebrow{color:var(--gold);}
 .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(255,255,255,0.12);border-radius:20px;overflow:hidden;}
 .step{background:#1B4632;padding:34px 26px;position:relative;}
 .step-num{font-family:'Fraunces',serif;font-size:38px;font-weight:650;color:var(--gold);opacity:.85;}
@@ -365,7 +351,7 @@ footer{padding:64px 0 36px;}
   .nav-cta{padding: 9px 14px; font-size: 12px;}
   .hero h1{font-size:32px; margin: 16px 0;}
   .hero p.lede{font-size: 15px;}
-  .btn{padding: 12px 20px; font-size: 13.5px; width: 100%; justify-content: center;}
+  .lp-btn{padding: 12px 20px; font-size: 13.5px; width: 100%; justify-content: center;}
   .hero-trust{gap:14px; flex-direction: column;}
   .float-card{display:none;}
   .phone{width:220px;height:450px;}
@@ -387,25 +373,15 @@ footer{padding:64px 0 36px;}
       
       <div style={{
         backgroundColor: 'var(--forest-deep)',
-        color: 'var(--white)',
-        padding: '8px 0',
-        fontSize: '13.5px',
-        fontWeight: '800',
-        letterSpacing: '0.15em',
+        color: 'var(--gold-light)',
+        padding: '7px 16px',
+        fontSize: '11px',
+        fontWeight: 700,
+        letterSpacing: '0.22em',
         textTransform: 'uppercase',
-        fontStyle: 'italic',
-        borderBottom: '1px solid rgba(217,139,43,0.2)',
-        overflow: 'hidden',
-        whiteSpace: 'nowrap',
-        width: '100%'
+        textAlign: 'center',
       }}>
-        <div style={{
-          display: 'inline-block',
-          animation: 'marquee 30s linear infinite',
-          paddingLeft: '100vw'
-        }}>
-          Better Life - Better Future
-        </div>
+        Better Life · Better Future
       </div>
       <nav className="nav">
   <div className="nav-inner">
@@ -448,15 +424,15 @@ footer{padding:64px 0 36px;}
   <div className="hero-pattern"></div>
   <div className="hero-inner">
     <div>
-      <span className="eyebrow hero-eyebrow">L'app des partenaires Longrich en Côte d'Ivoire</span>
+      <span className="lp-eyebrow hero-eyebrow">L'app des partenaires Longrich en Côte d'Ivoire</span>
       <h1>Votre bureau Longrich le plus proche, en un coup d'œil.</h1>
       <p className="lede">Localisez les prospections près de chez vous, comparez les vrais prix partenaires, et commandez vos produits bien-être préférés — où que vous soyez en Côte d'Ivoire.</p>
       <div className="hero-ctas">
-        <a href="/register" className="btn btn-gold" style={{ textDecoration: 'none' }}>
+        <a href="/register" className="lp-btn lp-btn-gold" style={{ textDecoration: 'none' }}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l9 5-9 5-9-5z"/><path d="M3 8v8l9 5 9-5V8" fill="none" stroke="currentColor" strokeWidth="2"/></svg>
           S'inscrire
         </a>
-        <button className="btn btn-ghost" onClick={handleStoreToast}>Voir comment ça marche</button>
+        <a href="#comment" className="lp-btn lp-btn-ghost" style={{ textDecoration: 'none' }}>Voir comment ça marche</a>
       </div>
       <div className="hero-trust">
         <div className="trust-stat"><b>58</b><span>Produits référencés</span></div>
@@ -510,7 +486,7 @@ footer{padding:64px 0 36px;}
 <section id="fonctionnalites">
   <div className="wrap">
     <div className="section-head reveal">
-      <span className="eyebrow" style={{"color":"var(--gold)"}}>Fonctionnalités</span>
+      <span className="lp-eyebrow" style={{"color":"var(--gold)"}}>Fonctionnalités</span>
       <h2>Tout ce qu'il faut pour vendre et acheter, au même endroit.</h2>
       <p>Conçue pour les partenaires et les prospections Longrich de Côte d'Ivoire, l'application réunit la localisation, le catalogue, les conseils bien-être et le paiement dans un seul parcours.</p>
     </div>
@@ -629,7 +605,7 @@ footer{padding:64px 0 36px;}
 <section className="how" id="comment">
   <div className="wrap">
     <div className="section-head reveal">
-      <span className="eyebrow">Comment ça marche</span>
+      <span className="lp-eyebrow">Comment ça marche</span>
       <h2>De la recherche au paiement, en quatre étapes.</h2>
       <p>Un parcours pensé pour les partenaires comme pour les prospections, du premier coup d'œil à la commande finalisée.</p>
     </div>
@@ -645,7 +621,7 @@ footer{padding:64px 0 36px;}
 <section id="avis">
   <div className="wrap">
     <div className="section-head reveal">
-      <span className="eyebrow" style={{"color":"var(--gold)"}}>Ce qu'ils en disent</span>
+      <span className="lp-eyebrow" style={{"color":"var(--gold)"}}>Ce qu'ils en disent</span>
       <h2>Pensée pour le terrain, par des gens du terrain.</h2>
     </div>
     <div className={`testi-grid reveal count-${Math.min(displayedAvis.length, 3)}`}>
@@ -674,7 +650,7 @@ footer{padding:64px 0 36px;}
 
 <section>
   <div className="cta-band reveal">
-    <span className="eyebrow" style={{"color":"var(--gold)"}}>Rejoignez le réseau</span>
+    <span className="lp-eyebrow" style={{"color":"var(--gold)"}}>Rejoignez le réseau</span>
     <h2>Téléchargez l'application Prospections Longrich dès aujourd'hui.</h2>
     <p>Gratuite pour les partenaires et les prospections Longrich, disponible bientôt sur Android et iOS.</p>
     <div className="store-row">
@@ -737,7 +713,7 @@ footer{padding:64px 0 36px;}
           zIndex: 200, boxShadow: '0 14px 30px rgba(0,0,0,0.25)', pointerEvents: toastVisible ? 'auto' : 'none'
         }}
       >
-        Bientôt disponible sur Android et iOS 🚀
+        Bientôt disponible sur Android et iOS.
       </div>
     </div>
   );

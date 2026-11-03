@@ -28,9 +28,9 @@ export default function ExpandableText({
             e.stopPropagation();
             setExpanded((v) => !v);
           }}
-          className="ml-1.5 text-forest font-bold underline whitespace-nowrap"
+          className="ml-1.5 text-palm font-semibold underline underline-offset-2 whitespace-nowrap hover:text-forest"
         >
-          {expanded ? "− Voir moins" : "+ Voir plus"}
+          {expanded ? "Voir moins" : "Voir plus"}
         </button>
       )}
     </span>

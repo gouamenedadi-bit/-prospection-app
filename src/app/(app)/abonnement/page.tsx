@@ -6,7 +6,30 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { getMySubscriptionStatus, initiatePayment } from "@/app/actions/subscription";
 
-const PLAN = { duration: "1 an", price: "2 000 FCFA" };
+const PLAN = { duration: "1 an", price: "2 000", currency: "FCFA" };
+
+const INCLUDED = [
+  "Catalogue complet : prix, PV et posologie",
+  "Guide Soins & bien-être par pathologie",
+  "Carte des stockistes et leurs produits",
+  "Grades et plan de compensation",
+];
+
+// Les pastilles gardent la couleur de chaque opérateur pour être reconnues d'un coup d'œil.
+const OPERATORS = [
+  { id: "orange" as const, label: "Orange Money", badge: <span className="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center font-bold shrink-0">O</span> },
+  { id: "mtn" as const, label: "MTN Mobile Money", badge: <span className="w-10 h-10 rounded-xl bg-yellow-100 text-yellow-700 flex items-center justify-center font-bold shrink-0">M</span> },
+  { id: "wave" as const, label: "Wave", badge: <span className="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center font-bold shrink-0">W</span> },
+  {
+    id: "visa" as const,
+    label: "Carte Visa",
+    badge: (
+      <span className="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center shrink-0">
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"></rect><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2 10h20"></path></svg>
+      </span>
+    ),
+  },
+];
 
 export default function AbonnementPage() {
   const router = useRouter();
@@ -43,7 +66,7 @@ export default function AbonnementPage() {
     setIsProcessing(false);
 
     if (!res.success) {
-      setError(res.error || "Une erreur est survenue.");
+      setError(res.error || "Le paiement n'a pas pu démarrer. Réessayez dans un instant.");
       return;
     }
 
@@ -55,129 +78,127 @@ export default function AbonnementPage() {
   };
 
   return (
-    <div className="space-y-6 pb-8">
+    <div className="space-y-5 pb-4">
       <style dangerouslySetInnerHTML={{ __html: `nav { display: none !important; }` }} />
-      <div className="bg-gradient-to-r from-forest to-forest-deep p-8 rounded-xl text-center shadow-md relative overflow-hidden">
-        <div className="absolute top-0 right-0 p-4 opacity-10">
-          <svg className="w-32 h-32" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-        </div>
-        <h2 className="text-3xl font-bold text-white font-heading relative z-10">Abonnement Premium</h2>
-        <p className="text-white/90 mt-2 relative z-10 max-w-lg mx-auto">
-          Débloquez toutes les fonctionnalités de l'application Prospections Longrich pour développer votre réseau plus rapidement.
-        </p>
-      </div>
+
+      <header className="page-head">
+        <p className="eyebrow">Abonnement</p>
+        <h2 className="page-title">Continuer avec Prospection</h2>
+        <p className="page-lead">Un seul forfait, tout inclus, pour développer votre réseau Longrich.</p>
+      </header>
 
       {status === "authenticated" && subStatus && (
         <div
-          className={`rounded-xl p-4 text-center font-semibold text-sm border ${
+          role="status"
+          className={`rounded-xl px-4 py-3 text-sm font-semibold border ${
             subStatus.isExpired
-              ? "bg-red-50 text-red-700 border-red-200"
+              ? "bg-clay-light text-clay border-clay/20"
               : subStatus.daysLeft <= 3
-              ? "bg-gold-light text-forest-deep border-gold/30"
+              ? "bg-gold-light text-gold-deep border-gold/30"
               : "bg-palm-light text-palm border-palm/20"
           }`}
         >
           {subStatus.isExpired
-            ? "Votre essai gratuit est terminé. Choisissez un forfait pour continuer."
+            ? "Votre essai gratuit est terminé. Abonnez-vous pour retrouver l'accès."
             : `Il vous reste ${subStatus.daysLeft} jour${subStatus.daysLeft > 1 ? "s" : ""} d'essai gratuit.`}
         </div>
       )}
 
       {manualInstructions ? (
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-line space-y-4 text-center">
-          <div className="w-14 h-14 bg-gold-light text-gold rounded-full flex items-center justify-center mx-auto">
-            <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
+        <div className="card p-6 space-y-4">
+          <div className="w-12 h-12 bg-gold-light text-gold-deep rounded-xl flex items-center justify-center" aria-hidden="true">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
           </div>
-          <h3 className="text-lg font-bold text-ink font-heading">Finalisez votre paiement</h3>
-          <p className="text-sm text-ink-soft">
-            Envoyez <strong>{manualInstructions.amount} FCFA</strong> par Mobile Money (Orange Money, MTN MoMo ou Wave) pour le forfait <strong>{manualInstructions.planLabel}</strong>, puis contactez {manualInstructions.supportContact} pour valider votre abonnement.
-          </p>
-          <p className="text-xs text-ink-soft/70">Votre compte sera débloqué sous 24h après validation.</p>
-          <button onClick={() => setManualInstructions(null)} className="text-forest font-semibold text-sm underline">Retour</button>
+          <div>
+            <h3 className="font-heading text-xl text-ink">Finalisez votre paiement</h3>
+            <p className="text-sm text-ink-soft mt-1">Forfait {manualInstructions.planLabel}</p>
+          </div>
+          <ol className="space-y-3 text-sm text-ink">
+            <li className="flex gap-3">
+              <span className="w-6 h-6 shrink-0 rounded-full bg-forest text-cream text-xs font-bold flex items-center justify-center">1</span>
+              <span>Envoyez <strong className="font-mono">{manualInstructions.amount.toLocaleString("fr-FR")} FCFA</strong> par Orange Money, MTN MoMo ou Wave.</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="w-6 h-6 shrink-0 rounded-full bg-forest text-cream text-xs font-bold flex items-center justify-center">2</span>
+              <span>Contactez <strong>{manualInstructions.supportContact}</strong> avec la référence du transfert.</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="w-6 h-6 shrink-0 rounded-full bg-forest text-cream text-xs font-bold flex items-center justify-center">3</span>
+              <span>Votre compte est débloqué sous 24 h après validation.</span>
+            </li>
+          </ol>
+          <button onClick={() => setManualInstructions(null)} className="btn-secondary w-full">Retour au forfait</button>
         </div>
       ) : showOperatorChoice ? (
-        <div className="bg-white rounded-xl p-6 border border-line shadow-sm max-w-sm mx-auto space-y-5">
-          <h3 className="text-lg font-bold text-ink font-heading text-center">Choisissez votre moyen de paiement</h3>
+        <div className="card p-5 space-y-4">
+          <h3 className="section-title">Choisissez votre moyen de paiement</h3>
 
-          <div className="space-y-3">
-            <button
-              onClick={() => setSelectedOperator("orange")}
-              className={`w-full flex items-center gap-3 p-4 rounded-xl border-2 transition-all ${
-                selectedOperator === "orange" ? "border-forest bg-palm-light" : "border-line hover:border-forest/40"
-              }`}
-            >
-              <span className="w-10 h-10 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center font-bold flex-shrink-0">O</span>
-              <span className="font-bold text-ink">Orange Money</span>
-            </button>
-            <button
-              onClick={() => setSelectedOperator("mtn")}
-              className={`w-full flex items-center gap-3 p-4 rounded-xl border-2 transition-all ${
-                selectedOperator === "mtn" ? "border-forest bg-palm-light" : "border-line hover:border-forest/40"
-              }`}
-            >
-              <span className="w-10 h-10 rounded-full bg-yellow-100 text-yellow-700 flex items-center justify-center font-bold flex-shrink-0">M</span>
-              <span className="font-bold text-ink">MTN Money</span>
-            </button>
-            <button
-              onClick={() => setSelectedOperator("wave")}
-              className={`w-full flex items-center gap-3 p-4 rounded-xl border-2 transition-all ${
-                selectedOperator === "wave" ? "border-forest bg-palm-light" : "border-line hover:border-forest/40"
-              }`}
-            >
-              <span className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold flex-shrink-0">W</span>
-              <span className="font-bold text-ink">Wave</span>
-            </button>
-            <button
-              onClick={() => setSelectedOperator("visa")}
-              className={`w-full flex items-center gap-3 p-4 rounded-xl border-2 transition-all ${
-                selectedOperator === "visa" ? "border-forest bg-palm-light" : "border-line hover:border-forest/40"
-              }`}
-            >
-              <span className="w-10 h-10 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center flex-shrink-0">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"></rect><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2 10h20"></path></svg>
-              </span>
-              <span className="font-bold text-ink">Carte Visa</span>
-            </button>
+          <div className="space-y-2" role="radiogroup" aria-label="Moyen de paiement">
+            {OPERATORS.map((op) => {
+              const selected = selectedOperator === op.id;
+              return (
+                <button
+                  key={op.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={selected}
+                  onClick={() => setSelectedOperator(op.id)}
+                  className={`w-full flex items-center gap-3 p-3 rounded-xl border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold ${
+                    selected ? "border-palm bg-palm-light/60" : "border-line bg-white hover:border-palm/40"
+                  }`}
+                >
+                  {op.badge}
+                  <span className="flex-1 text-left font-semibold text-sm text-ink">{op.label}</span>
+                  <span className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selected ? "border-palm" : "border-line"}`} aria-hidden="true">
+                    {selected && <span className="w-2.5 h-2.5 rounded-full bg-palm" />}
+                  </span>
+                </button>
+              );
+            })}
           </div>
 
-          <div className="flex gap-3 pt-2">
-            <button
-              onClick={() => router.push("/")}
-              className="flex-1 bg-cream-deep text-ink-soft py-3 rounded-xl font-bold hover:bg-line transition-all"
-            >
-              Annuler
-            </button>
-            <button
-              onClick={() => router.push("/login")}
-              disabled={!selectedOperator}
-              className="flex-1 bg-forest text-white py-3 rounded-xl font-bold shadow-md hover:bg-forest-deep transition-all disabled:opacity-40"
-            >
-              Valider
+          <div className="flex gap-2 pt-1">
+            <button onClick={() => router.push("/")} className="btn-secondary flex-1">Annuler</button>
+            <button onClick={() => router.push("/login")} disabled={!selectedOperator} className="btn-primary flex-1">
+              Continuer
             </button>
           </div>
+          <p className="text-[11px] text-ink-soft text-center">Vous serez invité à vous connecter pour finaliser le paiement.</p>
         </div>
       ) : (
-        <div className="pt-2">
-          {error && <div className="mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-lg text-center font-semibold">{error}</div>}
-          <div className="bg-white rounded-xl p-8 border-2 border-forest shadow-md max-w-sm mx-auto text-center">
-            <div className="text-gray-500 font-semibold mb-2">Forfait unique</div>
-            <div className="text-3xl font-bold text-forest font-heading mb-4">{PLAN.duration}</div>
-            <div className="text-3xl font-bold text-ink mb-6">{PLAN.price}</div>
-            <button
-              onClick={handleSubscribeClick}
-              disabled={isProcessing}
-              className="w-full bg-forest text-white px-8 py-3 rounded-xl font-bold shadow-md hover:bg-forest-deep transition-all disabled:opacity-50"
-            >
-              {isProcessing ? "Traitement..." : status === "authenticated" ? "S'abonner maintenant" : "Se connecter pour s'abonner"}
-            </button>
+        <>
+          {error && <div role="alert" className="alert-error">{error}</div>}
+
+          <div className="card overflow-hidden">
+            <div className="bg-forest-deep text-cream px-5 py-5 flex items-end justify-between gap-3">
+              <div>
+                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-gold">Forfait unique</p>
+                <p className="font-heading text-2xl mt-1">{PLAN.duration}</p>
+              </div>
+              <p className="text-right">
+                <span className="font-mono text-3xl font-semibold tabular-nums">{PLAN.price}</span>
+                <span className="block text-xs text-cream/70">{PLAN.currency} / an</span>
+              </p>
+            </div>
+            <ul className="px-5 py-4 space-y-2.5">
+              {INCLUDED.map((item) => (
+                <li key={item} className="flex items-start gap-2.5 text-sm text-ink">
+                  <svg className="w-4 h-4 mt-0.5 shrink-0 text-palm" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" /></svg>
+                  {item}
+                </li>
+              ))}
+            </ul>
+            <div className="px-5 pb-5">
+              <button onClick={handleSubscribeClick} disabled={isProcessing} className="btn-primary w-full">
+                {isProcessing ? "Préparation du paiement…" : status === "authenticated" ? "S'abonner pour 1 an" : "Choisir un moyen de paiement"}
+              </button>
+            </div>
           </div>
 
-          <div className="text-center mt-6">
-            <Link href="/" className="text-sm font-bold text-gray-500 hover:text-gray-900">
-              ← Retour à la page de présentation
-            </Link>
-          </div>
-        </div>
+          <p className="text-center">
+            <Link href="/" className="text-sm font-semibold text-ink-soft hover:text-ink">Retour à la présentation</Link>
+          </p>
+        </>
       )}
     </div>
   );
