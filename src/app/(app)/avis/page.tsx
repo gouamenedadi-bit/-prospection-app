@@ -18,7 +18,7 @@ export default function AvisPage() {
         lead="Votre note et vos suggestions nous aident à améliorer l'application."
       />
 
-      <div className="card p-5">
+      <div className="card p-5 rise-in">
         <AvisForm />
       </div>
     </div>

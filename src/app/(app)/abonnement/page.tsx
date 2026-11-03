@@ -105,7 +105,7 @@ export default function AbonnementPage() {
       )}
 
       {manualInstructions ? (
-        <div className="card p-6 space-y-4">
+        <div className="card p-6 space-y-4 rise-in">
           <div className="w-12 h-12 bg-gold-light text-gold-deep rounded-xl flex items-center justify-center" aria-hidden="true">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
           </div>
@@ -130,7 +130,7 @@ export default function AbonnementPage() {
           <button onClick={() => setManualInstructions(null)} className="btn-secondary w-full">Retour au forfait</button>
         </div>
       ) : showOperatorChoice ? (
-        <div className="card p-5 space-y-4">
+        <div className="card p-5 space-y-4 rise-in" style={{ ["--i" as string]: 1 } as React.CSSProperties}>
           <h3 className="section-title">Choisissez votre moyen de paiement</h3>
 
           <div className="space-y-2" role="radiogroup" aria-label="Moyen de paiement">
@@ -169,7 +169,7 @@ export default function AbonnementPage() {
         <>
           {error && <div role="alert" className="alert-error">{error}</div>}
 
-          <div className="card overflow-hidden">
+          <div className="card overflow-hidden rise-in">
             <div className="bg-forest-deep text-cream px-5 py-5 flex items-end justify-between gap-3">
               <div>
                 <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-gold">Forfait unique</p>

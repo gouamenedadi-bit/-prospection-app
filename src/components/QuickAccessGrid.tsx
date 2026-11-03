@@ -14,16 +14,17 @@ export default function QuickAccessGrid() {
 
   return (
     <div className="grid grid-cols-2 desk:grid-cols-3 gap-3 desk:gap-4">
-      {items.map((item) => (
+      {items.map((item, i) => (
         <a
           key={item.id}
           href={item.href}
-          className="card group p-4 flex flex-col items-start gap-3 hover:border-palm/30 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+          style={{ ["--i" as string]: i } as React.CSSProperties}
+          className="card lift-card accent-palm rise-in group p-4 flex flex-col items-start gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
         >
-          <div className="w-10 h-10 bg-palm-light rounded-xl flex items-center justify-center text-palm transition-colors group-hover:bg-palm group-hover:text-cream">
+          <div className="lift-badge w-11 h-11 bg-palm-light rounded-xl flex items-center justify-center text-palm transition-colors duration-300 group-hover:bg-palm group-hover:text-cream">
             {item.icon}
           </div>
-          <span className="text-sm font-bold text-ink leading-tight">{item.label}</span>
+          <span className="font-heading text-[16px] font-semibold text-forest leading-tight">{item.label}</span>
         </a>
       ))}
     </div>

@@ -159,23 +159,23 @@ export default function StockistesList() {
         {isLoading ? (
           <div className="card p-6 text-center text-sm text-ink-soft">Chargement des stockistes…</div>
         ) : filteredStockistes.length > 0 ? (
-          <ul className="card divide-y divide-line/70 overflow-hidden">
-            {filteredStockistes.map((stockiste) => (
-              <li key={stockiste.id}>
+          <ul className="space-y-2.5">
+            {filteredStockistes.map((stockiste, i) => (
+              <li key={stockiste.id} className="card lift-card accent-palm rise-in" style={{ ["--i" as string]: i } as React.CSSProperties}>
                 <button
                   type="button"
                   onClick={() => handleStockisteClick(stockiste)}
-                  className="w-full flex items-center gap-3 p-4 text-left hover:bg-cream/60 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gold"
+                  className="w-full flex items-center gap-3 p-4 pl-5 text-left rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gold"
                 >
-                  <span className="w-11 h-11 shrink-0 bg-palm-light rounded-xl flex items-center justify-center text-palm" aria-hidden="true">
+                  <span className="lift-badge w-11 h-11 shrink-0 bg-palm-light rounded-xl flex items-center justify-center text-palm" aria-hidden="true">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
                   </span>
                   <span className="flex-1 min-w-0">
-                    <span className="block font-bold text-sm text-ink truncate">{stockiste.name}</span>
+                    <span className="block font-heading font-semibold text-[16px] text-forest truncate">{stockiste.name}</span>
                     <span className="block text-xs text-ink-soft mt-0.5 truncate">{stockiste.location}</span>
                     <span className="block font-mono text-xs text-forest mt-0.5">{stockiste.contact}</span>
                   </span>
-                  <span className="shrink-0 text-xs font-bold text-palm">Produits ›</span>
+                  <span className="shrink-0 text-xs font-bold text-palm">Produits <span className="lift-arrow inline-block" aria-hidden="true">›</span></span>
                 </button>
               </li>
             ))}
