@@ -1,12 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 import { submitAvis } from "@/app/actions/avis";
 import DictationButton from "@/components/DictationButton";
 
 const LABELS = ["", "Pas satisfait", "Peu satisfait", "Correct", "Satisfait", "Très satisfait"];
 
 export default function AvisForm() {
+  const { data: session, status } = useSession();
+  const isMember = session?.user?.role === "partenaire" || session?.user?.role === "stockiste";
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState("");
@@ -32,6 +35,30 @@ export default function AvisForm() {
       setError(res.error || "Votre avis n'a pas pu être envoyé. Vérifiez votre connexion et réessayez.");
     }
   };
+
+  // Seuls les partenaires et stockistes donnent un avis (règle vérifiée côté serveur).
+  if (status === "loading") {
+    return <p className="text-sm text-ink-soft py-4 text-center">Chargement…</p>;
+  }
+
+  if (!isMember) {
+    const isAdmin = session?.user?.role === "admin";
+    return (
+      <div className="text-center py-2 space-y-3">
+        <p className="font-bold text-ink">
+          {isAdmin ? "Vous êtes connecté en administrateur." : "Connectez-vous pour donner votre avis."}
+        </p>
+        <p className="text-sm text-ink-soft">
+          {isAdmin
+            ? "Les avis sont donnés par les partenaires et les stockistes. Vous les retrouvez dans l'onglet Avis de l'administration."
+            : "Les avis sont réservés aux partenaires et aux stockistes inscrits."}
+        </p>
+        <a href={isAdmin ? "/admin" : "/login"} className="btn-primary w-full">
+          {isAdmin ? "Voir les avis reçus" : "Se connecter"}
+        </a>
+      </div>
+    );
+  }
 
   if (submitted) {
     return (

@@ -6,6 +6,7 @@ import QuickAccessGrid from "@/components/QuickAccessGrid";
 export default function Home() {
   const { data: session } = useSession();
   const isStockiste = session?.user?.role === "stockiste";
+  const isAdmin = session?.user?.role === "admin";
   const settingsHref = isStockiste ? "/dashboard/stockiste" : "/dashboard/partner/settings";
   const firstName = session?.user?.name?.split(" ")[0];
 
@@ -44,11 +45,11 @@ export default function Home() {
           <span className="flex-1 text-sm font-semibold text-ink">Paramètres du compte</span>
           <span className="text-ink-soft/50" aria-hidden="true">›</span>
         </a>
-        <a href="/avis" className="flex items-center gap-3 px-4 py-3.5 hover:bg-cream/60 transition-colors">
+        <a href={isAdmin ? "/admin" : "/avis"} className="flex items-center gap-3 px-4 py-3.5 hover:bg-cream/60 transition-colors">
           <span className="w-9 h-9 rounded-xl bg-gold-light text-gold-deep flex items-center justify-center" aria-hidden="true">
             <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 21.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"/></svg>
           </span>
-          <span className="flex-1 text-sm font-semibold text-ink">Donner votre avis</span>
+          <span className="flex-1 text-sm font-semibold text-ink">{isAdmin ? "Voir les avis reçus" : "Donner votre avis"}</span>
           <span className="text-ink-soft/50" aria-hidden="true">›</span>
         </a>
         <button
