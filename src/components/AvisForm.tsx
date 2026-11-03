@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { submitAvis } from "@/app/actions/avis";
+import DictationButton from "@/components/DictationButton";
 
 const LABELS = ["", "Pas satisfait", "Peu satisfait", "Correct", "Satisfait", "Très satisfait"];
 
@@ -82,14 +83,16 @@ export default function AvisForm() {
 
       <div>
         <label htmlFor="avis-comment" className="label">Commentaire <span className="font-normal text-ink-soft/70">(facultatif)</span></label>
-        <textarea
-          id="avis-comment"
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-          rows={4}
-          placeholder="Ce qui vous plaît, ce qui manque, ce qui vous bloque…"
-          className="input resize-none"
-        />
+        <DictationButton value={comment} onChange={setComment}>
+          <textarea
+            id="avis-comment"
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            rows={4}
+            placeholder="Écrivez ou dictez : ce qui vous plaît, ce qui manque…"
+            className="input resize-none pb-14"
+          />
+        </DictationButton>
       </div>
 
       <button type="submit" disabled={isSaving} className="btn-primary w-full">
