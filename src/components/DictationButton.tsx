@@ -1,28 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-
-// Types minimaux de l'API Web Speech (absente des types DOM de TypeScript).
-type RecognitionResult = { isFinal: boolean; 0: { transcript: string } };
-type RecognitionEvent = { resultIndex: number; results: ArrayLike<RecognitionResult> };
-type Recognition = {
-  lang: string;
-  continuous: boolean;
-  interimResults: boolean;
-  onresult: ((e: RecognitionEvent) => void) | null;
-  onerror: ((e: { error: string }) => void) | null;
-  onend: (() => void) | null;
-  start: () => void;
-  stop: () => void;
-  abort: () => void;
-};
-type RecognitionCtor = new () => Recognition;
-
-function getRecognitionCtor(): RecognitionCtor | null {
-  if (typeof window === "undefined") return null;
-  const w = window as unknown as { SpeechRecognition?: RecognitionCtor; webkitSpeechRecognition?: RecognitionCtor };
-  return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null;
-}
+import { Recognition, SPEECH_ERRORS, getRecognitionCtor } from "@/lib/speech";
 
 // Ajoute un morceau dicté au texte existant, avec l'espace et la majuscule qui conviennent.
 function appendSpoken(base: string, spoken: string) {
@@ -33,14 +12,6 @@ function appendSpoken(base: string, spoken: string) {
   const text = startsSentence ? chunk.charAt(0).toUpperCase() + chunk.slice(1) : chunk;
   return trimmed === "" ? text : `${trimmed} ${text}`;
 }
-
-const ERRORS: Record<string, string> = {
-  "not-allowed": "Le micro est bloqué. Autorisez-le dans les réglages du navigateur, puis réessayez.",
-  "service-not-allowed": "Le micro est bloqué. Autorisez-le dans les réglages du navigateur, puis réessayez.",
-  "audio-capture": "Aucun micro détecté sur cet appareil.",
-  "no-speech": "Aucune voix détectée. Touchez le micro et parlez près du téléphone.",
-  network: "La dictée a besoin d'une connexion internet. Vérifiez votre connexion et réessayez.",
-};
 
 /**
  * Bouton micro : la personne parle, le texte s'écrit dans le champ.
@@ -97,7 +68,7 @@ export default function DictationButton({
       onChange(appendSpoken(baseRef.current, interim));
     };
     rec.onerror = (e) => {
-      if (e.error !== "aborted") setError(ERRORS[e.error] ?? "La dictée s'est interrompue. Touchez le micro pour reprendre.");
+      if (e.error !== "aborted") setError(SPEECH_ERRORS[e.error] ?? "La dictée s'est interrompue. Touchez le micro pour reprendre.");
     };
     rec.onend = () => {
       setListening(false);

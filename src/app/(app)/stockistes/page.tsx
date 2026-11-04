@@ -6,6 +6,9 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { getAllStockistes } from "@/app/actions/stockistes";
 import { getStockisteInventory } from "@/app/actions/inventory";
 import { PageHeader } from "@/components/ui";
+import VoiceSearchButton from "@/components/VoiceSearchButton";
+import { normalize, closestPlace } from "@/lib/fuzzy";
+import { CITIES, COMMUNES } from "@/lib/places";
 
 const fcfa = (n: unknown) => (Number(n) || 0).toLocaleString("fr-FR");
 
@@ -20,6 +23,8 @@ function Pin({ active }: { active?: boolean }) {
 
 export default function StockistesList() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [listening, setListening] = useState(false);
+  const [voiceError, setVoiceError] = useState("");
   const mapRef = useRef<MapRef>(null);
   const mapBoxRef = useRef<HTMLDivElement>(null);
 
@@ -76,13 +81,19 @@ export default function StockistesList() {
     setIsLoadingInventory(false);
   };
 
-  const filteredStockistes = stockistes.filter(s =>
-    (s.name && s.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (s.location && s.location.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (s.city && s.city.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (s.commune && s.commune.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (s.contact && s.contact.includes(searchTerm))
-  );
+  // Recherche sans accents ni majuscules. Si rien ne correspond, on essaie la commune ou la ville
+  // la plus proche : utile quand la dictée entend « Makori » pour « Marcory ».
+  const matches = (st: any, term: string) => {
+    const t = normalize(term);
+    if (!t) return true;
+    const digits = term.replace(/\D/g, "");
+    return [st.name, st.city, st.commune, st.neighborhood].some((v) => v && normalize(String(v)).includes(t))
+      || (digits.length >= 4 && String(st.contact || "").replace(/\D/g, "").includes(digits));
+  };
+  const directMatches = stockistes.filter((st) => matches(st, searchTerm));
+  const placeNames = Array.from(new Set([...COMMUNES, ...CITIES, ...stockistes.flatMap((st) => [st.city, st.commune, st.neighborhood]).filter(Boolean)]));
+  const correctedPlace = searchTerm.trim() && directMatches.length === 0 ? closestPlace(searchTerm, placeNames) : null;
+  const filteredStockistes = correctedPlace ? stockistes.filter((st) => matches(st, correctedPlace)) : directMatches;
 
   return (
     <div className="relative">
@@ -95,7 +106,8 @@ export default function StockistesList() {
       {/* Ordinateur : carte à gauche (fixe pendant le défilement), recherche et liste à droite */}
       <div className="space-y-4 desk:space-y-0 desk:grid desk:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] desk:gap-6 desk:items-start">
         {/* Carte */}
-        <div ref={mapBoxRef} className="card overflow-hidden relative h-[280px] desk:h-[calc(100vh-15rem)] desk:min-h-[420px] desk:sticky desk:top-8">
+        <div className="sticky top-14 z-20 -mx-4 px-4 pt-1 bg-cream desk:top-5 desk:mx-0 desk:px-0 desk:pt-0 desk:bg-transparent">
+        <div ref={mapBoxRef} className="card overflow-hidden relative h-[200px] sm:h-[240px] desk:h-[calc(100vh-15rem)] desk:min-h-[420px]">
           <Map
             ref={mapRef}
             initialViewState={{
@@ -140,19 +152,36 @@ export default function StockistesList() {
             )}
           </Map>
         </div>
+        </div>
 
         <div className="space-y-4">
-        {/* Recherche */}
-        <div className="relative">
-          <svg className="w-5 h-5 text-ink-soft/50 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-          <input
-            type="search"
-            aria-label="Rechercher un stockiste"
-            placeholder="Nom, ville, commune ou téléphone"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="input pl-11"
-          />
+        {/* Recherche : reste visible sous la carte ; seule la liste défile */}
+        <div className="sticky top-[260px] sm:top-[300px] z-20 -mx-4 px-4 pt-3 pb-3 bg-cream desk:top-0 desk:mx-0 desk:px-0 desk:pt-5 desk:-mt-5">
+          <div className="relative">
+            <svg className="w-5 h-5 text-ink-soft/50 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            <input
+              type="search"
+              aria-label="Rechercher un stockiste par nom, commune, quartier ou téléphone"
+              placeholder={listening ? "Parlez maintenant…" : "Commune, quartier ou nom"}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className={`input pl-11 pr-14 ${listening ? "border-gold ring-2 ring-gold/25" : ""}`}
+            />
+            <VoiceSearchButton
+              onText={(text) => setSearchTerm(text)}
+              onError={setVoiceError}
+              onListeningChange={setListening}
+            />
+          </div>
+          {(listening || voiceError || correctedPlace) && (
+            <p role="status" aria-live="polite" className={`text-xs mt-1.5 ${voiceError ? "text-clay" : "text-ink-soft"}`}>
+              {listening
+                ? "Je vous écoute… dites une commune ou un quartier, par exemple « Yopougon »."
+                : voiceError
+                ? voiceError
+                : <>Résultats pour <span className="font-bold text-forest">« {correctedPlace} »</span></>}
+            </p>
+          )}
         </div>
 
         {/* Liste */}

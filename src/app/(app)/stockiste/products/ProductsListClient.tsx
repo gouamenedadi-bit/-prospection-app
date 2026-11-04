@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import VoiceSearchButton from "@/components/VoiceSearchButton";
+import { normalize } from "@/lib/fuzzy";
 
 const fcfa = (n: unknown) => (Number(n) || 0).toLocaleString("fr-FR");
 
@@ -9,9 +11,9 @@ export default function ProductsListClient({ products }: { products: any[] }) {
   const router = useRouter();
   const [search, setSearch] = useState("");
 
+  const q = normalize(search);
   const filteredProducts = products.filter(product =>
-    product.name.toLowerCase().includes(search.toLowerCase()) ||
-    (product.description && product.description.toLowerCase().includes(search.toLowerCase()))
+    !q || normalize(product.name).includes(q) || (product.description && normalize(product.description).includes(q))
   );
 
   return (
@@ -26,8 +28,9 @@ export default function ProductsListClient({ products }: { products: any[] }) {
           onChange={(e) => setSearch(e.target.value)}
           aria-label="Rechercher un produit"
           placeholder="Rechercher un produit ou une indication"
-          className="input pl-11"
+          className="input pl-11 pr-14"
         />
+        <VoiceSearchButton onText={(text) => setSearch(text)} />
       </div>
 
       {filteredProducts.length === 0 ? (

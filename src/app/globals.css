@@ -148,6 +148,14 @@ body {
 .lift-card .lift-badge { transition: transform 260ms cubic-bezier(.2,.7,.2,1); }
 .lift-card:hover .lift-badge { transform: scale(1.06) rotate(-3deg); }
 
+/* Micro en écoute : halo orange qui pulse */
+@keyframes voice-pulse {
+  0%   { box-shadow: 0 0 0 0 rgb(239 123 26 / 0.55); }
+  70%  { box-shadow: 0 0 0 12px rgb(239 123 26 / 0); }
+  100% { box-shadow: 0 0 0 0 rgb(239 123 26 / 0); }
+}
+.voice-pulse { animation: voice-pulse 1.3s ease-out infinite; }
+
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { scrollbar-width: none; }
 

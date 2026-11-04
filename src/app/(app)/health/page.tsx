@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { pathologiesList } from "@/data/pathologies";
 import { getProducts } from "@/app/actions/products";
 import { PageHeader } from "@/components/ui";
+import VoiceSearchButton from "@/components/VoiceSearchButton";
+import { normalize } from "@/lib/fuzzy";
 
 export default function HealthWellness() {
   const router = useRouter();
@@ -63,10 +65,10 @@ export default function HealthWellness() {
     return Number.isFinite(n) && String(v).trim() !== "" ? n.toLocaleString("fr-FR") : String(v);
   };
 
-  const q = query.trim().toLowerCase();
+  const q = normalize(query);
   const sortedPathologies = [...pathologiesList]
     .sort((a, b) => a.name.localeCompare(b.name, "fr", { sensitivity: "base" }))
-    .filter((p) => !q || p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q));
+    .filter((p) => !q || normalize(p.name).includes(q) || normalize(p.description).includes(q));
 
   // Regroupement par première lettre, sans accent (« Éczéma » va sous E).
   const letterOf = (name: string) => name.normalize("NFD").replace(/[̀-ͯ]/g, "").charAt(0).toUpperCase();
@@ -100,8 +102,9 @@ export default function HealthWellness() {
           onChange={(e) => setQuery(e.target.value)}
           aria-label="Rechercher une maladie ou un symptôme"
           placeholder="Rechercher une maladie ou un symptôme"
-          className="input pl-11"
+          className="input pl-11 pr-14"
         />
+        <VoiceSearchButton onText={(text) => setQuery(text)} />
       </div>
 
       {/* Index A–Z : reste visible pendant le défilement */}
