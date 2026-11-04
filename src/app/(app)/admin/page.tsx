@@ -653,7 +653,7 @@ export default function AdminDashboard() {
                 <div className="flex justify-between items-start gap-3">
                   <div className="min-w-0">
                     <p className="font-mono text-xl font-semibold text-ink tabular-nums">{fcfa(payment.amount)} <span className="text-xs text-ink-soft font-normal">F CFA</span></p>
-                    <p className="text-sm font-semibold text-ink mt-0.5">{payment.planLabel}</p>
+                    <p className="text-sm font-semibold text-ink mt-0.5">{payment.planLabel}{payment.provider === "wave" ? " · payé par Wave (à vérifier dans Wave)" : ""}</p>
                   </div>
                   <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-gold-light text-[#B4560B]">En attente</span>
                 </div>

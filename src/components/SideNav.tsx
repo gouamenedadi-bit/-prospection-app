@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
-import { NAV_ITEMS, NavItem, resolveHref } from "@/lib/navItems";
+import { MEMBER_ONLY_IDS, NAV_ITEMS, NavItem, resolveHref } from "@/lib/navItems";
 
 const ROLE_LABELS: Record<string, string> = {
   partenaire: "Partenaire",
@@ -39,7 +39,7 @@ export default function SideNav() {
   const name = session?.user?.name;
 
   // L'admin n'a pas de profil membre : sa rubrique « Administration » remplace « Profil ».
-  const items = NAV_ITEMS.filter((i) => !(role === "admin" && i.id === "profile")).map((i) => ({ ...i, href: resolveHref(i, role) }));
+  const items = NAV_ITEMS.filter((i) => !(role === "admin" && (i.id === "profile" || MEMBER_ONLY_IDS.includes(i.id)))).map((i) => ({ ...i, href: resolveHref(i, role) }));
   if (role === "admin") items.push(ADMIN_ITEM);
 
   // La rubrique la plus précise gagne (ex. /dashboard/stockiste plutôt que /dashboard).

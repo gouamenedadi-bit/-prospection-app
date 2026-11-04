@@ -61,7 +61,18 @@ export const NAV_ITEMS: NavItem[] = [
       <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
     ),
   },
+  {
+    id: "abonnement",
+    href: "/abonnement",
+    label: "Abonnement",
+    icon: (
+      <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2.5" strokeWidth="1.75"></rect><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M2.5 10h19M6.5 15h4"></path></svg>
+    ),
+  },
 ];
+
+/** Rubriques réservées aux membres (l'administrateur ne s'abonne pas). */
+export const MEMBER_ONLY_IDS = ["abonnement"];
 
 /** Le bouton Profil mène à l’espace qui correspond au type de compte. */
 export function resolveHref(item: NavItem, role?: string) {

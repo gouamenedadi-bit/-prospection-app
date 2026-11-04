@@ -2,12 +2,12 @@
 
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { getMySubscriptionStatus, initiatePayment } from "@/app/actions/subscription";
+import { getMySubscriptionStatus, declareWavePayment } from "@/app/actions/subscription";
 import ContactList from "@/components/ContactList";
 
-const PLAN = { duration: "1 an", price: "2 000", currency: "FCFA" };
+const PLAN = { duration: "1 an", amount: 2000, currency: "FCFA" };
+const fcfa = (n: number) => n.toLocaleString("fr-FR");
 
 const INCLUDED = [
   "Catalogue complet : prix, PV et posologie",
@@ -16,76 +16,54 @@ const INCLUDED = [
   "Grades et plan de compensation",
 ];
 
-// Les pastilles gardent la couleur de chaque opérateur pour être reconnues d'un coup d'œil.
-const OPERATORS = [
-  { id: "orange" as const, label: "Orange Money", badge: <span className="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center font-bold shrink-0">O</span> },
-  { id: "mtn" as const, label: "MTN Mobile Money", badge: <span className="w-10 h-10 rounded-xl bg-yellow-100 text-yellow-700 flex items-center justify-center font-bold shrink-0">M</span> },
-  { id: "wave" as const, label: "Wave", badge: <span className="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center font-bold shrink-0">W</span> },
-  {
-    id: "visa" as const,
-    label: "Carte Visa",
-    badge: (
-      <span className="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center shrink-0">
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"></rect><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2 10h20"></path></svg>
-      </span>
-    ),
-  },
-];
+// Couleur officielle de Wave, pour que le bouton et le QR soient reconnus d'un coup d'œil.
+const WAVE_BLUE = "#1DC8FF";
+
+function WaveMark({ className = "w-6 h-6" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M2 9c2.5 0 2.5 3 5 3s2.5-3 5-3 2.5 3 5 3 2.5-3 5-3M2 15c2.5 0 2.5 3 5 3s2.5-3 5-3 2.5 3 5 3 2.5-3 5-3" />
+    </svg>
+  );
+}
+
+type Step = "plan" | "wave" | "done";
 
 export default function AbonnementPage() {
-  const router = useRouter();
   const { status } = useSession();
   const [subStatus, setSubStatus] = useState<{ isExpired: boolean; daysLeft: number; expiresAt: string } | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [manualInstructions, setManualInstructions] = useState<{ amount: number; planLabel: string; supportContact: string } | null>(null);
+  const [step, setStep] = useState<Step>("plan");
+  const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState("");
-  const [showOperatorChoice, setShowOperatorChoice] = useState(false);
-  const [selectedOperator, setSelectedOperator] = useState<"orange" | "mtn" | "wave" | "visa" | null>(null);
 
   useEffect(() => {
     if (status === "authenticated") {
       getMySubscriptionStatus().then((res) => {
-        if (res.success) {
-          setSubStatus({ isExpired: res.isExpired!, daysLeft: res.daysLeft!, expiresAt: res.expiresAt! });
-        }
+        if (res.success) setSubStatus({ isExpired: res.isExpired!, daysLeft: res.daysLeft!, expiresAt: res.expiresAt! });
       });
     }
   }, [status]);
 
-  const handleSubscribeClick = () => {
-    if (status !== "authenticated") {
-      setShowOperatorChoice(true);
-      return;
-    }
-    handlePay();
-  };
-
-  const handlePay = async () => {
+  const handleIHavePaid = async () => {
     setError("");
-    setIsProcessing(true);
-    const res = await initiatePayment("12m");
-    setIsProcessing(false);
-
+    setIsSending(true);
+    const res = await declareWavePayment();
+    setIsSending(false);
     if (!res.success) {
-      setError(res.error || "Le paiement n'a pas pu démarrer. Réessayez dans un instant.");
+      setError(res.error || "Votre paiement n'a pas pu être signalé. Réessayez dans un instant.");
       return;
     }
-
-    if (res.mode === "redirect") {
-      window.location.href = res.paymentUrl;
-    } else if (res.mode === "manual") {
-      setManualInstructions({ amount: res.amount!, planLabel: res.planLabel!, supportContact: res.supportContact! });
-    }
+    setStep("done");
   };
+
+  const activeUntil = subStatus && !subStatus.isExpired ? new Date(subStatus.expiresAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) : null;
 
   return (
     <div className="space-y-5 pb-4 lg:max-w-2xl lg:mx-auto">
-      <style dangerouslySetInnerHTML={{ __html: `nav[data-bottom-nav], aside { display: none !important; }` }} />
-
       <header className="page-head">
         <p className="eyebrow">Abonnement</p>
         <h2 className="page-title">Continuer avec Prospection</h2>
-        <p className="page-lead">Un seul forfait, tout inclus, pour développer votre réseau Longrich.</p>
+        <p className="page-lead">Un seul forfait, tout inclus, payé avec Wave.</p>
       </header>
 
       {status === "authenticated" && subStatus && (
@@ -100,79 +78,16 @@ export default function AbonnementPage() {
           }`}
         >
           {subStatus.isExpired
-            ? "Votre essai gratuit est terminé. Abonnez-vous pour retrouver l'accès."
-            : `Il vous reste ${subStatus.daysLeft} jour${subStatus.daysLeft > 1 ? "s" : ""} d'essai gratuit.`}
+            ? "Votre accès est terminé. Abonnez-vous pour retrouver toute l'application."
+            : `Votre accès est actif encore ${subStatus.daysLeft} jour${subStatus.daysLeft > 1 ? "s" : ""}${activeUntil ? `, jusqu'au ${activeUntil}` : ""}.`}
         </div>
       )}
 
-      {manualInstructions ? (
-        <div className="card p-6 space-y-4 rise-in">
-          <div className="w-12 h-12 bg-gold-light text-gold-deep rounded-xl flex items-center justify-center" aria-hidden="true">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-          </div>
-          <div>
-            <h3 className="font-heading text-xl text-ink">Finalisez votre paiement</h3>
-            <p className="text-sm text-ink-soft mt-1">Forfait {manualInstructions.planLabel}</p>
-          </div>
-          <ol className="space-y-3 text-sm text-ink">
-            <li className="flex gap-3">
-              <span className="w-6 h-6 shrink-0 rounded-full bg-forest text-cream text-xs font-bold flex items-center justify-center">1</span>
-              <span>Envoyez <strong className="font-mono">{manualInstructions.amount.toLocaleString("fr-FR")} FCFA</strong> par Orange Money, MTN MoMo ou Wave.</span>
-            </li>
-            <li className="flex gap-3">
-              <span className="w-6 h-6 shrink-0 rounded-full bg-forest text-cream text-xs font-bold flex items-center justify-center">2</span>
-              <div className="flex-1 min-w-0 space-y-2.5">
-                <span className="block">Envoyez la référence du transfert à l&apos;un de ces numéros, par appel ou WhatsApp :</span>
-                <ContactList message="Bonjour, je viens de payer mon abonnement Prospections Longrich (1 an, 2 000 FCFA). Référence du transfert : " />
-              </div>
-            </li>
-            <li className="flex gap-3">
-              <span className="w-6 h-6 shrink-0 rounded-full bg-forest text-cream text-xs font-bold flex items-center justify-center">3</span>
-              <span>Votre compte est débloqué sous 24 h après validation.</span>
-            </li>
-          </ol>
-          <button onClick={() => setManualInstructions(null)} className="btn-secondary w-full">Retour au forfait</button>
-        </div>
-      ) : showOperatorChoice ? (
-        <div className="card p-5 space-y-4 rise-in" style={{ ["--i" as string]: 1 } as React.CSSProperties}>
-          <h3 className="section-title">Choisissez votre moyen de paiement</h3>
+      {error && <div role="alert" className="alert-error">{error}</div>}
 
-          <div className="space-y-2" role="radiogroup" aria-label="Moyen de paiement">
-            {OPERATORS.map((op) => {
-              const selected = selectedOperator === op.id;
-              return (
-                <button
-                  key={op.id}
-                  type="button"
-                  role="radio"
-                  aria-checked={selected}
-                  onClick={() => setSelectedOperator(op.id)}
-                  className={`w-full flex items-center gap-3 p-3 rounded-xl border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold ${
-                    selected ? "border-palm bg-palm-light/60" : "border-line bg-white hover:border-palm/40"
-                  }`}
-                >
-                  {op.badge}
-                  <span className="flex-1 text-left font-semibold text-sm text-ink">{op.label}</span>
-                  <span className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selected ? "border-palm" : "border-line"}`} aria-hidden="true">
-                    {selected && <span className="w-2.5 h-2.5 rounded-full bg-palm" />}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="flex gap-2 pt-1">
-            <button onClick={() => router.push("/")} className="btn-secondary flex-1">Annuler</button>
-            <button onClick={() => router.push("/login")} disabled={!selectedOperator} className="btn-primary flex-1">
-              Continuer
-            </button>
-          </div>
-          <p className="text-[11px] text-ink-soft text-center">Vous serez invité à vous connecter pour finaliser le paiement.</p>
-        </div>
-      ) : (
+      {/* Étape 1 : le forfait */}
+      {step === "plan" && (
         <>
-          {error && <div role="alert" className="alert-error">{error}</div>}
-
           <div className="card overflow-hidden rise-in">
             <div className="bg-forest-deep text-cream px-5 py-5 flex items-end justify-between gap-3">
               <div>
@@ -180,7 +95,7 @@ export default function AbonnementPage() {
                 <p className="font-heading text-2xl mt-1">{PLAN.duration}</p>
               </div>
               <p className="text-right">
-                <span className="font-mono text-3xl font-semibold tabular-nums">{PLAN.price}</span>
+                <span className="font-mono text-3xl font-semibold tabular-nums">{fcfa(PLAN.amount)}</span>
                 <span className="block text-xs text-cream/70">{PLAN.currency} / an</span>
               </p>
             </div>
@@ -193,9 +108,19 @@ export default function AbonnementPage() {
               ))}
             </ul>
             <div className="px-5 pb-5">
-              <button onClick={handleSubscribeClick} disabled={isProcessing} className="btn-primary w-full">
-                {isProcessing ? "Préparation du paiement…" : status === "authenticated" ? "S'abonner pour 1 an" : "Choisir un moyen de paiement"}
-              </button>
+              {status === "authenticated" ? (
+                <button
+                  onClick={() => setStep("wave")}
+                  className="w-full inline-flex items-center justify-center gap-2.5 rounded-xl px-4 py-3.5 text-[15px] font-bold text-white transition-[filter,transform] hover:brightness-95 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2"
+                  style={{ backgroundColor: WAVE_BLUE }}
+                >
+                  <WaveMark />
+                  Payer avec Wave
+                </button>
+              ) : (
+                <Link href="/login" className="btn-primary w-full">Se connecter pour payer avec Wave</Link>
+              )}
+              <p className="text-[11px] text-ink-soft text-center mt-2">Paiement uniquement par Wave.</p>
             </div>
           </div>
 
@@ -206,11 +131,76 @@ export default function AbonnementPage() {
             </div>
             <ContactList message="Bonjour, j'ai une question sur l'abonnement Prospections Longrich." />
           </section>
-
-          <p className="text-center">
-            <Link href="/" className="text-sm font-semibold text-ink-soft hover:text-ink">Retour à la présentation</Link>
-          </p>
         </>
+      )}
+
+      {/* Étape 2 : QR code Wave */}
+      {step === "wave" && (
+        <div className="space-y-4">
+          <section
+            className="rounded-[28px] px-6 pt-6 pb-5 text-center shadow-[0_24px_50px_-24px_rgb(29_200_255/0.7)] pop-in"
+            style={{ backgroundColor: WAVE_BLUE }}
+            aria-labelledby="wave-titre"
+          >
+            <h3 id="wave-titre" className="text-white text-xl font-extrabold flex items-center justify-center gap-2">
+              <WaveMark className="w-6 h-6" />
+              Scannez avec Wave
+            </h3>
+            <div className="mx-auto mt-4 w-full max-w-[260px] rounded-3xl bg-white p-3 shadow-lg">
+              <img src="/wave-qr.png" alt="QR code de paiement Wave de Prospections Longrich" className="w-full h-auto [image-rendering:pixelated]" />
+            </div>
+            <p className="inline-block mt-4 rounded-2xl bg-white/95 px-5 py-2.5 text-[15px] text-ink">
+              Montant à payer : <strong className="tabular-nums">{fcfa(PLAN.amount)} FCFA</strong>
+            </p>
+          </section>
+
+          <div className="card p-5 space-y-4 rise-in" style={{ ["--i" as string]: 1 } as React.CSSProperties}>
+            <ol className="space-y-3 text-sm text-ink">
+              {[
+                <>Ouvrez l&apos;application <strong>Wave</strong> et touchez <strong>Scanner</strong>.</>,
+                <>Scannez le QR code ci-dessus et payez <strong className="tabular-nums">{fcfa(PLAN.amount)} FCFA</strong>.</>,
+                <>Revenez ici et touchez <strong>« J&apos;ai payé »</strong>. Votre abonnement est activé après vérification.</>,
+              ].map((text, i) => (
+                <li key={i} className="flex gap-3">
+                  <span className="w-6 h-6 shrink-0 rounded-full bg-forest text-white text-xs font-bold flex items-center justify-center">{i + 1}</span>
+                  <span className="leading-relaxed">{text}</span>
+                </li>
+              ))}
+            </ol>
+
+            <p className="text-xs text-ink-soft bg-cream rounded-xl px-3 py-2.5 leading-relaxed">
+              Vous êtes sur le téléphone qui a Wave ? Téléchargez le QR code, puis scannez-le depuis un autre téléphone,
+              ou appelez le support ci-dessous.
+              {" "}
+              <a href="/wave-qr.png" download="QR-Wave-Prospections-Longrich.png" className="font-bold text-palm underline underline-offset-2">Télécharger le QR code</a>
+            </p>
+
+            <button onClick={handleIHavePaid} disabled={isSending} className="btn-primary w-full text-[15px] py-3.5">
+              {isSending ? "Envoi…" : "J'ai payé"}
+            </button>
+            <button onClick={() => setStep("plan")} className="btn-ghost w-full">Retour au forfait</button>
+          </div>
+        </div>
+      )}
+
+      {/* Étape 3 : paiement signalé */}
+      {step === "done" && (
+        <div className="card p-6 space-y-4 text-center rise-in">
+          <div className="mx-auto w-14 h-14 rounded-full bg-palm-light text-palm flex items-center justify-center pop-in" aria-hidden="true">
+            <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.25" d="M5 13l4 4L19 7" /></svg>
+          </div>
+          <div>
+            <h3 className="font-heading text-xl text-ink">Paiement signalé, merci !</h3>
+            <p className="text-sm text-ink-soft mt-1.5 leading-relaxed">
+              Nous vérifions la réception sur Wave et activons votre abonnement, en général sous 24 h.
+              Pour aller plus vite, envoyez la capture de votre paiement Wave sur WhatsApp :
+            </p>
+          </div>
+          <div className="text-left">
+            <ContactList message={`Bonjour, je viens de payer mon abonnement Prospections Longrich (1 an, ${fcfa(PLAN.amount)} FCFA) avec Wave. Voici la capture de mon paiement :`} />
+          </div>
+          <Link href="/dashboard" className="btn-secondary w-full">Retour à l&apos;accueil</Link>
+        </div>
       )}
     </div>
   );

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import ReorderableList from "@/components/ReorderableList";
-import { NAV_ITEMS, NavItem, resolveHref } from "@/lib/navItems";
+import { MEMBER_ONLY_IDS, NAV_ITEMS, NavItem, resolveHref } from "@/lib/navItems";
 
 const STORAGE_KEY = "prospection_nav_order_v1";
 const BAR_SIZE = 4;
@@ -16,8 +16,10 @@ function loadOrder(): string[] {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return DEFAULT_ORDER;
     const parsed = JSON.parse(raw);
-    if (Array.isArray(parsed) && parsed.length === NAV_ITEMS.length && DEFAULT_ORDER.every((id) => parsed.includes(id))) {
-      return parsed;
+    if (Array.isArray(parsed)) {
+      // Ordre personnalisé conservé ; les nouvelles rubriques s'ajoutent à la fin.
+      const known = parsed.filter((id): id is string => typeof id === "string" && DEFAULT_ORDER.includes(id));
+      return [...known, ...DEFAULT_ORDER.filter((id) => !known.includes(id))];
     }
   } catch {}
   return DEFAULT_ORDER;
@@ -42,6 +44,7 @@ export default function BottomNav({ className = "" }: { className?: string }) {
   const orderedItems = order
     .map((id) => NAV_ITEMS.find((i) => i.id === id))
     .filter((i): i is NavItem => Boolean(i))
+    .filter((i) => !(role === "admin" && MEMBER_ONLY_IDS.includes(i.id)))
     .map((i) => ({ ...i, href: resolveHref(i, role) }));
   // Les premiers éléments vont dans la barre ; les autres sont dans « Plus ».
   const barItems = orderedItems.slice(0, BAR_SIZE);

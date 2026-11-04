@@ -145,3 +145,41 @@ export async function validatePayment(paymentId: number) {
     return { success: false, error: "Impossible de valider le paiement." };
   }
 }
+
+/**
+ * La personne a scanné le QR code Wave et dit avoir payé : on enregistre un paiement
+ * « en attente » que l'administrateur valide après avoir vérifié la réception sur Wave.
+ * Un seul paiement en attente par compte : un second clic renvoie le même.
+ */
+export async function declareWavePayment() {
+  const account = await getCurrentAccount();
+  if (!account) {
+    return { success: false, error: "Connectez-vous pour signaler votre paiement." };
+  }
+  const plan = PLANS["12m"];
+
+  try {
+    const existing = await prisma.payment.findFirst({
+      where: { accountType: account.role, accountId: Number(account.id), status: "pending", provider: "wave" },
+      orderBy: { createdAt: "desc" },
+    });
+    if (existing) return { success: true, paymentId: existing.id, alreadyDeclared: true };
+
+    const payment = await prisma.payment.create({
+      data: {
+        accountType: account.role,
+        accountId: Number(account.id),
+        planLabel: plan.label,
+        durationDays: plan.days,
+        amount: plan.amount,
+        provider: "wave",
+        method: "wave",
+        status: "pending",
+      },
+    });
+    return { success: true, paymentId: payment.id, alreadyDeclared: false };
+  } catch (error) {
+    console.error("Erreur declareWavePayment:", error);
+    return { success: false, error: "Votre paiement n'a pas pu être signalé. Réessayez dans un instant." };
+  }
+}
