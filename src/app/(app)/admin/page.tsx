@@ -31,7 +31,7 @@ function RoleChip({ role }: { role: string }) {
   const isStockiste = role.toLowerCase() === "stockiste";
   return (
     <span
-      className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+      className={`text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full leading-none ${
         isStockiste ? "bg-gold-light text-[#B4560B]" : "bg-palm-light text-palm"
       }`}
     >
@@ -72,6 +72,8 @@ export default function AdminDashboard() {
 
   // Utilisateurs réels (Stockistes + Partenaires)
   const [allUsers, setAllUsers] = useState<any[]>([]);
+  const [memberFilter, setMemberFilter] = useState<"all" | "Partenaire" | "Stockiste">("all");
+  const [memberSearch, setMemberSearch] = useState("");
   const [isLoadingUsers, setIsLoadingUsers] = useState(true);
 
   const loadUsers = async () => {
@@ -359,53 +361,70 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-5 pb-8 -mx-1">
       {/* En-tête : ce qui demande une action, puis les chiffres du réseau */}
-      <section className="bg-forest-deep text-cream rounded-2xl overflow-hidden">
-        <div className="px-5 pt-5 flex items-start justify-between gap-3">
+      <section className="relative overflow-hidden rounded-3xl bg-forest bg-linear-to-br from-forest via-[#0F8C5A] to-palm text-white shadow-[0_20px_45px_-25px_rgb(12_122_78/0.65)] rise-in">
+        {/* Halos décoratifs, pour donner de la lumière au vert */}
+        <span className="pointer-events-none absolute -top-24 -right-16 w-72 h-72 rounded-full bg-white/10 blur-2xl" aria-hidden="true" />
+        <span className="pointer-events-none absolute -bottom-28 -left-20 w-72 h-72 rounded-full bg-[#7FE0B0]/15 blur-3xl" aria-hidden="true" />
+
+        <div className="relative px-5 sm:px-7 pt-6 flex items-start justify-between gap-3">
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-gold">{today}</p>
-            <h2 className="font-heading text-[26px] leading-tight mt-1.5">Tableau de bord</h2>
+            <p className="text-[13px] font-bold uppercase tracking-[0.14em] text-[#FFD9B0] first-letter:uppercase">{today}</p>
+            <h2 className="font-heading text-[30px] sm:text-[34px] leading-tight mt-1">Tableau de bord</h2>
+            <p className="text-[15px] text-white/85 mt-1">Bienvenue dans votre espace administrateur.</p>
           </div>
           <button
             onClick={() => signOut({ callbackUrl: '/' })}
-            className={`shrink-0 text-xs font-semibold text-cream/70 hover:text-cream border border-cream/20 hover:border-cream/50 rounded-full px-3 py-1.5 transition-colors ${focusRing} focus-visible:ring-offset-forest-deep`}
+            className={`shrink-0 text-sm font-semibold text-white bg-white/10 hover:bg-white/20 border border-white/30 rounded-full px-4 py-2 transition-colors ${focusRing} focus-visible:ring-offset-forest`}
           >
             Se déconnecter
           </button>
         </div>
 
-        <div className="px-5 pt-4">
+        <div className="relative px-5 sm:px-7 pt-5">
           {isLoadingPayments ? (
-            <div className="h-11 rounded-xl bg-cream/5" />
+            <div className="h-14 rounded-2xl bg-white/10 animate-pulse" />
           ) : pendingCount > 0 ? (
             <button
               onClick={() => goToTab("payments")}
-              className={`w-full flex items-center justify-between gap-3 bg-gold text-forest-deep rounded-xl px-4 py-3 text-left font-bold text-sm hover:brightness-105 transition ${focusRing} focus-visible:ring-offset-forest-deep`}
+              className={`group w-full flex items-center justify-between gap-3 bg-gold text-white rounded-2xl px-5 py-4 text-left font-bold text-base shadow-[0_10px_25px_-12px_rgb(239_123_26/0.9)] hover:brightness-105 active:scale-[0.99] transition ${focusRing} focus-visible:ring-offset-forest`}
             >
-              <span>
-                <span className="font-mono">{pendingCount}</span> paiement{pendingCount > 1 ? "s" : ""} à valider
+              <span className="flex items-center gap-3">
+                <span className="relative flex w-3 h-3" aria-hidden="true">
+                  <span className="absolute inset-0 rounded-full bg-white/80 motion-safe:animate-ping" />
+                  <span className="relative w-3 h-3 rounded-full bg-white" />
+                </span>
+                <span>
+                  <span className="tabular-nums">{pendingCount}</span> paiement{pendingCount > 1 ? "s" : ""} à valider
+                </span>
               </span>
-              <span aria-hidden="true">→</span>
+              <span aria-hidden="true" className="text-xl transition-transform group-hover:translate-x-1">→</span>
             </button>
           ) : (
-            <p className="flex items-center gap-2 rounded-xl border border-cream/15 px-4 py-3 text-sm text-cream/80">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#7FC79D]" aria-hidden="true" />
+            <p className="flex items-center gap-2.5 rounded-2xl bg-white/10 border border-white/20 px-5 py-4 text-[15px] font-medium text-white">
+              <span className="w-2 h-2 rounded-full bg-[#B6F0D2]" aria-hidden="true" />
               Aucun paiement en attente de validation.
             </p>
           )}
         </div>
 
-        <dl className="grid grid-cols-2 mt-5 border-t border-cream/10">
+        <dl className="relative grid grid-cols-2 desk:grid-cols-4 gap-3 px-5 sm:px-7 pt-5 pb-6">
           {[
             { label: "Partenaires", value: stats.totalPartenaires, extra: stats.newPartenaires ? `+${stats.newPartenaires} ce mois` : "aucun ce mois" },
             { label: "Stockistes", value: stats.totalStockistes, extra: "bureaux inscrits" },
             { label: "Inscriptions", value: stats.newUsers, extra: "ce mois-ci" },
             { label: "Produits", value: products.length, extra: "au catalogue" },
           ].map((s, i) => (
-            <div key={s.label} className={`px-5 py-3.5 ${i % 2 === 0 ? "border-r border-cream/10" : ""} ${i < 2 ? "border-b border-cream/10" : ""}`}>
-              <dt className="text-[11px] font-semibold text-cream/60">{s.label}</dt>
-              <dd className="flex items-baseline gap-2 mt-0.5">
-                <span className="font-mono text-2xl font-medium tabular-nums">{(s.label === "Produits" ? isLoading : isLoadingUsers) ? "–" : s.value}</span>
-                <span className="text-[11px] text-cream/50">{s.extra}</span>
+            <div
+              key={s.label}
+              className="rise-in rounded-2xl bg-white/[0.13] border border-white/20 backdrop-blur-sm px-4 py-4 transition-colors hover:bg-white/20"
+              style={{ ["--i" as string]: i + 2 } as React.CSSProperties}
+            >
+              <dt className="text-sm font-semibold text-white/90">{s.label}</dt>
+              <dd className="mt-1.5">
+                <span className="block text-[34px] leading-none font-bold tabular-nums">
+                  {(s.label === "Produits" ? isLoading : isLoadingUsers) ? "–" : s.value}
+                </span>
+                <span className="block text-sm text-white/80 mt-1.5">{s.extra}</span>
               </dd>
             </div>
           ))}
@@ -413,7 +432,7 @@ export default function AdminDashboard() {
       </section>
 
       {/* Onglets */}
-      <div role="tablist" aria-label="Sections de l'administration" className="grid grid-cols-4 gap-1 bg-cream-deep p-1 rounded-xl">
+      <div role="tablist" aria-label="Sections de l'administration" className="grid grid-cols-4 gap-1.5 bg-white border border-line p-1.5 rounded-2xl shadow-sm rise-in" style={{ ["--i" as string]: 6 } as React.CSSProperties}>
         {tabs.map((tab) => {
           const active = activeTab === tab.id;
           return (
@@ -422,15 +441,19 @@ export default function AdminDashboard() {
               role="tab"
               aria-selected={active}
               onClick={() => goToTab(tab.id)}
-              className={`relative py-2 rounded-lg text-xs font-bold transition-colors ${focusRing} ${
-                active ? "bg-white text-forest shadow-sm" : "text-ink-soft hover:text-ink"
+              className={`relative flex flex-col items-center gap-1 py-2.5 rounded-xl text-sm sm:text-[15px] font-bold transition-all duration-200 ${focusRing} ${
+                active ? "bg-palm text-white shadow-[0_8px_18px_-10px_rgb(18_160_106/0.9)]" : "text-ink-soft hover:text-forest hover:bg-palm-light"
               }`}
             >
               {tab.label}
-              <span className={`block font-mono text-[10px] font-medium mt-0.5 ${tab.alert ? "text-clay" : active ? "text-palm" : "text-ink-soft/60"}`}>
+              <span
+                className={`min-w-7 px-2 py-0.5 rounded-full text-xs font-bold tabular-nums ${
+                  active ? "bg-white/25 text-white" : tab.alert ? "bg-gold-light text-gold-deep" : "bg-cream-deep text-ink-soft"
+                }`}
+              >
                 {tab.count}
               </span>
-              {tab.alert && <span className="absolute top-1.5 right-2 w-1.5 h-1.5 rounded-full bg-clay" aria-hidden="true" />}
+              {tab.alert && !active && <span className="absolute top-2 right-2.5 w-2 h-2 rounded-full bg-gold motion-safe:animate-pulse" aria-hidden="true" />}
             </button>
           );
         })}
@@ -601,38 +624,108 @@ export default function AdminDashboard() {
 
       {/* ───── MEMBRES ───── */}
       {activeTab === "users" && (
-        <section className="bg-white rounded-2xl border border-line overflow-hidden motion-safe:animate-in motion-safe:fade-in motion-safe:duration-200">
-          <header className="px-4 py-3 border-b border-line">
-            <h3 className="font-bold text-ink">Membres inscrits</h3>
-            <p className="text-xs text-ink-soft mt-0.5">
-              <span className="font-mono">{stats.totalPartenaires}</span> partenaires · <span className="font-mono">{stats.totalStockistes}</span> stockistes
-            </p>
+        <section className="bg-white rounded-3xl border border-line overflow-hidden shadow-[0_12px_35px_-25px_rgb(12_122_78/0.45)] rise-in">
+          <header className="px-5 sm:px-6 pt-5 pb-4 border-b border-line space-y-4">
+            <div className="flex flex-wrap items-end justify-between gap-2">
+              <div>
+                <h3 className="section-title text-[22px]">Membres inscrits</h3>
+                <p className="text-[15px] text-ink-soft mt-1">
+                  <strong className="text-ink tabular-nums">{stats.totalPartenaires}</strong> partenaires ·{" "}
+                  <strong className="text-ink tabular-nums">{stats.totalStockistes}</strong> stockistes ·{" "}
+                  <strong className="text-palm tabular-nums">{allUsers.filter((u) => u.isActive).length}</strong> actifs
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-2.5">
+              <div className="relative flex-1">
+                <svg className="w-5 h-5 text-ink-soft/60 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                <input
+                  type="search"
+                  value={memberSearch}
+                  onChange={(e) => setMemberSearch(e.target.value)}
+                  placeholder="Nom ou téléphone"
+                  aria-label="Rechercher un membre par nom ou téléphone"
+                  className="w-full pl-11 pr-3 py-3 bg-cream border border-line rounded-xl text-[15px] text-ink placeholder:text-ink-soft/60 focus:outline-none focus:border-palm focus:ring-2 focus:ring-palm/20 transition-colors"
+                />
+              </div>
+              <div className="flex gap-1.5" role="group" aria-label="Filtrer par type de membre">
+                {([
+                  ["all", "Tous"],
+                  ["Partenaire", "Partenaires"],
+                  ["Stockiste", "Stockistes"],
+                ] as const).map(([id, label]) => (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => setMemberFilter(id)}
+                    aria-pressed={memberFilter === id}
+                    className={`flex-1 sm:flex-none px-3.5 py-2.5 rounded-xl text-sm font-bold transition-colors ${focusRing} ${
+                      memberFilter === id ? "bg-forest text-white" : "bg-cream text-ink-soft hover:text-forest hover:bg-palm-light"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
           </header>
           {isLoadingUsers ? (
             <Empty>Chargement des membres…</Empty>
           ) : allUsers.length === 0 ? (
             <Empty>Aucun membre inscrit pour l'instant. Les partenaires et stockistes apparaîtront ici dès leur inscription.</Empty>
-          ) : (
-            <ul className="divide-y divide-line">
-              {allUsers.map((user) => (
-                <li key={`${user.role}-${user.id}`} className="px-4 py-3 flex items-center justify-between gap-3">
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2">
-                      <p className="font-semibold text-sm text-ink truncate">{user.name}</p>
-                      <RoleChip role={user.role} />
-                    </div>
-                    <p className="text-xs text-ink-soft mt-0.5 font-mono">
-                      {user.phone} · inscrit le {new Date(user.createdAt).toLocaleDateString("fr-FR")}
-                    </p>
-                  </div>
-                  <span className={`shrink-0 flex items-center gap-1.5 text-[11px] font-semibold ${user.isActive ? "text-palm" : "text-clay"}`}>
-                    <span className={`w-1.5 h-1.5 rounded-full ${user.isActive ? "bg-palm" : "bg-clay"}`} aria-hidden="true" />
-                    {user.isActive ? "Actif" : "Expiré"}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
+          ) : (() => {
+            const q = memberSearch.trim().toLowerCase();
+            const qDigits = memberSearch.replace(/\D/g, "");
+            const shown = allUsers.filter(
+              (u) =>
+                (memberFilter === "all" || u.role === memberFilter) &&
+                (!q || String(u.name ?? "").toLowerCase().includes(q) || (qDigits.length >= 2 && String(u.phone ?? "").replace(/\D/g, "").includes(qDigits)))
+            );
+            if (shown.length === 0) return <Empty>Aucun membre ne correspond à cette recherche.</Empty>;
+            return (
+              <ul className="divide-y divide-line">
+                {shown.map((user, i) => {
+                  const initials = String(user.name ?? "?").trim().split(/\s+/).map((p: string) => p[0]).slice(0, 2).join("").toUpperCase();
+                  const isStockiste = String(user.role).toLowerCase() === "stockiste";
+                  return (
+                    <li
+                      key={`${user.role}-${user.id}`}
+                      className="rise-in group px-5 sm:px-6 py-4 flex items-center gap-4 transition-colors hover:bg-palm-light/50"
+                      style={{ ["--i" as string]: i } as React.CSSProperties}
+                    >
+                      <span
+                        className={`w-12 h-12 shrink-0 rounded-full flex items-center justify-center text-base font-bold transition-transform group-hover:scale-105 ${
+                          isStockiste ? "bg-gold-light text-gold-deep" : "bg-palm-light text-forest"
+                        }`}
+                        aria-hidden="true"
+                      >
+                        {initials}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
+                          <p className="font-bold text-[17px] text-ink truncate capitalize">{String(user.name ?? "").toLowerCase()}</p>
+                          <RoleChip role={user.role} />
+                        </div>
+                        <p className="text-[15px] text-ink-soft mt-1 flex flex-wrap gap-x-3 gap-y-0.5">
+                          <a href={`tel:${user.phone}`} className="font-semibold text-ink hover:text-palm tabular-nums">{user.phone}</a>
+                          <span>Inscrit le {new Date(user.createdAt).toLocaleDateString("fr-FR")}</span>
+                        </p>
+                      </div>
+                      <span
+                        className={`shrink-0 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-bold ${
+                          user.isActive ? "bg-palm-light text-forest" : "bg-clay-light text-clay"
+                        }`}
+                      >
+                        <span className={`w-2 h-2 rounded-full ${user.isActive ? "bg-palm" : "bg-clay"}`} aria-hidden="true" />
+                        {user.isActive ? "Actif" : "Expiré"}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            );
+          })()}
         </section>
       )}
 
