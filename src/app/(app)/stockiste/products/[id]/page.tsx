@@ -45,18 +45,18 @@ export default async function ProductDetailPage({
         <div className="p-5 desk:p-7 space-y-5">
           <div className="unfold" style={{ ["--i" as string]: 1 } as React.CSSProperties}>
             {product.pv != null && (
-              <span className="pv-stamp mb-2">{Number(product.pv).toLocaleString("fr-FR")}<span className="text-[9px] tracking-wider">PV</span></span>
+              <span className="pv-stamp mb-2">{Number(product.pv).toLocaleString("fr-FR")}<span className="text-[11px] tracking-wider">PV</span></span>
             )}
             <h1 className="font-heading text-[24px] text-ink leading-tight">{product.name}</h1>
           </div>
 
           <div className="unfold grid grid-cols-2 rounded-xl border border-line overflow-hidden" style={{ ["--i" as string]: 2 } as React.CSSProperties}>
             <div className="px-4 py-3 bg-palm-light/60">
-              <span className="block text-[11px] font-semibold text-palm">Prix partenaire</span>
+              <span className="block text-[13px] font-semibold text-palm">Prix partenaire</span>
               <span className="font-mono text-xl font-semibold text-forest tabular-nums">{fcfa(product.partnerPrice)} <span className="text-xs font-normal">F</span></span>
             </div>
             <div className="px-4 py-3 border-l border-line">
-              <span className="block text-[11px] font-semibold text-ink-soft">Prix public</span>
+              <span className="block text-[13px] font-semibold text-ink-soft">Prix public</span>
               <span className="font-mono text-xl font-semibold text-ink tabular-nums">{fcfa(product.publicPrice)} <span className="text-xs font-normal">F</span></span>
             </div>
           </div>

@@ -62,12 +62,12 @@ export default function FormationsList() {
             <li key={i} className="card lift-card accent-gold rise-in p-4 pl-5 flex gap-4" style={{ ["--i" as string]: i } as React.CSSProperties}>
               <div className="lift-badge w-14 shrink-0 self-start rounded-xl bg-forest text-cream text-center py-2 shadow-sm" aria-hidden="true">
                 <span className="block font-heading text-2xl leading-none">{form.day}</span>
-                <span className="block font-mono text-[10px] uppercase tracking-wider text-gold mt-1">{form.month}</span>
+                <span className="block font-mono text-[12px] uppercase tracking-wider text-gold mt-1">{form.month}</span>
               </div>
               <div className="min-w-0">
                 <h3 className="font-heading font-semibold text-forest text-[17px] leading-snug">{form.title}</h3>
                 <p className="font-mono text-xs text-gold-deep mt-1">{form.day} {form.month} {form.year}, {form.time}</p>
-                <dl className="mt-2 space-y-1 text-[13px]">
+                <dl className="mt-2 space-y-1 text-[15px]">
                   <div className="flex gap-1.5"><dt className="text-ink-soft shrink-0">Lieu :</dt><dd className="text-ink">{form.location}</dd></div>
                   <div className="flex gap-1.5"><dt className="text-ink-soft shrink-0">Formateur :</dt><dd className="text-ink">{form.trainer}</dd></div>
                 </dl>

@@ -91,7 +91,7 @@ export default function AbonnementPage() {
           <div className="card overflow-hidden rise-in">
             <div className="bg-forest-deep text-cream px-5 py-5 flex items-end justify-between gap-3">
               <div>
-                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-gold">Forfait unique</p>
+                <p className="font-mono text-[12px] uppercase tracking-[0.2em] text-gold">Forfait unique</p>
                 <p className="font-heading text-2xl mt-1">{PLAN.duration}</p>
               </div>
               <p className="text-right">
@@ -120,7 +120,7 @@ export default function AbonnementPage() {
               ) : (
                 <Link href="/login" className="btn-primary w-full">Se connecter pour payer avec Wave</Link>
               )}
-              <p className="text-[11px] text-ink-soft text-center mt-2">Paiement uniquement par Wave.</p>
+              <p className="text-[13px] text-ink-soft text-center mt-2">Paiement uniquement par Wave.</p>
             </div>
           </div>
 

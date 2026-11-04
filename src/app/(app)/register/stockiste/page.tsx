@@ -67,7 +67,7 @@ export default function RegisterStockiste() {
         <div>
           <label htmlFor="rs-hood" className="label">Quartier et repère</label>
           <input id="rs-hood" name="neighborhood" type="text" required className="input" placeholder="Angré 8e Tranche, près du rond-point" />
-          <p className="text-[11px] text-ink-soft mt-1.5">Aide les partenaires à trouver votre bureau.</p>
+          <p className="text-[13px] text-ink-soft mt-1.5">Aide les partenaires à trouver votre bureau.</p>
         </div>
 
         <div>

@@ -169,8 +169,8 @@ export default function HealthWellness() {
                       className="w-full p-4 pl-5 flex items-start justify-between gap-3 text-left rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gold"
                     >
                       <div className="min-w-0">
-                        <h3 className="font-heading font-semibold text-rouge text-[17px] leading-snug">{pathology.name}</h3>
-                        <p className="text-[13px] text-ink-soft mt-1 leading-relaxed">{pathology.description}</p>
+                        <h3 className="font-heading font-semibold text-rouge text-[19px] leading-snug">{pathology.name}</h3>
+                        <p className="text-[15px] text-ink-soft mt-1 leading-relaxed">{pathology.description}</p>
                       </div>
                       <span
                         className={`lift-chevron mt-0.5 w-8 h-8 shrink-0 rounded-full flex items-center justify-center transition-all duration-300 ${isOpen ? "bg-rouge text-white" : "bg-rouge-light text-rouge"}`}
@@ -214,14 +214,14 @@ export default function HealthWellness() {
                                   </div>
                                   <div className="flex-1 min-w-0">
                                     <div className="flex justify-between items-start gap-2">
-                                      <h5 className="font-semibold text-ink text-[13px] leading-snug">{prod.name}</h5>
-                                      <span className="pv-stamp">{prod.pv}<span className="text-[9px] tracking-wider">PV</span></span>
+                                      <h5 className="font-semibold text-ink text-[15px] leading-snug">{prod.name}</h5>
+                                      <span className="pv-stamp">{prod.pv}<span className="text-[11px] tracking-wider">PV</span></span>
                                     </div>
-                                    <p className="font-mono text-[12px] mt-1.5 tabular-nums">
+                                    <p className="font-mono text-[14px] mt-1.5 tabular-nums">
                                       <span className="text-forest font-semibold">{fcfa(prod.partner)} F</span>
                                       <span className="text-ink-soft"> partenaire, {fcfa(prod.public)} F public</span>
                                     </p>
-                                    <p className="text-[12px] text-ink-soft mt-1.5 leading-relaxed">{prod.dosage}</p>
+                                    <p className="text-[14px] text-ink-soft mt-1.5 leading-relaxed">{prod.dosage}</p>
                                     {isClickable && (
                                       <span className="text-xs font-bold text-palm mt-2 inline-block">Voir la fiche produit</span>
                                     )}

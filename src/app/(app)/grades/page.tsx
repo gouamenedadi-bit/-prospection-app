@@ -89,7 +89,7 @@ export default function GradesCompensations() {
                     </div>
                     <div className="text-right shrink-0">
                       <p className="font-mono text-sm font-semibold text-forest tabular-nums">{g.pv}</p>
-                      <p className="font-mono text-[10px] text-ink-soft tracking-wider">PV</p>
+                      <p className="font-mono text-[12px] text-ink-soft tracking-wider">PV</p>
                     </div>
                   </li>
                 );

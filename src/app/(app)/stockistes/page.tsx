@@ -228,7 +228,7 @@ export default function StockistesList() {
           <div className="relative bg-cream w-full max-w-md max-h-[85vh] flex flex-col overflow-hidden rounded-t-3xl sm:rounded-3xl shadow-2xl motion-safe:animate-in motion-safe:slide-in-from-bottom motion-safe:duration-300">
             <div className="bg-forest-deep text-cream px-5 pt-5 pb-4 flex justify-between items-start gap-3">
               <div className="min-w-0">
-                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-gold">Produits disponibles</p>
+                <p className="font-mono text-[12px] uppercase tracking-[0.2em] text-gold">Produits disponibles</p>
                 <h3 id="inv-title" className="font-heading text-xl mt-1 truncate">{selectedStockiste.name}</h3>
                 <p className="text-xs text-cream/70 mt-0.5">{selectedStockiste.location} · <span className="font-mono">{selectedStockiste.contact}</span></p>
               </div>
@@ -262,8 +262,8 @@ export default function StockistesList() {
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h4 className="font-semibold text-[13px] text-ink line-clamp-2 leading-snug">{product.name}</h4>
-                          <p className="font-mono text-[11px] mt-1 tabular-nums">
+                          <h4 className="font-semibold text-[15px] text-ink line-clamp-2 leading-snug">{product.name}</h4>
+                          <p className="font-mono text-[13px] mt-1 tabular-nums">
                             <span className="text-forest font-semibold">{fcfa(product.partnerPrice)} F</span>
                             <span className="text-ink-soft"> · {fcfa(product.publicPrice)} F public · {product.pv} PV</span>
                           </p>

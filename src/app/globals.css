@@ -30,8 +30,16 @@
   --color-cream: #F6FAF7;
   --color-cream-deep: #E8F1EC;
   --color-ink: #17221C;
-  --color-ink-soft: #54635A;
+  --color-ink-soft: #3B4740;  /* gris qui tire sur le noir, bien lisible */
   --color-line: #DCE8E1;
+
+  /* Échelle de texte agrandie pour la lisibilité (xs 13 px, sm 15 px, base 17 px) */
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.4;
+  --text-sm: 0.9375rem;
+  --text-sm--line-height: 1.45;
+  --text-base: 1.0625rem;
+  --text-base--line-height: 1.5;
 
   --font-sans: var(--font-manrope), sans-serif;
   --font-heading: var(--font-fraunces), serif;
@@ -53,17 +61,17 @@ body {
 @layer components {
   /* Titre de page : petit sur-titre doré + titre Fraunces */
   .page-head { @apply mb-5; }
-  .eyebrow { @apply font-mono text-[10px] font-medium uppercase tracking-[0.18em] text-gold-deep; }
-  .page-title { @apply font-heading text-[26px] leading-tight text-orange mt-1; }
+  .eyebrow { @apply font-mono text-[12px] font-medium uppercase tracking-[0.18em] text-gold-deep; }
+  .page-title { @apply font-heading text-[28px] leading-tight text-orange mt-1; }
   .page-lead { @apply text-sm text-ink-soft mt-1.5 leading-relaxed; }
-  .section-title { @apply text-[15px] font-bold text-orange; }
+  .section-title { @apply text-[17px] font-bold text-orange; }
 
   /* Surfaces */
   .card { @apply bg-white rounded-2xl border border-line/70 shadow-soft; }
   .card-pad { @apply p-4; }
   .card-dark { @apply bg-forest-deep text-cream rounded-2xl; }
   .note { @apply bg-cream rounded-xl border border-line px-3 py-2.5; }
-  .note-label { @apply block font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-palm mb-1; }
+  .note-label { @apply block font-mono text-[12px] font-medium uppercase tracking-[0.14em] text-palm mb-1; }
 
   /* Boutons */
   .btn, .btn-primary, .btn-gold, .btn-secondary, .btn-ghost, .btn-danger {
@@ -82,13 +90,13 @@ body {
   .alert-success { @apply p-3 bg-palm-light text-palm text-sm rounded-xl font-semibold; }
 
   /* Étiquettes */
-  .chip, .chip-palm, .chip-gold, .chip-clay { @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider; }
+  .chip, .chip-palm, .chip-gold, .chip-clay { @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[12px] font-bold uppercase tracking-wider; }
   .chip-palm { @apply bg-palm-light text-palm; }
   .chip-gold { @apply bg-gold-light text-gold-deep; }
   .chip-clay { @apply bg-clay-light text-clay; }
 
   /* Cachet PV (signature du catalogue) */
-  .pv-stamp { @apply inline-flex items-baseline gap-0.5 px-1.5 py-0.5 rounded-md border border-dashed border-gold bg-gold-light text-gold-deep font-mono text-[11px] font-semibold leading-none whitespace-nowrap; }
+  .pv-stamp { @apply inline-flex items-baseline gap-0.5 px-1.5 py-0.5 rounded-md border border-dashed border-gold bg-gold-light text-gold-deep font-mono text-[13px] font-semibold leading-none whitespace-nowrap; }
 }
 
 /* ─────────── Cartes animées (Soins, Grades, Produits) ─────────── */

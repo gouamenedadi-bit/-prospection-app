@@ -72,13 +72,13 @@ export default function CompensationPlanPage() {
               >
                 <span className="lift-badge relative w-12 h-12 shrink-0 rounded-2xl bg-palm-light text-palm flex items-center justify-center">
                   <Icon name={g.icon} className="w-6 h-6" />
-                  <span className="absolute -top-1.5 -right-1.5 min-w-5 h-5 px-1 rounded-full bg-palm text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-white">
+                  <span className="absolute -top-1.5 -right-1.5 min-w-5 h-5 px-1 rounded-full bg-palm text-white text-[12px] font-bold flex items-center justify-center ring-2 ring-white">
                     {g.num}
                   </span>
                 </span>
                 <div className="min-w-0">
                   <p className="font-heading text-[17px] font-semibold text-forest leading-snug">{g.title}</p>
-                  <p className="text-[13px] text-ink-soft mt-0.5 leading-relaxed">{g.details}</p>
+                  <p className="text-[15px] text-ink-soft mt-0.5 leading-relaxed">{g.details}</p>
                 </div>
               </li>
             ))}
@@ -102,13 +102,13 @@ export default function CompensationPlanPage() {
                 >
                   <span className="lift-badge relative w-12 h-12 shrink-0 rounded-2xl bg-gold text-forest-deep flex items-center justify-center shadow-[0_6px_18px_-6px_rgb(239_123_26/0.6)]">
                     <Icon name={g.icon} className="w-6 h-6" />
-                    <span className="absolute -top-1.5 -right-1.5 min-w-5 h-5 px-1 rounded-full bg-cream text-forest-deep text-[10px] font-bold flex items-center justify-center ring-2 ring-forest-deep">
+                    <span className="absolute -top-1.5 -right-1.5 min-w-5 h-5 px-1 rounded-full bg-cream text-forest-deep text-[12px] font-bold flex items-center justify-center ring-2 ring-forest-deep">
                       {g.num}
                     </span>
                   </span>
                   <div className="min-w-0">
                     <p className="font-heading text-[17px] font-semibold text-cream leading-snug">{g.title}</p>
-                    <p className="text-[13px] text-cream/70 mt-0.5 leading-relaxed">{g.details}</p>
+                    <p className="text-[15px] text-cream/70 mt-0.5 leading-relaxed">{g.details}</p>
                     {g.value && (
                       <p className="font-mono text-sm font-semibold text-gold mt-1.5 tabular-nums">{g.value}</p>
                     )}

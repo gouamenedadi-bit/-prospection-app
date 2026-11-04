@@ -207,22 +207,22 @@ export default function StockisteDashboard() {
       {/* En-tête du bureau */}
       <section className="card-dark p-5 relative overflow-hidden">
         <div className="absolute -right-10 -top-10 w-40 h-40 rounded-full border-[18px] border-gold/15" aria-hidden="true" />
-        <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-gold relative">Espace stockiste</p>
+        <p className="font-mono text-[12px] uppercase tracking-[0.2em] text-gold relative">Espace stockiste</p>
         <h2 className="font-heading text-[24px] leading-tight mt-1.5 relative truncate">{profileForm.name || "Mon bureau"}</h2>
         <p className="text-sm text-cream/70 mt-0.5 relative truncate">
           {[profileForm.neighborhood || profileForm.commune, profileForm.city].filter(Boolean).join(", ") || "Adresse à compléter"}
         </p>
         <dl className="grid grid-cols-3 gap-2 mt-4 relative">
           <div className="rounded-xl bg-cream/5 border border-cream/10 px-3 py-2">
-            <dt className="text-[10px] text-cream/60">En stock</dt>
+            <dt className="text-[12px] text-cream/60">En stock</dt>
             <dd className="font-mono text-lg tabular-nums">{isLoadingProducts ? "–" : stockedCount}</dd>
           </div>
           <div className={`rounded-xl px-3 py-2 border ${lowStockItems.length ? "bg-gold/15 border-gold/30" : "bg-cream/5 border-cream/10"}`}>
-            <dt className="text-[10px] text-cream/60">Stock faible</dt>
+            <dt className="text-[12px] text-cream/60">Stock faible</dt>
             <dd className="font-mono text-lg tabular-nums">{isLoadingProducts ? "–" : lowStockItems.length}</dd>
           </div>
           <div className="rounded-xl bg-cream/5 border border-cream/10 px-3 py-2">
-            <dt className="text-[10px] text-cream/60">Formations</dt>
+            <dt className="text-[12px] text-cream/60">Formations</dt>
             <dd className="font-mono text-lg tabular-nums">{formations.length}</dd>
           </div>
         </dl>
@@ -320,22 +320,22 @@ export default function StockisteDashboard() {
                   )}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-[11px] font-semibold text-ink-soft">Modifier la quantité</p>
+                  <p className="text-[13px] font-semibold text-ink-soft">Modifier la quantité</p>
                   <h4 className="font-bold text-sm text-ink leading-snug line-clamp-2">{editForm.name}</h4>
                 </div>
               </div>
 
               <div className="p-4 space-y-4">
                 <dl className="grid grid-cols-3 rounded-xl border border-line overflow-hidden text-center">
-                  <div className="py-2"><dt className="text-[10px] text-ink-soft">PV</dt><dd className="font-mono text-sm font-semibold">{editForm.pv}</dd></div>
-                  <div className="py-2 border-x border-line"><dt className="text-[10px] text-ink-soft">Partenaire</dt><dd className="font-mono text-sm font-semibold text-forest">{fcfa(editForm.partnerPrice)} F</dd></div>
-                  <div className="py-2"><dt className="text-[10px] text-ink-soft">Public</dt><dd className="font-mono text-sm font-semibold">{fcfa(editForm.publicPrice)} F</dd></div>
+                  <div className="py-2"><dt className="text-[12px] text-ink-soft">PV</dt><dd className="font-mono text-sm font-semibold">{editForm.pv}</dd></div>
+                  <div className="py-2 border-x border-line"><dt className="text-[12px] text-ink-soft">Partenaire</dt><dd className="font-mono text-sm font-semibold text-forest">{fcfa(editForm.partnerPrice)} F</dd></div>
+                  <div className="py-2"><dt className="text-[12px] text-ink-soft">Public</dt><dd className="font-mono text-sm font-semibold">{fcfa(editForm.publicPrice)} F</dd></div>
                 </dl>
 
                 {editForm.posology && (
                   <div className="note">
                     <span className="note-label">Posologie</span>
-                    <p className="text-[13px] text-ink">{editForm.posology}</p>
+                    <p className="text-[15px] text-ink">{editForm.posology}</p>
                   </div>
                 )}
 
@@ -380,8 +380,8 @@ export default function StockisteDashboard() {
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-semibold text-[13px] text-ink line-clamp-1">{product.name}</h4>
-                      <p className="font-mono text-[11px] mt-0.5 tabular-nums">
+                      <h4 className="font-semibold text-[15px] text-ink line-clamp-1">{product.name}</h4>
+                      <p className="font-mono text-[13px] mt-0.5 tabular-nums">
                         <span className="text-forest font-semibold">{fcfa(product.partnerPrice)} F</span>
                         <span className="text-ink-soft"> · {fcfa(product.publicPrice)} F · {product.pv} PV</span>
                       </p>
@@ -394,7 +394,7 @@ export default function StockisteDashboard() {
                       aria-label={`Modifier la quantité de ${product.name} (${product.quantity})`}
                     >
                       <span className="block font-mono text-sm font-semibold leading-none">{product.quantity}</span>
-                      <span className="block text-[9px] font-semibold mt-0.5">Modifier</span>
+                      <span className="block text-[11px] font-semibold mt-0.5">Modifier</span>
                     </button>
                   </li>
                 );
@@ -457,7 +457,7 @@ export default function StockisteDashboard() {
                   <li key={idx} className="card p-3.5 flex items-center gap-3.5">
                     <div className="w-12 shrink-0 rounded-xl bg-forest text-cream text-center py-1.5" aria-hidden="true">
                       <span className="block font-heading text-xl leading-none">{d.day}</span>
-                      <span className="block font-mono text-[9px] uppercase tracking-wider text-gold mt-0.5">{d.month}</span>
+                      <span className="block font-mono text-[11px] uppercase tracking-wider text-gold mt-0.5">{d.month}</span>
                     </div>
                     <div className="flex-1 min-w-0">
                       <h4 className="font-bold text-sm text-ink truncate">{form.title}</h4>

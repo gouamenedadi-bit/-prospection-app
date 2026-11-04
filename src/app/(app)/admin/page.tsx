@@ -20,9 +20,9 @@ const labelCls = "block text-xs font-semibold text-ink-soft mb-1.5";
 function Stamp({ pv }: { pv: unknown }) {
   // Le "cachet" PV : la valeur en points, signature visuelle du catalogue.
   return (
-    <span className="inline-flex items-baseline gap-0.5 px-1.5 py-0.5 rounded-md border border-dashed border-gold bg-gold-light text-[#B4560B] font-mono text-[11px] font-semibold leading-none whitespace-nowrap">
+    <span className="inline-flex items-baseline gap-0.5 px-1.5 py-0.5 rounded-md border border-dashed border-gold bg-gold-light text-[#B4560B] font-mono text-[13px] font-semibold leading-none whitespace-nowrap">
       {pvFmt(pv)}
-      <span className="text-[9px] tracking-wider">PV</span>
+      <span className="text-[11px] tracking-wider">PV</span>
     </span>
   );
 }
@@ -31,7 +31,7 @@ function RoleChip({ role }: { role: string }) {
   const isStockiste = role.toLowerCase() === "stockiste";
   return (
     <span
-      className={`text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full leading-none ${
+      className={`text-[13px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full leading-none ${
         isStockiste ? "bg-gold-light text-[#B4560B]" : "bg-palm-light text-palm"
       }`}
     >
@@ -276,7 +276,7 @@ export default function AdminDashboard() {
         <style dangerouslySetInnerHTML={{__html: `nav[data-bottom-nav] { pointer-events: none; opacity: 0.4; filter: grayscale(100%); }`}} />
         <div className="w-full bg-white rounded-2xl border border-line overflow-hidden motion-safe:animate-in motion-safe:fade-in motion-safe:duration-300">
           <div className="bg-forest-deep px-6 pt-7 pb-6 text-cream">
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-gold">Espace administrateur</p>
+            <p className="font-mono text-[12px] uppercase tracking-[0.2em] text-gold">Espace administrateur</p>
             <h2 className="font-heading text-[28px] leading-tight mt-2">Connexion</h2>
             <p className="text-sm text-cream/70 mt-1">Catalogue, membres et abonnements de la plateforme.</p>
           </div>
@@ -368,7 +368,7 @@ export default function AdminDashboard() {
 
         <div className="relative px-5 sm:px-7 pt-6 flex items-start justify-between gap-3">
           <div>
-            <p className="text-[13px] font-bold uppercase tracking-[0.14em] text-[#FFD9B0] first-letter:uppercase">{today}</p>
+            <p className="text-[15px] font-bold uppercase tracking-[0.14em] text-[#FFD9B0] first-letter:uppercase">{today}</p>
             <h2 className="font-heading text-[30px] sm:text-[34px] leading-tight mt-1">Tableau de bord</h2>
             <p className="text-[15px] text-white/85 mt-1">Bienvenue dans votre espace administrateur.</p>
           </div>
@@ -562,7 +562,7 @@ export default function AdminDashboard() {
 
               {/* La liste de prix */}
               <div className="bg-white rounded-2xl border border-line overflow-hidden">
-                <div className="flex items-center justify-between px-4 py-2 bg-cream/70 border-b border-line font-mono text-[10px] uppercase tracking-[0.14em] text-ink-soft">
+                <div className="flex items-center justify-between px-4 py-2 bg-cream/70 border-b border-line font-mono text-[12px] uppercase tracking-[0.14em] text-ink-soft">
                   <span>Produit</span>
                   <span>Public / Partenaire</span>
                 </div>
@@ -591,16 +591,16 @@ export default function AdminDashboard() {
 
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-2">
-                            <h4 className="text-[13px] font-semibold text-ink leading-snug line-clamp-2">{product.name}</h4>
+                            <h4 className="text-[15px] font-semibold text-ink leading-snug line-clamp-2">{product.name}</h4>
                             <div className="text-right shrink-0 font-mono tabular-nums leading-tight">
-                              <div className="text-[13px] font-semibold text-forest">{fcfa(product.publicPrice)}<span className="text-[10px] text-ink-soft font-normal"> F</span></div>
-                              <div className="text-[11px] text-ink-soft">{fcfa(product.partnerPrice)} F</div>
+                              <div className="text-[15px] font-semibold text-forest">{fcfa(product.publicPrice)}<span className="text-[12px] text-ink-soft font-normal"> F</span></div>
+                              <div className="text-[13px] text-ink-soft">{fcfa(product.partnerPrice)} F</div>
                             </div>
                           </div>
                           <div className="flex items-center justify-between gap-2 mt-1.5">
                             <div className="flex items-center gap-2 min-w-0">
                               <Stamp pv={product.pv} />
-                              <span className="text-[11px] text-ink-soft truncate">{product.posology || "Posologie non renseignée"}</span>
+                              <span className="text-[13px] text-ink-soft truncate">{product.posology || "Posologie non renseignée"}</span>
                             </div>
                             <div className="flex shrink-0 -mr-1">
                               <button onClick={() => handleEditClick(product)} className={`p-1.5 rounded-md text-ink-soft/60 hover:text-forest hover:bg-palm-light ${focusRing}`} aria-label={`Modifier ${product.name}`} title="Modifier">
@@ -748,7 +748,7 @@ export default function AdminDashboard() {
                     <p className="font-mono text-xl font-semibold text-ink tabular-nums">{fcfa(payment.amount)} <span className="text-xs text-ink-soft font-normal">F CFA</span></p>
                     <p className="text-sm font-semibold text-ink mt-0.5">{payment.planLabel}{payment.provider === "wave" ? " · payé par Wave (à vérifier dans Wave)" : ""}</p>
                   </div>
-                  <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-gold-light text-[#B4560B]">En attente</span>
+                  <span className="shrink-0 text-[12px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-gold-light text-[#B4560B]">En attente</span>
                 </div>
                 <div className="flex items-center gap-2 mt-2 text-xs text-ink-soft">
                   <span className="font-semibold text-ink truncate">{payment.accountName}</span>
@@ -805,7 +805,7 @@ export default function AdminDashboard() {
                     </div>
                   </div>
                   {avis.comment && <p className="text-sm text-ink mt-1.5 leading-relaxed">{avis.comment}</p>}
-                  <p className="font-mono text-[11px] text-ink-soft mt-1.5">{new Date(avis.createdAt).toLocaleDateString("fr-FR")}</p>
+                  <p className="font-mono text-[13px] text-ink-soft mt-1.5">{new Date(avis.createdAt).toLocaleDateString("fr-FR")}</p>
                 </li>
               ))}
             </ul>

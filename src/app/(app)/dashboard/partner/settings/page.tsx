@@ -132,7 +132,7 @@ export default function PartnerSettings() {
         <div>
           <label htmlFor="ps-email" className="label">Email</label>
           <input id="ps-email" type="email" value={formData.email} disabled className="input bg-cream text-ink-soft cursor-not-allowed" />
-          <p className="text-[11px] text-ink-soft mt-1.5">L&apos;email ne peut pas être modifié. Contactez le support si besoin.</p>
+          <p className="text-[13px] text-ink-soft mt-1.5">L&apos;email ne peut pas être modifié. Contactez le support si besoin.</p>
         </div>
 
         <div className="grid grid-cols-2 gap-3">

@@ -63,13 +63,13 @@ export default function ProductsListClient({ products }: { products: any[] }) {
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-heading text-[16px] font-semibold text-forest leading-snug line-clamp-2">{product.name}</h3>
+                  <h3 className="font-heading text-[18px] font-semibold text-forest leading-snug line-clamp-2">{product.name}</h3>
                   <div className="flex items-center gap-2 mt-1.5">
-                    <span className="pv-stamp">{Number(product.pv || 0).toLocaleString("fr-FR")}<span className="text-[9px] tracking-wider">PV</span></span>
-                    {product.posology && <span className="text-[11px] text-ink-soft truncate">{product.posology}</span>}
+                    <span className="pv-stamp">{Number(product.pv || 0).toLocaleString("fr-FR")}<span className="text-[11px] tracking-wider">PV</span></span>
+                    {product.posology && <span className="text-[13px] text-ink-soft truncate">{product.posology}</span>}
                   </div>
-                  <p className="font-mono text-[12px] mt-1.5 tabular-nums">
-                    <span className="text-forest font-semibold">{fcfa(product.partnerPrice)} F</span>
+                  <p className="text-[15px] mt-1.5 tabular-nums">
+                    <span className="text-forest font-bold">{fcfa(product.partnerPrice)} F</span>
                     <span className="text-ink-soft"> partenaire, {fcfa(product.publicPrice)} F public</span>
                   </p>
                 </div>

@@ -53,7 +53,7 @@ export function AuthShell({
       {nav === "hide" && <style dangerouslySetInnerHTML={{ __html: `nav[data-bottom-nav] { display: none !important; }` }} />}
       <div className="w-full card overflow-hidden motion-safe:animate-in motion-safe:fade-in motion-safe:duration-300">
         <div className="bg-forest-deep px-6 pt-7 pb-6 text-cream">
-          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-gold">{eyebrow}</p>
+          <p className="font-mono text-[12px] uppercase tracking-[0.2em] text-gold">{eyebrow}</p>
           <h2 className="font-heading text-[28px] leading-tight mt-2">{title}</h2>
           {lead && <p className="text-sm text-cream/70 mt-1.5 leading-relaxed">{lead}</p>}
         </div>

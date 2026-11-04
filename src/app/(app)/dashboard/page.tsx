@@ -15,7 +15,7 @@ export default function Home() {
       {/* Bienvenue */}
       <section className="card-dark p-5 relative overflow-hidden rise-in">
         <div className="absolute -right-10 -top-10 w-40 h-40 rounded-full border-[18px] border-gold/15" aria-hidden="true" />
-        <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-gold relative">
+        <p className="font-mono text-[12px] uppercase tracking-[0.2em] text-gold relative">
           {isAdmin ? "Espace administrateur" : isStockiste ? "Espace stockiste" : "Espace partenaire"}
         </p>
         <h2 className="font-heading text-[26px] leading-tight mt-1.5 relative">

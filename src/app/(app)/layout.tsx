@@ -47,7 +47,7 @@ export default function AppLayout({
           <span className="w-8 h-8 rounded-lg bg-gold text-forest-deep flex items-center justify-center font-heading text-lg leading-none" aria-hidden="true">L</span>
           <span className="leading-tight">
             <span className="block font-heading text-[17px]">Prospection</span>
-            <span className="block font-mono text-[9px] uppercase tracking-[0.2em] text-gold">Longrich · Côte d&apos;Ivoire</span>
+            <span className="block font-mono text-[11px] uppercase tracking-[0.2em] text-gold">Longrich · Côte d&apos;Ivoire</span>
           </span>
         </a>
       </header>
