@@ -49,10 +49,10 @@ model Payment {
   planLabel      String
   durationDays   Int
   amount         Float
-  method         String?
+  method         String?  // Wave : numéro avec lequel le membre a payé
   provider       String   @default("cinetpay")
   status         String   @default("pending") // pending | success | failed
-  transactionRef String?  @unique
+  transactionRef String?  @unique // Wave : ID de transfert saisi par le membre
   validatedBy    String?
 
   createdAt DateTime @default(now())

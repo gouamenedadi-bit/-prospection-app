@@ -35,6 +35,8 @@ export default function AbonnementPage() {
   const [step, setStep] = useState<Step>("plan");
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState("");
+  const [transferId, setTransferId] = useState("");
+  const [payerPhone, setPayerPhone] = useState("");
 
   useEffect(() => {
     if (status === "authenticated") {
@@ -44,10 +46,11 @@ export default function AbonnementPage() {
     }
   }, [status]);
 
-  const handleIHavePaid = async () => {
+  const handleIHavePaid = async (e: React.FormEvent) => {
+    e.preventDefault();
     setError("");
     setIsSending(true);
-    const res = await declareWavePayment();
+    const res = await declareWavePayment({ transferId, payerPhone });
     setIsSending(false);
     if (!res.success) {
       setError(res.error || "Votre paiement n'a pas pu être signalé. Réessayez dans un instant.");
@@ -83,7 +86,7 @@ export default function AbonnementPage() {
         </div>
       )}
 
-      {error && <div role="alert" className="alert-error">{error}</div>}
+      {error && step !== "wave" && <div role="alert" className="alert-error">{error}</div>}
 
       {/* Étape 1 : le forfait */}
       {step === "plan" && (
@@ -159,7 +162,7 @@ export default function AbonnementPage() {
               {[
                 <>Ouvrez l&apos;application <strong>Wave</strong> et touchez <strong>Scanner</strong>.</>,
                 <>Scannez le QR code ci-dessus et payez <strong className="tabular-nums">{fcfa(PLAN.amount)} FCFA</strong>.</>,
-                <>Revenez ici et touchez <strong>« J&apos;ai payé »</strong>. Votre abonnement est activé après vérification.</>,
+                <>Revenez ici, saisissez l&apos;<strong>ID de transfert</strong> et le <strong>numéro Wave</strong> utilisé, puis touchez <strong>« J&apos;ai payé »</strong>.</>,
               ].map((text, i) => (
                 <li key={i} className="flex gap-3">
                   <span className="w-6 h-6 shrink-0 rounded-full bg-forest text-white text-xs font-bold flex items-center justify-center">{i + 1}</span>
@@ -175,9 +178,46 @@ export default function AbonnementPage() {
               <a href="/wave-qr.png" download="QR-Wave-Prospections-Longrich.png" className="font-bold text-palm underline underline-offset-2">Télécharger le QR code</a>
             </p>
 
-            <button onClick={handleIHavePaid} disabled={isSending} className="btn-primary w-full text-[15px] py-3.5">
-              {isSending ? "Envoi…" : "J'ai payé"}
-            </button>
+            <form onSubmit={handleIHavePaid} className="space-y-4 border-t border-line pt-4">
+              <div>
+                <h4 className="font-bold text-ink">Après le paiement</h4>
+                <p className="text-sm text-ink-soft mt-0.5">Ces deux informations nous servent à retrouver votre paiement dans Wave.</p>
+              </div>
+              <div>
+                <label htmlFor="wave-transfer-id" className="label">ID de transfert Wave</label>
+                <input
+                  id="wave-transfer-id"
+                  type="text"
+                  required
+                  autoComplete="off"
+                  autoCapitalize="characters"
+                  spellCheck={false}
+                  value={transferId}
+                  onChange={(e) => setTransferId(e.target.value)}
+                  placeholder="Ex. T_ABCD1234EFGH"
+                  className="input font-mono uppercase tracking-wide"
+                />
+                <p className="text-xs text-ink-soft mt-1.5">Dans Wave, ouvrez la transaction : l&apos;ID est en bas du reçu.</p>
+              </div>
+              <div>
+                <label htmlFor="wave-payer-phone" className="label">Numéro Wave utilisé pour payer</label>
+                <input
+                  id="wave-payer-phone"
+                  type="tel"
+                  required
+                  inputMode="tel"
+                  autoComplete="tel"
+                  value={payerPhone}
+                  onChange={(e) => setPayerPhone(e.target.value)}
+                  placeholder="07 01 02 03 04"
+                  className="input tabular-nums"
+                />
+              </div>
+              {error && <div role="alert" className="alert-error">{error}</div>}
+              <button type="submit" disabled={isSending} className="btn-primary w-full text-[15px] py-3.5">
+                {isSending ? "Envoi…" : "J'ai payé"}
+              </button>
+            </form>
             <button onClick={() => setStep("plan")} className="btn-ghost w-full">Retour au forfait</button>
           </div>
         </div>

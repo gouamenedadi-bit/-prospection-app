@@ -816,7 +816,7 @@ export default function AdminDashboard() {
                 <div className="flex justify-between items-start gap-3">
                   <div className="min-w-0">
                     <p className="font-mono text-xl font-semibold text-ink tabular-nums">{fcfa(payment.amount)} <span className="text-xs text-ink-soft font-normal">F CFA</span></p>
-                    <p className="text-sm font-semibold text-ink mt-0.5">{payment.planLabel}{payment.provider === "wave" ? " · payé par Wave (à vérifier dans Wave)" : ""}</p>
+                    <p className="text-sm font-semibold text-ink mt-0.5">{payment.planLabel}{payment.provider === "wave" ? " · payé par Wave" : ""}</p>
                   </div>
                   <span className="shrink-0 text-[12px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-gold-light text-[#B4560B]">En attente</span>
                 </div>
@@ -825,6 +825,44 @@ export default function AdminDashboard() {
                   <RoleChip role={payment.accountType} />
                   <span className="font-mono ml-auto shrink-0">{new Date(payment.createdAt).toLocaleDateString("fr-FR")}</span>
                 </div>
+                {payment.provider === "wave" && (() => {
+                  const payerPhone = payment.method && payment.method !== "wave" ? payment.method : null;
+                  const transferId = payment.transactionRef || null;
+                  return (
+                    <dl className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      <div className="rounded-xl bg-cream border border-line px-3.5 py-2.5 min-w-0">
+                        <dt className="text-xs font-semibold text-ink-soft">ID de transfert Wave</dt>
+                        <dd className="mt-0.5 flex items-center gap-2 min-w-0">
+                          {transferId ? (
+                            <>
+                              <span className="font-mono text-base font-bold text-ink break-all select-all">{transferId}</span>
+                              <button
+                                type="button"
+                                onClick={() => navigator.clipboard?.writeText(transferId)}
+                                className={`ml-auto shrink-0 text-xs font-bold text-palm hover:text-forest rounded px-1.5 py-1 ${focusRing}`}
+                                aria-label={`Copier l'ID de transfert ${transferId}`}
+                              >
+                                Copier
+                              </button>
+                            </>
+                          ) : (
+                            <span className="text-sm text-clay font-semibold">Non renseigné</span>
+                          )}
+                        </dd>
+                      </div>
+                      <div className="rounded-xl bg-cream border border-line px-3.5 py-2.5">
+                        <dt className="text-xs font-semibold text-ink-soft">Numéro Wave du payeur</dt>
+                        <dd className="mt-0.5">
+                          {payerPhone ? (
+                            <a href={`tel:${payerPhone}`} className="font-mono text-base font-bold text-ink hover:text-palm tabular-nums">{payerPhone}</a>
+                          ) : (
+                            <span className="text-sm text-clay font-semibold">Non renseigné</span>
+                          )}
+                        </dd>
+                      </div>
+                    </dl>
+                  );
+                })()}
                 <button
                   onClick={() => handleValidatePayment(payment.id)}
                   disabled={validatingId === payment.id}

@@ -152,19 +152,48 @@ export async function validatePayment(paymentId: number) {
  * « en attente » que l'administrateur valide après avoir vérifié la réception sur Wave.
  * Un seul paiement en attente par compte : un second clic renvoie le même.
  */
-export async function declareWavePayment() {
+/**
+ * Le membre signale son paiement Wave avec l'ID de transfert et le numéro qui a payé,
+ * pour que l'admin les retrouve dans Wave avant de valider.
+ * `transactionRef` contient l'ID de transfert (unique : un même ID ne sert qu'une fois),
+ * `method` contient le numéro Wave du payeur.
+ */
+export async function declareWavePayment(input: { transferId: string; payerPhone: string }) {
   const account = await getCurrentAccount();
   if (!account) {
     return { success: false, error: "Connectez-vous pour signaler votre paiement." };
   }
   const plan = PLANS["12m"];
 
+  const transferId = String(input?.transferId ?? "").trim().replace(/\s+/g, "").toUpperCase();
+  const payerPhone = String(input?.payerPhone ?? "").replace(/[^\d+]/g, "");
+  if (!/^[A-Z0-9_\-.]{6,40}$/.test(transferId)) {
+    return { success: false, error: "Saisissez l'ID de transfert tel qu'il apparaît dans Wave (au moins 6 caractères)." };
+  }
+  const digits = payerPhone.replace(/\D/g, "");
+  if (digits.length < 8 || digits.length > 15) {
+    return { success: false, error: "Saisissez le numéro Wave avec lequel vous avez payé (10 chiffres)." };
+  }
+
   try {
+    const sameRef = await prisma.payment.findUnique({ where: { transactionRef: transferId } });
+    if (sameRef && !(sameRef.accountType === account.role && sameRef.accountId === Number(account.id))) {
+      return { success: false, error: "Cet ID de transfert a déjà été utilisé. Vérifiez-le dans Wave." };
+    }
+    if (sameRef) return { success: true, paymentId: sameRef.id, alreadyDeclared: true };
+
     const existing = await prisma.payment.findFirst({
       where: { accountType: account.role, accountId: Number(account.id), status: "pending", provider: "wave" },
       orderBy: { createdAt: "desc" },
     });
-    if (existing) return { success: true, paymentId: existing.id, alreadyDeclared: true };
+    if (existing) {
+      // Déjà signalé : on complète ou corrige l'ID et le numéro.
+      const updated = await prisma.payment.update({
+        where: { id: existing.id },
+        data: { transactionRef: transferId, method: payerPhone },
+      });
+      return { success: true, paymentId: updated.id, alreadyDeclared: true };
+    }
 
     const payment = await prisma.payment.create({
       data: {
@@ -174,7 +203,8 @@ export async function declareWavePayment() {
         durationDays: plan.days,
         amount: plan.amount,
         provider: "wave",
-        method: "wave",
+        method: payerPhone,
+        transactionRef: transferId,
         status: "pending",
       },
     });
