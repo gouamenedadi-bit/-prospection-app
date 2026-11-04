@@ -18,6 +18,8 @@ export default function ProductsListClient({ products }: { products: any[] }) {
 
   return (
     <div className="space-y-4">
+      {/* Recherche figée sous l'en-tête : seule la liste défile */}
+      <div className="sticky top-14 z-30 -mx-4 px-4 pt-2 pb-3 bg-cream/95 backdrop-blur-md desk:top-0 desk:mx-0 desk:px-0 desk:pt-5 desk:-mt-5">
       <div className="relative">
         <svg className="w-5 h-5 text-ink-soft/50 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -31,6 +33,7 @@ export default function ProductsListClient({ products }: { products: any[] }) {
           className="input pl-11 pr-14"
         />
         <VoiceSearchButton onText={(text) => setSearch(text)} />
+      </div>
       </div>
 
       {filteredProducts.length === 0 ? (

@@ -94,6 +94,8 @@ export default function HealthWellness() {
         lead="Les pathologies courantes et les produits Longrich recommandés, avec leur posologie."
       />
 
+      {/* Recherche et index A–Z figés sous l'en-tête : seule la liste défile */}
+      <div className="sticky top-14 z-30 -mx-4 px-4 pt-2 pb-3 bg-cream/95 backdrop-blur-md desk:top-0 desk:mx-0 desk:px-0 desk:pt-5 desk:-mt-5">
       <div className="relative">
         <svg className="w-5 h-5 text-ink-soft/50 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
         <input
@@ -101,7 +103,7 @@ export default function HealthWellness() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           aria-label="Rechercher une maladie ou un symptôme"
-          placeholder="Rechercher une maladie ou un symptôme"
+          placeholder="Maladie ou symptôme"
           className="input pl-11 pr-14"
         />
         <VoiceSearchButton onText={(text) => setQuery(text)} />
@@ -111,7 +113,7 @@ export default function HealthWellness() {
       {groups.length > 1 && (
         <nav
           aria-label="Aller à une lettre"
-          className={`sticky top-14 desk:top-0 z-30 -mx-4 px-4 lg:mx-0 lg:px-0 py-2.5 bg-cream/90 backdrop-blur-md`}
+          className="pt-2.5"
         >
           <div className="flex gap-1.5 overflow-x-auto no-scrollbar">
             {groups.map((g) => (
@@ -128,6 +130,7 @@ export default function HealthWellness() {
           </div>
         </nav>
       )}
+      </div>
 
       <p className="text-xs text-ink-soft mt-1 mb-4" aria-live="polite">
         {sortedPathologies.length} pathologie{sortedPathologies.length > 1 ? "s" : ""}
@@ -142,7 +145,7 @@ export default function HealthWellness() {
 
       <div className="space-y-8">
         {groups.map((group) => (
-          <section key={group.letter} id={`lettre-${group.letter}`} className="scroll-mt-32 lg:scroll-mt-20" aria-labelledby={`titre-${group.letter}`}>
+          <section key={group.letter} id={`lettre-${group.letter}`} className="scroll-mt-48 desk:scroll-mt-36" aria-labelledby={`titre-${group.letter}`}>
             <div className="flex items-center gap-3 mb-3">
               <h2 id={`titre-${group.letter}`} className="font-heading text-[34px] leading-none text-rouge">{group.letter}</h2>
               <span className="h-px flex-1 bg-gradient-to-r from-rouge/30 to-transparent" aria-hidden="true" />
