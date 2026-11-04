@@ -2,11 +2,14 @@
 
 import React, { useState, useTransition } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import { registerStockiste } from "@/app/actions/auth";
 import { AuthShell, PasswordInput } from "@/components/ui";
 import { CITIES, COMMUNES } from "@/lib/places";
 
 export default function RegisterStockiste() {
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [password, setPassword] = useState("");
@@ -18,9 +21,23 @@ export default function RegisterStockiste() {
 
     startTransition(async () => {
       const result = await registerStockiste(formData);
-      if (result?.error) {
-        setError(result.error);
+      if (!result.success) {
+        setError(result.error ?? "Une erreur est survenue. Réessayez.");
+        return;
       }
+      // Compte créé : on connecte directement la personne.
+      const login = await signIn("credentials", {
+        redirect: false,
+        email: result.email,
+        password: String(formData.get("password") ?? ""),
+        role: "stockiste",
+      });
+      if (login?.error) {
+        router.push("/login");
+        return;
+      }
+      router.push("/dashboard");
+      router.refresh();
     });
   };
 

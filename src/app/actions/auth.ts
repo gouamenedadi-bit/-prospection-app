@@ -2,7 +2,6 @@
 
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
-import { redirect } from "next/navigation";
 import { TRIAL_DAYS } from "@/lib/subscription";
 import { normalizeEmail } from "@/lib/normalize";
 
@@ -58,7 +57,8 @@ export async function registerStockiste(formData: FormData) {
     return { error: "Une erreur technique est survenue. Merci de réessayer dans un instant." };
   }
 
-  redirect("/login");
+  // Le client connecte la personne juste après (signIn), puis l’envoie sur son accueil.
+  return { success: true as const, email };
 }
 
 export async function registerPartenaire(formData: FormData) {
@@ -111,5 +111,6 @@ export async function registerPartenaire(formData: FormData) {
     return { error: "Une erreur technique est survenue. Merci de réessayer dans un instant." };
   }
 
-  redirect("/login");
+  // Le client connecte la personne juste après (signIn), puis l’envoie sur son accueil.
+  return { success: true as const, email };
 }
