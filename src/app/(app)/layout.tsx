@@ -16,7 +16,8 @@ export default function AppLayout({
 }>) {
   const pathname = usePathname();
   const router = useRouter();
-  const { status } = useSession();
+  const { status, data: session } = useSession();
+  const role = session?.user?.role;
 
   const [subStatus, setSubStatus] = useState<{ isExpired: boolean; daysLeft: number } | null>(null);
   const [bannerDismissed, setBannerDismissed] = useState(false);
@@ -28,9 +29,12 @@ export default function AppLayout({
     getMySubscriptionStatus().then((res) => {
       if (res.success) {
         setSubStatus({ isExpired: res.isExpired!, daysLeft: res.daysLeft! });
+      } else if ("deleted" in res && res.deleted && (role === "stockiste" || role === "partenaire")) {
+        // Compte supprimé par l'administrateur alors que la session était ouverte.
+        signOut({ callbackUrl: "/login" });
       }
     });
-  }, [status, pathname]);
+  }, [status, pathname, role]);
 
   const isBlocked = !isExempt && subStatus?.isExpired;
   // Sur ordinateur, une personne connectée a une colonne de navigation à gauche.

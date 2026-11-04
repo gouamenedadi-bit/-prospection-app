@@ -8,7 +8,8 @@ export async function getMySubscriptionStatus() {
   try {
     const account = await getCurrentAccount();
     if (!account) {
-      return { success: false, error: "Non authentifié." };
+      // Pour un membre connecté, cela veut dire que son compte a été supprimé : le client se déconnecte.
+      return { success: false, error: "Non authentifié.", deleted: true };
     }
 
     const expiresAt =

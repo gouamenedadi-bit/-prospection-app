@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { getProducts, createProduct, updateProduct, deleteProduct } from "@/app/actions/products";
 import { getPendingPayments, validatePayment } from "@/app/actions/subscription";
-import { getAllUsers } from "@/app/actions/adminUsers";
+import { getAllUsers, deleteMember } from "@/app/actions/adminUsers";
 import { getAllAvis } from "@/app/actions/avis";
 
 // Montants en F CFA avec séparateur de milliers français ("3 120").
@@ -75,6 +75,26 @@ export default function AdminDashboard() {
   const [memberFilter, setMemberFilter] = useState<"all" | "Partenaire" | "Stockiste">("all");
   const [memberSearch, setMemberSearch] = useState("");
   const [isLoadingUsers, setIsLoadingUsers] = useState(true);
+  const [memberToDelete, setMemberToDelete] = useState<any | null>(null);
+  const [isDeletingMember, setIsDeletingMember] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
+  const [deleteNotice, setDeleteNotice] = useState("");
+
+  const confirmDeleteMember = async () => {
+    if (!memberToDelete) return;
+    setIsDeletingMember(true);
+    setDeleteError("");
+    const res = await deleteMember(memberToDelete.id);
+    setIsDeletingMember(false);
+    if (!res.success) {
+      setDeleteError(res.error || "La suppression n'a pas abouti. Réessayez.");
+      return;
+    }
+    setAllUsers((list) => list.filter((u) => u.id !== memberToDelete.id));
+    setDeleteNotice(`Le compte de ${memberToDelete.name} a été supprimé.`);
+    setMemberToDelete(null);
+    setTimeout(() => setDeleteNotice(""), 4000);
+  };
 
   const loadUsers = async () => {
     setIsLoadingUsers(true);
@@ -712,14 +732,25 @@ export default function AdminDashboard() {
                           <span>Inscrit le {new Date(user.createdAt).toLocaleDateString("fr-FR")}</span>
                         </p>
                       </div>
-                      <span
-                        className={`shrink-0 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-bold ${
-                          user.isActive ? "bg-palm-light text-forest" : "bg-clay-light text-clay"
-                        }`}
-                      >
-                        <span className={`w-2 h-2 rounded-full ${user.isActive ? "bg-palm" : "bg-clay"}`} aria-hidden="true" />
-                        {user.isActive ? "Actif" : "Expiré"}
-                      </span>
+                      <div className="shrink-0 flex flex-col sm:flex-row items-end sm:items-center gap-2">
+                        <span
+                          className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-bold ${
+                            user.isActive ? "bg-palm-light text-forest" : "bg-clay-light text-clay"
+                          }`}
+                        >
+                          <span className={`w-2 h-2 rounded-full ${user.isActive ? "bg-palm" : "bg-clay"}`} aria-hidden="true" />
+                          {user.isActive ? "Actif" : "Expiré"}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => { setDeleteError(""); setMemberToDelete(user); }}
+                          aria-label={`Supprimer le compte de ${user.name}`}
+                          className={`inline-flex items-center gap-1.5 rounded-full border border-clay/30 bg-white px-3 py-1.5 text-sm font-bold text-clay transition-colors hover:bg-clay hover:text-white hover:border-clay ${focusRing}`}
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6" /></svg>
+                          Supprimer
+                        </button>
+                      </div>
                     </li>
                   );
                 })}
@@ -727,6 +758,45 @@ export default function AdminDashboard() {
             );
           })()}
         </section>
+      )}
+
+      {deleteNotice && (
+        <div role="status" className="fixed bottom-24 lg:bottom-8 left-1/2 -translate-x-1/2 z-[110] rounded-2xl bg-ink text-white px-5 py-3 text-[15px] font-semibold shadow-xl pop-in">
+          {deleteNotice}
+        </div>
+      )}
+
+      {/* Confirmation de suppression d'un membre */}
+      {memberToDelete && (
+        <div className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="suppr-titre">
+          <div className="absolute inset-0 bg-ink/40 backdrop-blur-[2px]" onClick={() => !isDeletingMember && setMemberToDelete(null)} />
+          <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl p-6 pop-in">
+            <div className="w-12 h-12 rounded-full bg-clay-light text-clay flex items-center justify-center" aria-hidden="true">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6" /></svg>
+            </div>
+            <h3 id="suppr-titre" className="font-heading text-[22px] text-ink mt-4">Supprimer ce compte ?</h3>
+            <p className="text-[15px] text-ink-soft mt-2 leading-relaxed">
+              Le compte de <strong className="text-ink capitalize">{String(memberToDelete.name).toLowerCase()}</strong> ({memberToDelete.role.toLowerCase()}, {memberToDelete.phone}) sera
+              supprimé définitivement, avec ses avis et ses paiements en attente. La personne ne pourra plus se connecter.
+              Cette action ne peut pas être annulée.
+            </p>
+            {deleteError && <div role="alert" className="alert-error mt-4">{deleteError}</div>}
+            <div className="flex flex-col-reverse sm:flex-row gap-2.5 mt-6">
+              <button type="button" onClick={() => setMemberToDelete(null)} disabled={isDeletingMember} className="btn-secondary flex-1">
+                Annuler
+              </button>
+              <button
+                type="button"
+                onClick={confirmDeleteMember}
+                disabled={isDeletingMember}
+                autoFocus
+                className={`flex-1 inline-flex items-center justify-center rounded-xl px-4 py-3 text-sm font-bold bg-clay text-white hover:brightness-95 disabled:opacity-50 transition ${focusRing}`}
+              >
+                {isDeletingMember ? "Suppression…" : "Supprimer le compte"}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* ───── PAIEMENTS ───── */}
