@@ -55,7 +55,7 @@ export default function PartnerDashboard() {
   };
 
   return (
-    <div className="space-y-5 pb-4 lg:max-w-2xl">
+    <div className="space-y-5 pb-4 lg:max-w-2xl lg:mx-auto">
       <PageHeader eyebrow="Espace partenaire" title="Mon profil" lead="Vos informations personnelles." />
 
       <form onSubmit={triggerSave} className="card p-5 space-y-4">

@@ -90,7 +90,7 @@ export default function PartnerSettings() {
   const initials = `${formData.firstName[0] || ""}${formData.lastName[0] || ""}`.toUpperCase() || "P";
 
   return (
-    <div className="space-y-5 pb-4 lg:max-w-2xl">
+    <div className="space-y-5 pb-4 lg:max-w-2xl lg:mx-auto">
       <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink-soft hover:text-forest rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold">
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
         Accueil

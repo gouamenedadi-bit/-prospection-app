@@ -79,7 +79,7 @@ export default function AbonnementPage() {
   };
 
   return (
-    <div className="space-y-5 pb-4 lg:max-w-2xl">
+    <div className="space-y-5 pb-4 lg:max-w-2xl lg:mx-auto">
       <style dangerouslySetInnerHTML={{ __html: `nav[data-bottom-nav], aside { display: none !important; }` }} />
 
       <header className="page-head">
