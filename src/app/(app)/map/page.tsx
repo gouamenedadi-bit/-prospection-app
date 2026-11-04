@@ -63,8 +63,8 @@ export default function MapPage() {
               }}
             >
               <svg width="30" height="38" viewBox="0 0 30 38" className="cursor-pointer drop-shadow-md hover:scale-110 transition-transform" aria-hidden="true">
-                <path d="M15 37C15 37 28 23.5 28 14A13 13 0 0 0 2 14C2 23.5 15 37 15 37Z" fill="#173B2C" stroke="#F6F2E7" strokeWidth="2" />
-                <circle cx="15" cy="14" r="5" fill="#D98B2B" />
+                <path d="M15 37C15 37 28 23.5 28 14A13 13 0 0 0 2 14C2 23.5 15 37 15 37Z" fill="#0C7A4E" stroke="#F6FAF7" strokeWidth="2" />
+                <circle cx="15" cy="14" r="5" fill="#EF7B1A" />
               </svg>
             </Marker>
           ))}

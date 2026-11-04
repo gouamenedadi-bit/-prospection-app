@@ -20,7 +20,7 @@ const labelCls = "block text-xs font-semibold text-ink-soft mb-1.5";
 function Stamp({ pv }: { pv: unknown }) {
   // Le "cachet" PV : la valeur en points, signature visuelle du catalogue.
   return (
-    <span className="inline-flex items-baseline gap-0.5 px-1.5 py-0.5 rounded-md border border-dashed border-gold bg-gold-light text-[#8A5512] font-mono text-[11px] font-semibold leading-none whitespace-nowrap">
+    <span className="inline-flex items-baseline gap-0.5 px-1.5 py-0.5 rounded-md border border-dashed border-gold bg-gold-light text-[#B4560B] font-mono text-[11px] font-semibold leading-none whitespace-nowrap">
       {pvFmt(pv)}
       <span className="text-[9px] tracking-wider">PV</span>
     </span>
@@ -32,7 +32,7 @@ function RoleChip({ role }: { role: string }) {
   return (
     <span
       className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
-        isStockiste ? "bg-gold-light text-[#8A5512]" : "bg-palm-light text-palm"
+        isStockiste ? "bg-gold-light text-[#B4560B]" : "bg-palm-light text-palm"
       }`}
     >
       {isStockiste ? "Stockiste" : "Partenaire"}
@@ -655,7 +655,7 @@ export default function AdminDashboard() {
                     <p className="font-mono text-xl font-semibold text-ink tabular-nums">{fcfa(payment.amount)} <span className="text-xs text-ink-soft font-normal">F CFA</span></p>
                     <p className="text-sm font-semibold text-ink mt-0.5">{payment.planLabel}</p>
                   </div>
-                  <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-gold-light text-[#8A5512]">En attente</span>
+                  <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-gold-light text-[#B4560B]">En attente</span>
                 </div>
                 <div className="flex items-center gap-2 mt-2 text-xs text-ink-soft">
                   <span className="font-semibold text-ink truncate">{payment.accountName}</span>

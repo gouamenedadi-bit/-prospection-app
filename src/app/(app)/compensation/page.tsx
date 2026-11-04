@@ -43,7 +43,7 @@ function Icon({ name, className }: { name: string; className?: string }) {
 function SectionTitle({ title, range, dark = false }: { title: string; range: string; dark?: boolean }) {
   return (
     <div className="flex items-center gap-3 mb-3">
-      <h3 className={`font-heading text-[21px] leading-none ${dark ? "text-cream" : "text-ink"}`}>{title}</h3>
+      <h3 className={`font-heading text-[21px] leading-none ${dark ? "text-cream" : "text-orange"}`}>{title}</h3>
       <span className={`h-px flex-1 ${dark ? "bg-white/15" : "bg-line"}`} aria-hidden="true" />
       <span className={`text-xs ${dark ? "text-cream/60" : "text-ink-soft"}`}>{range}</span>
     </div>
@@ -100,7 +100,7 @@ export default function CompensationPlanPage() {
                   className="lift-card accent-gold rise-in rounded-2xl border border-white/10 bg-white/[0.05] flex items-center gap-4 p-4 pl-5"
                   style={{ ["--i" as string]: i + 7 } as React.CSSProperties}
                 >
-                  <span className="lift-badge relative w-12 h-12 shrink-0 rounded-2xl bg-gold text-forest-deep flex items-center justify-center shadow-[0_6px_18px_-6px_rgb(217_139_43/0.6)]">
+                  <span className="lift-badge relative w-12 h-12 shrink-0 rounded-2xl bg-gold text-forest-deep flex items-center justify-center shadow-[0_6px_18px_-6px_rgb(239_123_26/0.6)]">
                     <Icon name={g.icon} className="w-6 h-6" />
                     <span className="absolute -top-1.5 -right-1.5 min-w-5 h-5 px-1 rounded-full bg-cream text-forest-deep text-[10px] font-bold flex items-center justify-center ring-2 ring-forest-deep">
                       {g.num}

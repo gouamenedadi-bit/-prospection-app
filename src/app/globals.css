@@ -8,35 +8,36 @@
 }
 
 :root {
-  --background: #F6F2E7; /* cream */
-  --foreground: #20231F; /* ink */
+  --background: #F6FAF7; /* blanc légèrement teinté vert */
+  --foreground: #17221C; /* ink */
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-forest: #173B2C;
-  --color-forest-deep: #0F2A1F;
-  --color-palm: #1F6E4A;
-  --color-palm-light: #E7F2EB;
-  --color-gold: #D98B2B;
-  --color-gold-light: #FBEAD2;
-  --color-gold-deep: #8A5512;
+  --color-forest: #0C7A4E;
+  --color-forest-deep: #075A39;
+  --color-palm: #12A06A;
+  --color-palm-light: #E3F5EC;
+  --color-gold: #EF7B1A;
+  --color-gold-light: #FDEBD8;
+  --color-gold-deep: #B4560B;
+  --color-orange: #E2690B;      /* titres (orange du logo Longrich, lisible sur fond clair) */
   --color-clay: #B5552B;
   --color-clay-light: #FBE7DE;
   --color-rouge: #B3261E;       /* noms des pathologies (page Soins) */
   --color-rouge-light: #FCEBE8;
-  --color-cream: #F6F2E7;
-  --color-cream-deep: #EFE8D6;
-  --color-ink: #20231F;
-  --color-ink-soft: #5B6358;
-  --color-line: #E1DAC4;
+  --color-cream: #F6FAF7;
+  --color-cream-deep: #E8F1EC;
+  --color-ink: #17221C;
+  --color-ink-soft: #54635A;
+  --color-line: #DCE8E1;
 
   --font-sans: var(--font-manrope), sans-serif;
   --font-heading: var(--font-fraunces), serif;
   --font-mono: var(--font-plex-mono), ui-monospace, monospace;
 
-  --shadow-soft: 0 1px 2px rgb(15 42 31 / 0.04), 0 4px 16px -6px rgb(15 42 31 / 0.08);
+  --shadow-soft: 0 1px 2px rgb(7 60 40 / 0.04), 0 4px 16px -6px rgb(7 60 40 / 0.08);
 }
 
 body {
@@ -53,9 +54,9 @@ body {
   /* Titre de page : petit sur-titre doré + titre Fraunces */
   .page-head { @apply mb-5; }
   .eyebrow { @apply font-mono text-[10px] font-medium uppercase tracking-[0.18em] text-gold-deep; }
-  .page-title { @apply font-heading text-[26px] leading-tight text-ink mt-1; }
+  .page-title { @apply font-heading text-[26px] leading-tight text-orange mt-1; }
   .page-lead { @apply text-sm text-ink-soft mt-1.5 leading-relaxed; }
-  .section-title { @apply text-[15px] font-bold text-ink; }
+  .section-title { @apply text-[15px] font-bold text-orange; }
 
   /* Surfaces */
   .card { @apply bg-white rounded-2xl border border-line/70 shadow-soft; }
@@ -129,7 +130,7 @@ body {
   z-index: 1;
 }
 .lift-card:hover, .lift-card[data-open="true"] {
-  box-shadow: 0 2px 4px rgb(15 42 31 / 0.04), 0 14px 32px -14px color-mix(in srgb, var(--accent) 32%, transparent);
+  box-shadow: 0 2px 4px rgb(7 60 40 / 0.04), 0 14px 32px -14px color-mix(in srgb, var(--accent) 32%, transparent);
   border-color: color-mix(in srgb, var(--accent) 24%, transparent);
 }
 .lift-card:hover { transform: translateY(-2px); }

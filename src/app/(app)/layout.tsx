@@ -40,7 +40,7 @@ export default function AppLayout({
   return (
     <div data-desk={desk} className={`w-full ${desk ? "lg:flex lg:min-h-screen" : ""}`}>
     {desk && <SideNav />}
-    <div className={`w-full max-w-md bg-cream min-h-screen sm:shadow-[0_0_0_1px_rgb(225_218_196),0_20px_60px_-20px_rgb(15_42_31/0.25)] flex flex-col relative overflow-x-clip mx-auto ${desk ? "lg:max-w-none lg:mx-0 lg:flex-1 lg:min-w-0 lg:shadow-none" : ""}`}>
+    <div className={`w-full max-w-md bg-cream min-h-screen sm:shadow-[0_0_0_1px_rgb(220_232_225),0_20px_60px_-20px_rgb(7_60_40/0.25)] flex flex-col relative overflow-x-clip mx-auto ${desk ? "lg:max-w-none lg:mx-0 lg:flex-1 lg:min-w-0 lg:shadow-none" : ""}`}>
       {/* Header */}
       <header className={`bg-forest text-cream px-4 h-14 sticky top-0 z-50 flex items-center justify-between ${desk ? "lg:hidden" : ""}`}>
         <a href="/dashboard" className="flex items-center gap-2.5 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold">

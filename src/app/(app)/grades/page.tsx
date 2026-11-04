@@ -61,7 +61,7 @@ export default function GradesCompensations() {
           <section key={group.name}>
             <h3 className="flex items-center gap-2.5 mb-3">
               <span className={`w-2.5 h-2.5 rounded-full ${DOT[group.tone]}`} aria-hidden="true" />
-              <span className="font-heading text-xl text-ink">{group.name}</span>
+              <span className="font-heading text-xl text-orange">{group.name}</span>
               <span className="h-px flex-1 bg-line" aria-hidden="true" />
               <span className="text-xs text-ink-soft">{group.grades.length} grades</span>
             </h3>
