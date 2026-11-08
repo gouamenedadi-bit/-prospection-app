@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/ui";
-import { CITIES } from "@/lib/places";
+import { CITIES, communeForCity } from "@/lib/places";
 
 const PARTNER_COMMUNES = ["Abobo", "Adjamé", "Attécoubé", "Cocody", "Koumassi", "Marcory", "Plateau", "Port-Bouët", "Treichville", "Yopougon", "Anyama", "Bingerville", "Songon", "Commune Centrale", "Autre"].sort();
 
@@ -80,7 +80,7 @@ export default function PartnerDashboard() {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label htmlFor="pd-city" className="label">Ville</label>
-            <select id="pd-city" value={formData.city} onChange={e => setFormData({...formData, city: e.target.value})} className="input">
+            <select id="pd-city" value={formData.city} onChange={e => setFormData({...formData, city: e.target.value, commune: communeForCity(e.target.value, formData.commune)})} className="input">
               {CITIES.map(ville => <option key={ville} value={ville}>{ville}</option>)}
             </select>
           </div>

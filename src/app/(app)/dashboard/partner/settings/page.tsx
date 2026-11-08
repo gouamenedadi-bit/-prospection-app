@@ -6,7 +6,7 @@ import Link from "next/link";
 import { getPartenaireProfile, updatePartenaireProfile } from "@/app/actions/partenaires";
 import ReorderableList from "@/components/ReorderableList";
 import { PageHeader } from "@/components/ui";
-import { CITIES, COMMUNES } from "@/lib/places";
+import { CITIES, COMMUNES, communeForCity } from "@/lib/places";
 import {
   QUICK_ACCESS_DEFAULT_ORDER,
   loadQuickAccessOrder,
@@ -138,7 +138,7 @@ export default function PartnerSettings() {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label htmlFor="ps-city" className="label">Ville</label>
-            <select id="ps-city" name="city" value={formData.city} onChange={handleChange} className="input">
+            <select id="ps-city" name="city" value={formData.city} onChange={(e) => setFormData({ ...formData, city: e.target.value, commune: communeForCity(e.target.value, formData.commune) })} className="input">
               {CITIES.map((v) => <option key={v} value={v}>{v}</option>)}
             </select>
           </div>

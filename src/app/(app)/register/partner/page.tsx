@@ -6,13 +6,14 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { registerPartenaire } from "@/app/actions/auth";
 import { AuthShell, PasswordInput } from "@/components/ui";
-import { CITIES, COMMUNES } from "@/lib/places";
+import { CITIES, COMMUNES, communeForCity } from "@/lib/places";
 
 export default function RegisterPartner() {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [password, setPassword] = useState("");
+  const [commune, setCommune] = useState(COMMUNES[0]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -75,13 +76,13 @@ export default function RegisterPartner() {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label htmlFor="rp-city" className="label">Ville</label>
-            <select id="rp-city" name="city" className="input" defaultValue="Abidjan">
+            <select id="rp-city" name="city" className="input" defaultValue="Abidjan" onChange={(e) => setCommune(communeForCity(e.target.value, commune))}>
               {CITIES.map(v => <option key={v} value={v}>{v}</option>)}
             </select>
           </div>
           <div>
             <label htmlFor="rp-commune" className="label">Commune</label>
-            <select id="rp-commune" name="commune" className="input">
+            <select id="rp-commune" name="commune" className="input" value={commune} onChange={(e) => setCommune(e.target.value)}>
               {COMMUNES.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>

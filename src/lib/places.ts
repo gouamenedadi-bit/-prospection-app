@@ -7,6 +7,9 @@ const KNOWN_COMMUNES = ["Abobo", "Adjamé", "Anyama", "Attécoubé", "Bingervill
 export const OTHER_COMMUNE = "Autre";
 export const COMMUNES = [...KNOWN_COMMUNES, OTHER_COMMUNE];
 
+/** Commune à retenir quand la ville change : la liste ne couvre qu'Abidjan, ailleurs on passe sur « Autre ». */
+export const communeForCity = (city: string, current: string) => (city === "Abidjan" ? current : OTHER_COMMUNE);
+
 /** Commune à afficher ou à chercher : « Autre » ne renseigne sur aucun lieu. */
 export const realCommune = (commune?: string | null) => (commune && commune !== OTHER_COMMUNE ? commune : null);
 
