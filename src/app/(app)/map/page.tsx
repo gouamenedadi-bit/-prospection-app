@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Map, { Marker, Popup } from 'react-map-gl/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { PageHeader } from "@/components/ui";
+import { placeLabel } from "@/lib/places";
 
 // Mock data for stockistes
 const STOCKISTES = [
@@ -80,7 +81,7 @@ export default function MapPage() {
             >
               <div className="p-1">
                 <h3 className="font-bold text-forest">{selectedStockiste.name}</h3>
-                <p className="text-ink-soft mt-0.5">{selectedStockiste.city}, {selectedStockiste.commune}</p>
+                <p className="text-ink-soft mt-0.5">{placeLabel(selectedStockiste.city, selectedStockiste.commune)}</p>
                 <p className="font-mono text-ink mt-1">{selectedStockiste.phone}</p>
                 <a href="/stockistes" className="mt-2 block text-center bg-palm-light text-palm py-1.5 rounded-lg text-xs font-bold hover:bg-palm hover:text-cream transition-colors">
                   Voir les produits

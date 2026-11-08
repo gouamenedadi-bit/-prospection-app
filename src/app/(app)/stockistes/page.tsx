@@ -8,7 +8,7 @@ import { getStockisteInventory } from "@/app/actions/inventory";
 import { PageHeader } from "@/components/ui";
 import VoiceSearchButton from "@/components/VoiceSearchButton";
 import { normalize, closestPlace } from "@/lib/fuzzy";
-import { CITIES, COMMUNES } from "@/lib/places";
+import { CITIES, COMMUNES, placeLabel, realCommune } from "@/lib/places";
 
 const fcfa = (n: unknown) => (Number(n) || 0).toLocaleString("fr-FR");
 
@@ -56,7 +56,7 @@ export default function StockistesList() {
       if (res.success && res.data) {
         setStockistes(res.data.map(s => ({
           ...s,
-          location: `${s.city}, ${s.commune}`,
+          location: placeLabel(s.city, s.commune),
           contact: s.phone,
           status: "Ouvert",
           lat: s.latitude || 5.3096,
@@ -87,11 +87,11 @@ export default function StockistesList() {
     const t = normalize(term);
     if (!t) return true;
     const digits = term.replace(/\D/g, "");
-    return [st.name, st.city, st.commune, st.neighborhood].some((v) => v && normalize(String(v)).includes(t))
+    return [st.name, st.city, realCommune(st.commune), st.neighborhood].some((v) => v && normalize(String(v)).includes(t))
       || (digits.length >= 4 && String(st.contact || "").replace(/\D/g, "").includes(digits));
   };
   const directMatches = stockistes.filter((st) => matches(st, searchTerm));
-  const placeNames = Array.from(new Set([...COMMUNES, ...CITIES, ...stockistes.flatMap((st) => [st.city, st.commune, st.neighborhood]).filter(Boolean)]));
+  const placeNames = Array.from(new Set([...COMMUNES.filter((c) => realCommune(c)), ...CITIES, ...stockistes.flatMap((st) => [st.city, realCommune(st.commune), st.neighborhood]).filter(Boolean)]));
   const correctedPlace = searchTerm.trim() && directMatches.length === 0 ? closestPlace(searchTerm, placeNames) : null;
   const filteredStockistes = correctedPlace ? stockistes.filter((st) => matches(st, correctedPlace)) : directMatches;
 
@@ -145,7 +145,7 @@ export default function StockistesList() {
               >
                 <div className="p-1">
                   <h3 className="font-bold text-forest">{selectedStockiste.name}</h3>
-                  <p className="text-ink-soft mt-0.5">{selectedStockiste.city}, {selectedStockiste.commune}</p>
+                  <p className="text-ink-soft mt-0.5">{placeLabel(selectedStockiste.city, selectedStockiste.commune)}</p>
                   <p className="font-mono text-ink mt-1">{selectedStockiste.contact}</p>
                 </div>
               </Popup>
