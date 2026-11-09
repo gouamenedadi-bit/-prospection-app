@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { pickTopStocks } from "@/lib/topStocks";
+import { getContentAccess } from "@/lib/authz";
 
 async function requireOwnStockiste(id: number | string) {
   const session = await getServerSession(authOptions);
@@ -52,15 +53,18 @@ export async function updateStock(stockisteId: number | string, produitId: numbe
 
 /**
  * Pour chaque produit en stock, le seul stockiste qui en a le plus : en cas de pénurie,
- * on sait qui appeler. Réservé aux personnes connectées (contient des téléphones).
+ * on sait qui appeler. Réservé aux abonnements actifs (contient des téléphones).
  */
 export async function getTopStocks() {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) {
-    return { success: false as const, error: "Connectez-vous pour voir où trouver les produits." };
-  }
-
   try {
+    const access = await getContentAccess();
+    if (access === "none") {
+      return { success: false as const, error: "Connectez-vous pour voir où trouver les produits." };
+    }
+    if (access === "expired") {
+      return { success: false as const, error: "Votre abonnement est terminé. Renouvelez-le pour voir où trouver les produits." };
+    }
+
     const rows = await prisma.inventory.findMany({
       where: { quantity: { gt: 0 } },
       select: {

@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
+import { getSubscriptionExpiry } from "@/lib/subscription";
 
 export async function requireAdmin() {
   const session = await getServerSession(authOptions);
@@ -23,4 +24,18 @@ export async function getCurrentAccount() {
       : await prisma.partenaire.findUnique({ where: { id }, select: { id: true } });
   if (!exists) return null;
   return { id: session.user.id, role };
+}
+
+/**
+ * Droit d'accès aux contenus réservés, vérifié côté serveur.
+ * « none » : pas connecté, ou compte supprimé. « expired » : abonnement terminé.
+ */
+export async function getContentAccess(): Promise<"ok" | "none" | "expired"> {
+  const session = await getServerSession(authOptions);
+  const role = session?.user?.role;
+  if (role === "admin") return "ok";
+  if (role !== "stockiste" && role !== "partenaire") return "none";
+  const expiresAt = await getSubscriptionExpiry(role, Number(session!.user.id));
+  if (!expiresAt) return "none";
+  return expiresAt.getTime() > Date.now() ? "ok" : "expired";
 }
