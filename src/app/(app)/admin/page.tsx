@@ -7,6 +7,8 @@ import { getProducts, createProduct, updateProduct, deleteProduct } from "@/app/
 import { getPendingPayments, validatePayment } from "@/app/actions/subscription";
 import { getAllUsers, deleteMember, extendMember } from "@/app/actions/adminUsers";
 import { getAllAvis } from "@/app/actions/avis";
+import { getAnnonces } from "@/app/actions/annonces";
+import AnnoncesAdmin from "./AnnoncesAdmin";
 
 // Montants en F CFA avec séparateur de milliers français ("3 120").
 const fcfa = (n: unknown) => (Number(n) || 0).toLocaleString("fr-FR");
@@ -80,6 +82,14 @@ export default function AdminDashboard() {
   const [deleteError, setDeleteError] = useState("");
   const [deleteNotice, setDeleteNotice] = useState("");
   const [extendingId, setExtendingId] = useState<string | null>(null);
+  const [annonceCount, setAnnonceCount] = useState(0);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    getAnnonces().then((res) => {
+      if (res.success && res.data) setAnnonceCount(res.data.length);
+    });
+  }, [isAuthenticated]);
 
   const extendAccess = async (user: any, days: number) => {
     setExtendingId(user.id);
@@ -385,6 +395,7 @@ export default function AdminDashboard() {
     { id: "products", label: "Catalogue", count: products.length, alert: false },
     { id: "users", label: "Membres", count: allUsers.length, alert: false },
     { id: "payments", label: "Paiements", count: pendingCount, alert: pendingCount > 0 },
+    { id: "annonces", label: "Annonces", count: annonceCount, alert: false },
     { id: "avis", label: "Avis", count: allAvis.length, alert: false },
   ];
 
@@ -467,7 +478,7 @@ export default function AdminDashboard() {
       </section>
 
       {/* Onglets */}
-      <div role="tablist" aria-label="Sections de l'administration" className="grid grid-cols-4 gap-1.5 bg-white border border-line p-1.5 rounded-2xl shadow-sm rise-in" style={{ ["--i" as string]: 6 } as React.CSSProperties}>
+      <div role="tablist" aria-label="Sections de l'administration" className="grid grid-cols-3 lg:grid-cols-5 gap-1.5 bg-white border border-line p-1.5 rounded-2xl shadow-sm rise-in" style={{ ["--i" as string]: 6 } as React.CSSProperties}>
         {tabs.map((tab) => {
           const active = activeTab === tab.id;
           return (
@@ -903,6 +914,8 @@ export default function AdminDashboard() {
           )}
         </section>
       )}
+
+      {activeTab === "annonces" && <AnnoncesAdmin onCount={setAnnonceCount} />}
 
       {/* ───── AVIS ───── */}
       {activeTab === "avis" && (

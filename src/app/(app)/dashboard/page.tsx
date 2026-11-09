@@ -1,7 +1,10 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import QuickAccessGrid from "@/components/QuickAccessGrid";
+import { getAnnonces } from "@/app/actions/annonces";
+import { annonceCategory, formatEventDate, type Annonce } from "@/lib/annonces";
 
 export default function Home() {
   const { data: session } = useSession();
@@ -9,6 +12,13 @@ export default function Home() {
   const isAdmin = session?.user?.role === "admin";
   const settingsHref = isStockiste ? "/dashboard/stockiste" : "/dashboard/partner/settings";
   const firstName = session?.user?.name?.split(" ")[0];
+  const [annonces, setAnnonces] = useState<Annonce[]>([]);
+
+  useEffect(() => {
+    getAnnonces(3).then((res) => {
+      if (res.success && res.data) setAnnonces(res.data);
+    });
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -67,10 +77,25 @@ export default function Home() {
 
       {/* Actualités */}
       <section>
-        <h3 className="section-title mb-3">Dernières informations</h3>
-        <div className="card p-5 text-center rise-in" style={{ ["--i" as string]: 8 } as React.CSSProperties}>
-          <p className="text-sm text-ink-soft">Aucune nouveauté pour le moment. Les annonces du réseau apparaîtront ici.</p>
+        <div className="flex items-baseline justify-between gap-3 mb-3">
+          <h3 className="section-title">Dernières informations</h3>
+          {annonces.length > 0 && <a href="/annonces" className="text-sm font-bold text-palm shrink-0">Tout voir</a>}
         </div>
+        {annonces.length === 0 ? (
+          <div className="card p-5 text-center rise-in" style={{ ["--i" as string]: 8 } as React.CSSProperties}>
+            <p className="text-sm text-ink-soft">Aucune nouveauté pour le moment. Les annonces du réseau apparaîtront ici.</p>
+          </div>
+        ) : (
+          <div className="card divide-y divide-line rise-in" style={{ ["--i" as string]: 8 } as React.CSSProperties}>
+            {annonces.map((a) => (
+              <a key={a.id} href="/annonces" className="block px-4 py-3.5 hover:bg-cream/60 transition-colors first:rounded-t-2xl last:rounded-b-2xl">
+                <span className={`inline-block rounded-full px-2.5 py-0.5 text-[13px] font-bold ${annonceCategory(a.category).chip}`}>{annonceCategory(a.category).label}</span>
+                <p className="font-bold text-[17px] text-ink mt-1 break-words">{a.title}</p>
+                {a.eventDate && <p className="text-[15px] text-ink-soft mt-0.5 first-letter:uppercase">{formatEventDate(a.eventDate)}</p>}
+              </a>
+            ))}
+          </div>
+        )}
       </section>
     </div>
   );
