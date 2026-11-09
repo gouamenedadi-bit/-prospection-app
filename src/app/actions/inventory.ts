@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { pickTopStocks } from "@/lib/topStocks";
 
 async function requireOwnStockiste(id: number | string) {
   const session = await getServerSession(authOptions);
@@ -46,6 +47,33 @@ export async function updateStock(stockisteId: number | string, produitId: numbe
   } catch (error: any) {
     console.error("Erreur lors de la mise à jour du stock:", error);
     return { success: false, error: "Impossible de mettre à jour le stock." };
+  }
+}
+
+/**
+ * Pour chaque produit en stock, le seul stockiste qui en a le plus : en cas de pénurie,
+ * on sait qui appeler. Réservé aux personnes connectées (contient des téléphones).
+ */
+export async function getTopStocks() {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) {
+    return { success: false as const, error: "Connectez-vous pour voir où trouver les produits." };
+  }
+
+  try {
+    const rows = await prisma.inventory.findMany({
+      where: { quantity: { gt: 0 } },
+      select: {
+        quantity: true,
+        stockisteId: true,
+        produit: { select: { id: true, name: true, image: true } },
+        stockiste: { select: { name: true, phone: true, city: true, commune: true, neighborhood: true } },
+      },
+    });
+    return { success: true as const, data: pickTopStocks(rows) };
+  } catch (error) {
+    console.error("Erreur getTopStocks:", error);
+    return { success: false as const, error: "Impossible de charger les stocks. Réessayez." };
   }
 }
 

@@ -46,6 +46,14 @@ export const NAV_ITEMS: NavItem[] = [
     ),
   },
   {
+    id: "ou-trouver",
+    href: "/ou-trouver",
+    label: "Où trouver",
+    icon: (
+      <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M21 21l-5.2-5.2M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z" /></svg>
+    ),
+  },
+  {
     id: "products",
     href: "/stockiste/products",
     label: "Produits",

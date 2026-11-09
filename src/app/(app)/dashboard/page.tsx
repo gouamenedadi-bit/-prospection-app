@@ -58,6 +58,18 @@ export default function Home() {
         </section>
       )}
 
+      {/* Pénurie : où trouver un produit */}
+      <a href="/ou-trouver" className="card flex items-center gap-3.5 p-4 hover:bg-cream/60 transition-colors rise-in" style={{ ["--i" as string]: 2 } as React.CSSProperties}>
+        <span className="w-11 h-11 shrink-0 rounded-xl bg-gold-light text-gold-deep flex items-center justify-center" aria-hidden="true">
+          <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M21 21l-5.2-5.2M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z" /></svg>
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block font-bold text-[17px] text-ink">Un produit manque ?</span>
+          <span className="block text-[15px] text-ink-soft">Voyez quel stockiste en a le plus.</span>
+        </span>
+        <span className="text-ink-soft/50" aria-hidden="true">›</span>
+      </a>
+
       {/* Accès rapides */}
       <section>
         <div className="flex items-center justify-between mb-3">
