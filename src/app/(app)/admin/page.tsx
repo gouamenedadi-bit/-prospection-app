@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { getProducts, createProduct, updateProduct, deleteProduct } from "@/app/actions/products";
 import { getPendingPayments, validatePayment } from "@/app/actions/subscription";
-import { getAllUsers, deleteMember } from "@/app/actions/adminUsers";
+import { getAllUsers, deleteMember, extendMember } from "@/app/actions/adminUsers";
 import { getAllAvis } from "@/app/actions/avis";
 
 // Montants en F CFA avec séparateur de milliers français ("3 120").
@@ -79,6 +79,21 @@ export default function AdminDashboard() {
   const [isDeletingMember, setIsDeletingMember] = useState(false);
   const [deleteError, setDeleteError] = useState("");
   const [deleteNotice, setDeleteNotice] = useState("");
+  const [extendingId, setExtendingId] = useState<string | null>(null);
+
+  const extendAccess = async (user: any, days: number) => {
+    setExtendingId(user.id);
+    const res = await extendMember(user.id, days);
+    setExtendingId(null);
+    if (!res.success) {
+      setDeleteNotice(res.error || "La prolongation n'a pas abouti. Réessayez.");
+    } else {
+      setAllUsers((list) => list.map((u) => (u.id === user.id ? { ...u, isActive: true } : u)));
+      const until = new Date(res.expiresAt!).toLocaleDateString("fr-FR");
+      setDeleteNotice(`Accès de ${user.name} prolongé jusqu'au ${until}.`);
+    }
+    setTimeout(() => setDeleteNotice(""), 4000);
+  };
 
   const confirmDeleteMember = async () => {
     if (!memberToDelete) return;
@@ -711,7 +726,7 @@ export default function AdminDashboard() {
                   return (
                     <li
                       key={`${user.role}-${user.id}`}
-                      className="rise-in group px-5 sm:px-6 py-4 flex items-center gap-4 transition-colors hover:bg-palm-light/50"
+                      className="rise-in group px-5 sm:px-6 py-4 flex flex-wrap sm:flex-nowrap items-center gap-x-4 gap-y-3 transition-colors hover:bg-palm-light/50"
                       style={{ ["--i" as string]: i } as React.CSSProperties}
                     >
                       <span
@@ -732,7 +747,7 @@ export default function AdminDashboard() {
                           <span>Inscrit le {new Date(user.createdAt).toLocaleDateString("fr-FR")}</span>
                         </p>
                       </div>
-                      <div className="shrink-0 flex flex-col sm:flex-row items-end sm:items-center gap-2">
+                      <div className="w-full sm:w-auto sm:shrink-0 flex flex-wrap items-center justify-end gap-2">
                         <span
                           className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-bold ${
                             user.isActive ? "bg-palm-light text-forest" : "bg-clay-light text-clay"
@@ -741,6 +756,19 @@ export default function AdminDashboard() {
                           <span className={`w-2 h-2 rounded-full ${user.isActive ? "bg-palm" : "bg-clay"}`} aria-hidden="true" />
                           {user.isActive ? "Actif" : "Expiré"}
                         </span>
+                        {!user.isActive && (
+                          <select
+                            value=""
+                            disabled={extendingId === user.id}
+                            onChange={(e) => e.target.value && extendAccess(user, Number(e.target.value))}
+                            aria-label={`Prolonger l'accès de ${user.name}`}
+                            className={`rounded-full border border-palm/30 bg-white px-3 py-1.5 text-sm font-bold text-palm cursor-pointer transition-colors hover:bg-palm-light disabled:opacity-60 ${focusRing}`}
+                          >
+                            <option value="">{extendingId === user.id ? "Envoi…" : "Prolonger"}</option>
+                            <option value="14">14 jours</option>
+                            <option value="30">1 mois</option>
+                          </select>
+                        )}
                         <button
                           type="button"
                           onClick={() => { setDeleteError(""); setMemberToDelete(user); }}

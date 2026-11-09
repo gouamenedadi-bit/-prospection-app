@@ -45,6 +45,44 @@ export async function getAllUsers() {
 }
 
 /**
+ * Redonne un accès temporaire à un membre (14 jours ou 1 mois), sans paiement.
+ * Le délai part d'aujourd'hui si l'accès est terminé, sinon de sa date de fin.
+ */
+export async function extendMember(memberId: string, days: number) {
+  try {
+    await requireAdmin();
+
+    if (days !== 14 && days !== 30) return { success: false, error: "Durée invalide." };
+    const match = /^(stockiste|partenaire)-(\d+)$/.exec(String(memberId));
+    if (!match) return { success: false, error: "Membre introuvable." };
+    const accountType = match[1];
+    const id = Number(match[2]);
+
+    const select = { subscriptionExpiresAt: true };
+    const account =
+      accountType === "stockiste"
+        ? await prisma.stockiste.findUnique({ where: { id }, select })
+        : await prisma.partenaire.findUnique({ where: { id }, select });
+    if (!account) return { success: false, error: "Ce membre n'existe plus." };
+
+    const now = new Date();
+    const base = account.subscriptionExpiresAt > now ? account.subscriptionExpiresAt : now;
+    const subscriptionExpiresAt = new Date(base.getTime() + days * 24 * 60 * 60 * 1000);
+
+    if (accountType === "stockiste") {
+      await prisma.stockiste.update({ where: { id }, data: { subscriptionExpiresAt } });
+    } else {
+      await prisma.partenaire.update({ where: { id }, data: { subscriptionExpiresAt } });
+    }
+
+    return { success: true, expiresAt: subscriptionExpiresAt.toISOString() };
+  } catch (error) {
+    console.error("Erreur extendMember:", error);
+    return { success: false, error: "La prolongation n'a pas abouti. Réessayez." };
+  }
+}
+
+/**
  * Supprime définitivement un compte membre (compte d'essai, abonnement non reconduit…).
  * Supprime aussi ce qui n'a de sens qu'avec le compte : avis, paiements en attente,
  * liens de réinitialisation, formations et stock (stockiste).
