@@ -77,10 +77,11 @@ export async function getTopStocks() {
   }
 }
 
-// Récupère tout l'inventaire d'un stockiste, en incluant les infos des produits
-// Lecture publique : les partenaires consultent le stock des stockistes avant achat.
+// Récupère tout l'inventaire d'un stockiste. Réservé à lui-même : les autres ne voient
+// que le stock le plus élevé de chaque produit (getTopStocks).
 export async function getStockisteInventory(stockisteId: number | string) {
   try {
+    await requireOwnStockiste(stockisteId);
     const sId = typeof stockisteId === "string" ? parseInt(stockisteId) : stockisteId;
     
     const inventory = await prisma.inventory.findMany({

@@ -12,7 +12,7 @@ const fcfa = (n: number) => n.toLocaleString("fr-FR");
 const INCLUDED = [
   "Catalogue complet : prix, PV et posologie",
   "Guide Soins & bien-être par pathologie",
-  "Carte des stockistes et leurs produits",
+  "Carte des stockistes et où trouver chaque produit",
   "Grades et plan de compensation",
 ];
 

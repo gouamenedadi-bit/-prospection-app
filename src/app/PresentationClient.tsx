@@ -519,7 +519,7 @@ footer{padding:64px 0 36px;}
         <div className="f-text">
           <span className="f-num">01</span>
           <h3>Localisez le bureau le plus proche</h3>
-          <p>Recherchez par ville, commune ou quartier et repérez en un instant les prospections Longrich autour de vous, avec leur distance et leurs produits disponibles.</p>
+          <p>Recherchez par ville, commune ou quartier et repérez en un instant les prospections Longrich autour de vous, avec leur distance et leurs coordonnées.</p>
         </div>
         <div className="f-visual">
           <div className="mini-card">

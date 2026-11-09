@@ -4,13 +4,10 @@ import { useState, useEffect, useRef } from "react";
 import Map, { Marker, Popup, MapRef } from 'react-map-gl/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { getAllStockistes } from "@/app/actions/stockistes";
-import { getStockisteInventory } from "@/app/actions/inventory";
 import { PageHeader } from "@/components/ui";
 import VoiceSearchButton from "@/components/VoiceSearchButton";
 import { normalize, closestPlace } from "@/lib/fuzzy";
 import { CITIES, COMMUNES, placeLabel, realCommune } from "@/lib/places";
-
-const fcfa = (n: unknown) => (Number(n) || 0).toLocaleString("fr-FR");
 
 function Pin({ active }: { active?: boolean }) {
   return (
@@ -41,10 +38,8 @@ export default function StockistesList() {
   const [stockistes, setStockistes] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Modal d'inventaire
-  const [showInventory, setShowInventory] = useState(false);
-  const [inventoryItems, setInventoryItems] = useState<any[]>([]);
-  const [isLoadingInventory, setIsLoadingInventory] = useState(false);
+  // Fiche du stockiste : coordonnées seulement, ses quantités ne sont pas publiques
+  const [showDetail, setShowDetail] = useState(false);
 
   // Utilisation de la clé depuis les variables d'environnement
   const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || "";
@@ -68,17 +63,9 @@ export default function StockistesList() {
     loadStockistes();
   }, []);
 
-  const handleStockisteClick = async (stockiste: any) => {
+  const handleStockisteClick = (stockiste: any) => {
     setSelectedStockiste(stockiste);
-    setShowInventory(true);
-    setIsLoadingInventory(true);
-    setInventoryItems([]);
-
-    const res = await getStockisteInventory(stockiste.id);
-    if (res.success && res.data) {
-      setInventoryItems(res.data);
-    }
-    setIsLoadingInventory(false);
+    setShowDetail(true);
   };
 
   // Recherche sans accents ni majuscules. Si rien ne correspond, on essaie la commune ou la ville
@@ -134,7 +121,7 @@ export default function StockistesList() {
               </Marker>
             ))}
 
-            {selectedStockiste && !showInventory && (
+            {selectedStockiste && !showDetail && (
               <Popup
                 longitude={selectedStockiste.lng}
                 latitude={selectedStockiste.lat}
@@ -204,7 +191,7 @@ export default function StockistesList() {
                     <span className="block text-xs text-ink-soft mt-0.5 truncate">{stockiste.location}</span>
                     <span className="block font-mono text-xs text-forest mt-0.5">{stockiste.contact}</span>
                   </span>
-                  <span className="shrink-0 text-xs font-bold text-palm">Produits <span className="lift-arrow inline-block" aria-hidden="true">›</span></span>
+                  <span className="shrink-0 text-xs font-bold text-palm">Contact <span className="lift-arrow inline-block" aria-hidden="true">›</span></span>
                 </button>
               </li>
             ))}
@@ -221,67 +208,27 @@ export default function StockistesList() {
         </div>
       </div>
 
-      {/* Inventaire du stockiste */}
-      {showInventory && selectedStockiste && (
-        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center" role="dialog" aria-modal="true" aria-labelledby="inv-title">
-          <div className="absolute inset-0 bg-forest-deep/50 backdrop-blur-[2px]" onClick={() => setShowInventory(false)} />
-          <div className="relative bg-cream w-full max-w-md max-h-[85vh] flex flex-col overflow-hidden rounded-t-3xl sm:rounded-3xl shadow-2xl motion-safe:animate-in motion-safe:slide-in-from-bottom motion-safe:duration-300">
+      {/* Fiche du stockiste */}
+      {showDetail && selectedStockiste && (
+        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center" role="dialog" aria-modal="true" aria-labelledby="st-title">
+          <div className="absolute inset-0 bg-forest-deep/50 backdrop-blur-[2px]" onClick={() => setShowDetail(false)} />
+          <div className="relative bg-cream w-full max-w-md overflow-hidden rounded-t-3xl sm:rounded-3xl shadow-2xl motion-safe:animate-in motion-safe:slide-in-from-bottom motion-safe:duration-300">
             <div className="bg-forest-deep text-cream px-5 pt-5 pb-4 flex justify-between items-start gap-3">
               <div className="min-w-0">
-                <p className="font-mono text-[12px] uppercase tracking-[0.2em] text-gold">Produits disponibles</p>
-                <h3 id="inv-title" className="font-heading text-xl mt-1 truncate">{selectedStockiste.name}</h3>
-                <p className="text-xs text-cream/70 mt-0.5">{selectedStockiste.location} · <span className="font-mono">{selectedStockiste.contact}</span></p>
+                <p className="font-mono text-[12px] uppercase tracking-[0.2em] text-gold">Stockiste</p>
+                <h3 id="st-title" className="font-heading text-xl mt-1 break-words">{selectedStockiste.name}</h3>
+                <p className="text-[15px] text-cream/80 mt-1 break-words">
+                  {[selectedStockiste.neighborhood, selectedStockiste.location].filter(Boolean).join(", ")}
+                </p>
               </div>
-              <button onClick={() => setShowInventory(false)} aria-label="Fermer" className="p-1.5 -mr-1 rounded-full text-cream/70 hover:text-cream hover:bg-cream/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold">
+              <button onClick={() => setShowDetail(false)} aria-label="Fermer" className="p-1.5 -mr-1 rounded-full text-cream/70 hover:text-cream hover:bg-cream/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
               </button>
             </div>
-
-            <div className="p-4 overflow-y-auto flex-1">
-              {isLoadingInventory ? (
-                <div className="flex justify-center py-10" role="status" aria-label="Chargement">
-                  <div className="animate-spin rounded-full h-7 w-7 border-2 border-line border-t-palm"></div>
-                </div>
-              ) : inventoryItems.length > 0 ? (
-                <ul className="card divide-y divide-line/70 overflow-hidden">
-                  {inventoryItems.map((item, idx) => {
-                    const product = item.produit;
-                    const qty = item.quantity;
-                    const badge =
-                      qty >= 50 ? <span className="chip-palm">En stock</span>
-                      : qty < 5 ? <span className="chip-clay">Presque épuisé</span>
-                      : <span className="chip bg-cream-deep text-ink font-mono normal-case tracking-normal">{qty} en stock</span>;
-
-                    return (
-                      <li key={idx} className="flex items-center gap-3 p-3">
-                        <div className="w-12 h-12 bg-cream rounded-lg overflow-hidden shrink-0 flex items-center justify-center">
-                          {product.image ? (
-                            <img src={product.image} alt="" className="w-full h-full object-contain" loading="lazy" />
-                          ) : (
-                            <span className="text-ink-soft/50 text-xs font-bold">{product.name.substring(0, 2).toUpperCase()}</span>
-                          )}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-semibold text-[15px] text-ink line-clamp-2 leading-snug">{product.name}</h4>
-                          <p className="font-mono text-[13px] mt-1 tabular-nums">
-                            <span className="text-forest font-semibold">{fcfa(product.partnerPrice)} F</span>
-                            <span className="text-ink-soft"> · {fcfa(product.publicPrice)} F public · {product.pv} PV</span>
-                          </p>
-                        </div>
-                        <div className="shrink-0">{badge}</div>
-                      </li>
-                    );
-                  })}
-                </ul>
-              ) : (
-                <div className="card p-6 text-center text-sm text-ink-soft">
-                  Ce stockiste n&apos;a pas encore renseigné ses produits. Appelez-le au <span className="font-mono text-ink">{selectedStockiste.contact}</span> pour vérifier la disponibilité.
-                </div>
-              )}
-            </div>
-
-            <div className="p-4 pt-0">
-              <button onClick={() => setShowInventory(false)} className="btn-secondary w-full">Fermer</button>
+            <div className="p-4 space-y-2.5">
+              <a href={`tel:${selectedStockiste.contact}`} className="btn-primary w-full">Appeler le {selectedStockiste.contact}</a>
+              <a href="/ou-trouver" className="btn-secondary w-full">Chercher un produit</a>
+              <button onClick={() => setShowDetail(false)} className="btn-ghost w-full">Fermer</button>
             </div>
           </div>
         </div>
