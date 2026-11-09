@@ -87,7 +87,7 @@ export default function StockistesList() {
       <PageHeader
         eyebrow={isLoading ? "Réseau de distribution" : `Réseau · ${stockistes.length} bureaux`}
         title="Stockistes"
-        lead="Trouvez le bureau de distribution le plus proche et consultez ses produits disponibles."
+        lead="Trouvez le bureau de distribution le plus proche et appelez-le directement."
       />
 
       {/* Ordinateur : carte à gauche (fixe pendant le défilement), recherche et liste à droite */}
@@ -218,7 +218,7 @@ export default function StockistesList() {
                 <p className="font-mono text-[12px] uppercase tracking-[0.2em] text-gold">Stockiste</p>
                 <h3 id="st-title" className="font-heading text-xl mt-1 break-words">{selectedStockiste.name}</h3>
                 <p className="text-[15px] text-cream/80 mt-1 break-words">
-                  {[selectedStockiste.neighborhood, selectedStockiste.location].filter(Boolean).join(", ")}
+                  {[normalize(selectedStockiste.neighborhood ?? "") !== normalize(selectedStockiste.commune ?? "") ? selectedStockiste.neighborhood?.trim() : null, selectedStockiste.location].filter(Boolean).join(", ")}
                 </p>
               </div>
               <button onClick={() => setShowDetail(false)} aria-label="Fermer" className="p-1.5 -mr-1 rounded-full text-cream/70 hover:text-cream hover:bg-cream/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold">
