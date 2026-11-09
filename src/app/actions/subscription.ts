@@ -2,7 +2,8 @@
 
 import { prisma } from "@/lib/prisma";
 import { getCurrentAccount, requireAdmin } from "@/lib/authz";
-import { PLANS, PlanId, activateSubscription } from "@/lib/subscription";
+import { activateSubscription } from "@/lib/subscription";
+import { planFor } from "@/lib/pricing";
 
 export async function getMySubscriptionStatus() {
   try {
@@ -32,16 +33,13 @@ export async function getMySubscriptionStatus() {
   }
 }
 
-export async function initiatePayment(planId: PlanId) {
+export async function initiatePayment() {
   const account = await getCurrentAccount();
   if (!account) {
     return { success: false, error: "Non authentifié." };
   }
 
-  const plan = PLANS[planId];
-  if (!plan) {
-    return { success: false, error: "Forfait invalide." };
-  }
+  const plan = planFor(account.role);
 
   let payment;
   try {
@@ -163,7 +161,8 @@ export async function declareWavePayment(input: { transferId: string; payerPhone
   if (!account) {
     return { success: false, error: "Connectez-vous pour signaler votre paiement." };
   }
-  const plan = PLANS["12m"];
+  // Le montant dépend du type de compte connecté, jamais d'une valeur envoyée par le navigateur.
+  const plan = planFor(account.role);
 
   const transferId = String(input?.transferId ?? "").trim().replace(/\s+/g, "").toUpperCase();
   const payerPhone = String(input?.payerPhone ?? "").replace(/[^\d+]/g, "");
@@ -190,7 +189,7 @@ export async function declareWavePayment(input: { transferId: string; payerPhone
       // Déjà signalé : on complète ou corrige l'ID et le numéro.
       const updated = await prisma.payment.update({
         where: { id: existing.id },
-        data: { transactionRef: transferId, method: payerPhone },
+        data: { transactionRef: transferId, method: payerPhone, amount: plan.amount },
       });
       return { success: true, paymentId: updated.id, alreadyDeclared: true };
     }

@@ -2,12 +2,6 @@ import { prisma } from "@/lib/prisma";
 
 export const TRIAL_DAYS = 14;
 
-export type PlanId = "12m";
-
-export const PLANS: Record<PlanId, { label: string; days: number; amount: number }> = {
-  "12m": { label: "1 an", days: 365, amount: 2000 },
-};
-
 type AccountType = "stockiste" | "partenaire";
 
 export async function getSubscriptionExpiry(accountType: AccountType, accountId: number) {
