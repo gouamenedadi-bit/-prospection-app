@@ -3,6 +3,8 @@
 import React, { useEffect, useState } from "react";
 import { PageHeader } from "@/components/ui";
 import VoiceSearchButton from "@/components/VoiceSearchButton";
+import WhatsAppButton from "@/components/WhatsAppButton";
+import { whatsappForPhone } from "@/lib/contacts";
 import { getTopStocks } from "@/app/actions/inventory";
 import { normalize } from "@/lib/fuzzy";
 import { placeLabel } from "@/lib/places";
@@ -70,6 +72,7 @@ export default function OuTrouverPage() {
         <ul className="space-y-3">
           {shown.map((item, i) => {
             const place = [item.neighborhood, placeLabel(item.city, item.commune)].filter(Boolean).join(", ");
+            const whatsapp = whatsappForPhone(item.phone, `Bonjour, avez-vous toujours ce produit en stock : ${item.productName} ? Je vous ai trouvé sur l'application Prospections Longrich.`);
             return (
               <li key={item.productId} className="card p-4 rise-in" style={{ ["--i" as string]: Math.min(i, 8) } as React.CSSProperties}>
                 <div className="flex items-start gap-3">
@@ -87,12 +90,15 @@ export default function OuTrouverPage() {
                     </p>
                   </div>
                 </div>
-                <div className="mt-3 pt-3 border-t border-line flex items-center justify-between gap-3">
+                <div className="mt-3 pt-3 border-t border-line space-y-3">
                   <div className="min-w-0">
                     <p className="font-semibold text-[15px] text-ink break-words">{item.stockisteName}</p>
                     {place && <p className="text-[15px] text-ink-soft break-words">{place}</p>}
                   </div>
-                  <a href={`tel:${item.phone}`} aria-label={`Appeler ${item.stockisteName}`} className="btn-primary shrink-0">Appeler</a>
+                  <div className={`grid gap-2 ${whatsapp ? "grid-cols-2" : "grid-cols-1"}`}>
+                    <a href={`tel:${item.phone}`} aria-label={`Appeler ${item.stockisteName}`} className="btn-primary">Appeler</a>
+                    {whatsapp && <WhatsAppButton href={whatsapp} label="WhatsApp" ariaLabel={`Écrire sur WhatsApp à ${item.stockisteName}`} />}
+                  </div>
                 </div>
               </li>
             );

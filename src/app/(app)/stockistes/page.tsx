@@ -5,6 +5,8 @@ import Map, { Marker, Popup, MapRef } from 'react-map-gl/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { getAllStockistes } from "@/app/actions/stockistes";
 import { PageHeader } from "@/components/ui";
+import WhatsAppButton from "@/components/WhatsAppButton";
+import { whatsappForPhone } from "@/lib/contacts";
 import VoiceSearchButton from "@/components/VoiceSearchButton";
 import { normalize, closestPlace } from "@/lib/fuzzy";
 import { CITIES, COMMUNES, placeLabel, realCommune } from "@/lib/places";
@@ -227,6 +229,14 @@ export default function StockistesList() {
             </div>
             <div className="p-4 space-y-2.5">
               <a href={`tel:${selectedStockiste.contact}`} className="btn-primary w-full">Appeler le {selectedStockiste.contact}</a>
+              {whatsappForPhone(selectedStockiste.contact) && (
+                <WhatsAppButton
+                  href={whatsappForPhone(selectedStockiste.contact, "Bonjour, je vous contacte depuis l'application Prospections Longrich.")!}
+                  label="Écrire sur WhatsApp"
+                  ariaLabel={`Écrire sur WhatsApp à ${selectedStockiste.name}`}
+                  className="w-full"
+                />
+              )}
               <a href="/ou-trouver" className="btn-secondary w-full">Chercher un produit</a>
               <button onClick={() => setShowDetail(false)} className="btn-ghost w-full">Fermer</button>
             </div>

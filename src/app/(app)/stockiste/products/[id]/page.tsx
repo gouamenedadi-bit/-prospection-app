@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProductById } from "@/app/actions/products";
+import WhatsAppButton from "@/components/WhatsAppButton";
+import { whatsappShareLink } from "@/lib/contacts";
 
 export const dynamic = "force-dynamic";
 
@@ -25,6 +27,8 @@ export default async function ProductDetailPage({
   const backHref = from === "health" ? "/health" : "/stockiste/products";
   const backLabel = from === "health" ? "Soins & bien-être" : "Catalogue";
   const saving = (Number(product.publicPrice) || 0) - (Number(product.partnerPrice) || 0);
+  // Pour un prospect : seulement le prix public, jamais le prix partenaire.
+  const shareMessage = `Bonjour, je vous présente ce produit Longrich :\n${product.name}\nPrix public : ${fcfa(product.publicPrice)} FCFA\nÉcrivez-moi si vous voulez en savoir plus.`;
 
   return (
     <div className="space-y-4 pb-4">
@@ -65,6 +69,10 @@ export default async function ProductDetailPage({
               Un partenaire économise <span className="font-mono font-semibold text-forest">{fcfa(saving)} F</span> sur ce produit.
             </p>
           )}
+
+          <div className="unfold" style={{ ["--i" as string]: 2 } as React.CSSProperties}>
+            <WhatsAppButton href={whatsappShareLink(shareMessage)} label="Partager à un prospect sur WhatsApp" className="w-full" />
+          </div>
 
           {product.posology && (
             <div className="note unfold" style={{ ["--i" as string]: 3 } as React.CSSProperties}>

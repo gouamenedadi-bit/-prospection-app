@@ -8,3 +8,19 @@ export const SUPPORT_CONTACTS = [
 export function whatsappLink(number: string, message?: string) {
   return `https://wa.me/${number}${message ? `?text=${encodeURIComponent(message)}` : ""}`;
 }
+
+/**
+ * Lien WhatsApp vers le numéro d'un membre, tel qu'il l'a saisi.
+ * 10 chiffres : numéro ivoirien, on ajoute 225. Sinon l'indicatif est déjà présent.
+ * Renvoie null si le numéro est inutilisable : le bouton n'est alors pas affiché.
+ */
+export function whatsappForPhone(phone: string | null | undefined, message?: string) {
+  let digits = String(phone ?? "").replace(/\D/g, "");
+  if (digits.startsWith("00")) digits = digits.slice(2);
+  if (digits.length === 10) digits = `225${digits}`;
+  if (digits.length < 11 || digits.length > 15) return null;
+  return whatsappLink(digits, message);
+}
+
+/** WhatsApp s'ouvre et la personne choisit à quel contact envoyer le message. */
+export const whatsappShareLink = (message: string) => `https://wa.me/?text=${encodeURIComponent(message)}`;
