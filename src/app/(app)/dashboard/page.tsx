@@ -12,11 +12,11 @@ export default function Home() {
   const isAdmin = session?.user?.role === "admin";
   const settingsHref = isStockiste ? "/dashboard/stockiste" : "/dashboard/partner/settings";
   const firstName = session?.user?.name?.split(" ")[0];
-  const [annonces, setAnnonces] = useState<Annonce[]>([]);
+  const [annonce, setAnnonce] = useState<Annonce | null>(null);
 
   useEffect(() => {
-    getAnnonces(3).then((res) => {
-      if (res.success && res.data) setAnnonces(res.data);
+    getAnnonces(1).then((res) => {
+      if (res.success && res.data) setAnnonce(res.data[0] ?? null);
     });
   }, []);
 
@@ -39,6 +39,24 @@ export default function Home() {
             : "Développez votre réseau et suivez vos performances en Côte d'Ivoire."}
         </p>
       </section>
+
+      {/* Dernière annonce : masquée tant que rien n'est publié */}
+      {annonce && (
+        <section aria-label="Dernière annonce" className="card overflow-hidden rise-in" style={{ ["--i" as string]: 1 } as React.CSSProperties}>
+          <a href="/annonces" className="flex gap-3.5 p-4 hover:bg-cream/60 transition-colors">
+            {annonce.image && <img src={annonce.image} alt="" className="w-[72px] h-[72px] shrink-0 rounded-xl object-cover bg-cream-deep" />}
+            <div className="min-w-0 flex-1">
+              <span className={`inline-block rounded-full px-2.5 py-0.5 text-[13px] font-bold ${annonceCategory(annonce.category).chip}`}>{annonceCategory(annonce.category).label}</span>
+              <p className="font-bold text-[17px] text-ink mt-1 break-words">{annonce.title}</p>
+              {annonce.eventDate && <p className="text-[15px] text-ink-soft mt-0.5 first-letter:uppercase">{formatEventDate(annonce.eventDate)}</p>}
+            </div>
+          </a>
+          <a href="/annonces" className="flex items-center justify-between gap-3 px-4 py-3 border-t border-line text-[15px] font-bold text-palm hover:bg-palm-light/50 transition-colors">
+            Voir toutes les annonces
+            <span aria-hidden="true">›</span>
+          </a>
+        </section>
+      )}
 
       {/* Accès rapides */}
       <section>
@@ -73,29 +91,6 @@ export default function Home() {
           </span>
           <span className="flex-1 text-sm font-semibold text-clay">Se déconnecter</span>
         </button>
-      </section>
-
-      {/* Actualités */}
-      <section>
-        <div className="flex items-baseline justify-between gap-3 mb-3">
-          <h3 className="section-title">Dernières informations</h3>
-          {annonces.length > 0 && <a href="/annonces" className="text-sm font-bold text-palm shrink-0">Tout voir</a>}
-        </div>
-        {annonces.length === 0 ? (
-          <div className="card p-5 text-center rise-in" style={{ ["--i" as string]: 8 } as React.CSSProperties}>
-            <p className="text-sm text-ink-soft">Aucune nouveauté pour le moment. Les annonces du réseau apparaîtront ici.</p>
-          </div>
-        ) : (
-          <div className="card divide-y divide-line rise-in" style={{ ["--i" as string]: 8 } as React.CSSProperties}>
-            {annonces.map((a) => (
-              <a key={a.id} href="/annonces" className="block px-4 py-3.5 hover:bg-cream/60 transition-colors first:rounded-t-2xl last:rounded-b-2xl">
-                <span className={`inline-block rounded-full px-2.5 py-0.5 text-[13px] font-bold ${annonceCategory(a.category).chip}`}>{annonceCategory(a.category).label}</span>
-                <p className="font-bold text-[17px] text-ink mt-1 break-words">{a.title}</p>
-                {a.eventDate && <p className="text-[15px] text-ink-soft mt-0.5 first-letter:uppercase">{formatEventDate(a.eventDate)}</p>}
-              </a>
-            ))}
-          </div>
-        )}
       </section>
     </div>
   );
