@@ -70,6 +70,19 @@ export default function Home() {
         <span className="text-ink-soft/50" aria-hidden="true">›</span>
       </a>
 
+      {/* Guide : téléchargeable uniquement une fois connecté */}
+      {session?.user && (
+        <a href="/api/guide" download className="card flex items-center gap-3.5 p-4 hover:bg-cream/60 transition-colors rise-in" style={{ ["--i" as string]: 3 } as React.CSSProperties}>
+          <span className="w-11 h-11 shrink-0 rounded-xl bg-palm-light text-palm flex items-center justify-center" aria-hidden="true">
+            <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M12 4v11m0 0l-4-4m4 4l4-4M5 20h14" /></svg>
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block font-bold text-[17px] text-ink">Guide d&apos;utilisation</span>
+            <span className="block text-[15px] text-ink-soft">Téléchargez le guide en PDF.</span>
+          </span>
+        </a>
+      )}
+
       {/* Accès rapides */}
       <section>
         <div className="flex items-center justify-between mb-3">
