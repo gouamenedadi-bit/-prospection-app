@@ -21,12 +21,18 @@ export default function DictationButton({
   value,
   onChange,
   lang = "fr-FR",
+  hint = "Touchez le micro pour dicter votre commentaire.",
+  singleLine = false,
   children,
 }: {
   value: string;
   onChange: (next: string) => void;
   lang?: string;
-  /** Le champ texte ; le micro se place dans son coin bas droit. */
+  /** Phrase d'aide sous le champ, quand le micro n'écoute pas. */
+  hint?: string;
+  /** Champ d'une ligne : micro centré à droite (le champ garde pr-14). Sinon, coin bas droit. */
+  singleLine?: boolean;
+  /** Le champ texte. */
   children: React.ReactNode;
 }) {
   const [supported, setSupported] = useState(false);
@@ -95,11 +101,13 @@ export default function DictationButton({
         aria-pressed={listening}
         aria-label={listening ? "Arrêter la dictée" : "Dicter avec le micro"}
         title={listening ? "Arrêter la dictée" : "Dicter avec le micro"}
-        className={`absolute right-2.5 bottom-2.5 flex items-center gap-1.5 h-10 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold ${
-          listening ? "bg-clay text-white pl-3 pr-4" : "w-10 justify-center bg-palm-light text-forest hover:bg-forest hover:text-cream"
+        className={`absolute ${singleLine ? "right-1.5 top-1/2 -translate-y-1/2" : "right-2.5 bottom-2.5"} flex items-center gap-1.5 h-10 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold ${
+          listening
+            ? singleLine ? "w-10 justify-center bg-clay text-white" : "bg-clay text-white pl-3 pr-4"
+            : "w-10 justify-center bg-palm-light text-forest hover:bg-forest hover:text-cream"
         }`}
       >
-        {listening && <span className="w-2 h-2 rounded-full bg-white animate-pulse" aria-hidden="true" />}
+        {listening && !singleLine && <span className="w-2 h-2 rounded-full bg-white animate-pulse" aria-hidden="true" />}
         <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden="true">
           {listening ? (
             <rect x="7" y="7" width="10" height="10" rx="2" />
@@ -110,11 +118,11 @@ export default function DictationButton({
             </>
           )}
         </svg>
-        {listening && <span className="text-xs font-bold">Arrêter</span>}
+        {listening && !singleLine && <span className="text-xs font-bold">Arrêter</span>}
       </button>
       </div>
       <p role="status" aria-live="polite" className={`text-xs mt-1.5 ${error ? "text-clay" : "text-ink-soft"}`}>
-        {error || (listening ? "Parlez, votre texte s'écrit au fur et à mesure…" : "Touchez le micro pour dicter votre commentaire.")}
+        {error || (listening ? "Parlez, votre texte s'écrit au fur et à mesure… Touchez le carré pour arrêter." : hint)}
       </p>
     </>
   );

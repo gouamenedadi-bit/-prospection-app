@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { getAnnonces, saveAnnonce, deleteAnnonce, type AnnonceInput } from "@/app/actions/annonces";
 import { ANNONCE_CATEGORIES, annonceCategory, formatEventDate, type Annonce } from "@/lib/annonces";
+import DictationButton from "@/components/DictationButton";
 
 const EMPTY: AnnonceInput = { category: "evenement", title: "", body: "", eventDate: "", place: "", image: "" };
 
@@ -120,11 +121,15 @@ export default function AnnoncesAdmin({ onCount }: { onCount: (n: number) => voi
           </div>
           <div>
             <label htmlFor="an-title" className="label">Titre</label>
-            <input id="an-title" type="text" required maxLength={120} value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} className="input" placeholder="Grand séminaire de décembre" />
+            <DictationButton singleLine value={draft.title} onChange={(t) => setDraft((d) => (d ? { ...d, title: t.slice(0, 120) } : d))} hint="Touchez le micro pour dicter le titre.">
+              <input id="an-title" type="text" required maxLength={120} value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} className="input pr-14" placeholder="Grand séminaire de décembre" />
+            </DictationButton>
           </div>
           <div>
             <label htmlFor="an-body" className="label">Texte de l&apos;annonce</label>
-            <textarea id="an-body" required rows={5} maxLength={3000} value={draft.body} onChange={(e) => setDraft({ ...draft, body: e.target.value })} className="input" placeholder="Programme, intervenants, conditions de participation…" />
+            <DictationButton value={draft.body} onChange={(t) => setDraft((d) => (d ? { ...d, body: t.slice(0, 3000) } : d))} hint="Touchez le micro pour dicter le texte de l'annonce.">
+              <textarea id="an-body" required rows={5} maxLength={3000} value={draft.body} onChange={(e) => setDraft({ ...draft, body: e.target.value })} className="input pb-14" placeholder="Programme, intervenants, conditions de participation…" />
+            </DictationButton>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
