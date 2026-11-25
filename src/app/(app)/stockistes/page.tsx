@@ -4,6 +4,9 @@ import { useState, useEffect, useRef } from "react";
 import Map, { Marker, Popup, MapRef } from 'react-map-gl/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { getAllStockistes } from "@/app/actions/stockistes";
+import { getStockisteTopProducts } from "@/app/actions/inventory";
+
+type TopProduct = Extract<Awaited<ReturnType<typeof getStockisteTopProducts>>, { success: true }>["data"][number];
 import { PageHeader } from "@/components/ui";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { whatsappForPhone } from "@/lib/contacts";
@@ -40,8 +43,10 @@ export default function StockistesList() {
   const [stockistes, setStockistes] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Fiche du stockiste : coordonnées seulement, ses quantités ne sont pas publiques
+  // Fiche du stockiste : coordonnées et ses 10 plus gros stocks (pas tout son stock)
   const [showDetail, setShowDetail] = useState(false);
+  const [topProducts, setTopProducts] = useState<{ forId: number; items?: TopProduct[]; error?: string } | null>(null);
+  const openIdRef = useRef<number | null>(null);
 
   // Utilisation de la clé depuis les variables d'environnement
   const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || "";
@@ -68,6 +73,12 @@ export default function StockistesList() {
   const handleStockisteClick = (stockiste: any) => {
     setSelectedStockiste(stockiste);
     setShowDetail(true);
+    setTopProducts(null);
+    openIdRef.current = stockiste.id;
+    getStockisteTopProducts(stockiste.id).then((res) =>
+      // On ignore une réponse arrivée après l'ouverture d'une autre fiche.
+      openIdRef.current === stockiste.id && setTopProducts(res.success ? { forId: stockiste.id, items: res.data } : { forId: stockiste.id, error: res.error }),
+    );
   };
 
   // Recherche sans accents ni majuscules. Si rien ne correspond, on essaie la commune ou la ville
@@ -214,7 +225,7 @@ export default function StockistesList() {
       {showDetail && selectedStockiste && (
         <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center" role="dialog" aria-modal="true" aria-labelledby="st-title">
           <div className="absolute inset-0 bg-forest-deep/50 backdrop-blur-[2px]" onClick={() => setShowDetail(false)} />
-          <div className="relative bg-cream w-full max-w-md overflow-hidden rounded-t-3xl sm:rounded-3xl shadow-2xl motion-safe:animate-in motion-safe:slide-in-from-bottom motion-safe:duration-300">
+          <div className="relative bg-cream w-full max-w-md max-h-[92vh] overflow-y-auto rounded-t-3xl sm:rounded-3xl shadow-2xl motion-safe:animate-in motion-safe:slide-in-from-bottom motion-safe:duration-300">
             <div className="bg-forest-deep text-cream px-5 pt-5 pb-4 flex justify-between items-start gap-3">
               <div className="min-w-0">
                 <p className="font-mono text-[12px] uppercase tracking-[0.2em] text-gold">Stockiste</p>
@@ -227,6 +238,31 @@ export default function StockistesList() {
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
               </button>
             </div>
+            <div className="px-4 pt-4">
+              <h4 className="font-bold text-[16px] text-ink">Ses plus gros stocks</h4>
+              {!topProducts || topProducts.forId !== selectedStockiste.id ? (
+                <p className="text-sm text-ink-soft py-3">Chargement de ses produits…</p>
+              ) : topProducts.error ? (
+                <p className="text-sm text-ink-soft py-3">{topProducts.error}</p>
+              ) : topProducts.items!.length === 0 ? (
+                <p className="text-sm text-ink-soft py-3">Ce stockiste n&apos;a pas encore indiqué son stock. Appelez-le pour savoir ce qu&apos;il a.</p>
+              ) : (
+                <>
+                  <ul className="mt-2 divide-y divide-line rounded-2xl bg-white border border-line">
+                    {topProducts.items!.map((p) => (
+                      <li key={p.productId} className="flex items-center gap-3 px-3 py-2.5">
+                        <div className="w-10 h-10 bg-cream rounded-lg overflow-hidden shrink-0 flex items-center justify-center">
+                          {p.image ? <img src={p.image} alt="" loading="lazy" className="w-full h-full object-contain" /> : <span className="text-[11px] font-bold text-ink-soft/50">{p.productName.slice(0, 3)}</span>}
+                        </div>
+                        <p className="flex-1 min-w-0 text-[15px] font-semibold text-ink leading-snug break-words">{p.productName}</p>
+                        <span className="shrink-0 rounded-full bg-palm-light text-forest px-2.5 py-0.5 text-sm font-bold tabular-nums">{p.quantity.toLocaleString("fr-FR")}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="text-[13px] text-ink-soft mt-2">Pour un autre produit, appelez-le ou écrivez-lui sur WhatsApp.</p>
+                </>
+              )}
+            </div>
             <div className="p-4 space-y-2.5">
               <a href={`tel:${selectedStockiste.contact}`} className="btn-primary w-full">Appeler le {selectedStockiste.contact}</a>
               {whatsappForPhone(selectedStockiste.contact) && (
@@ -237,7 +273,7 @@ export default function StockistesList() {
                   className="w-full"
                 />
               )}
-              <a href="/ou-trouver" className="btn-secondary w-full">Chercher un produit</a>
+              <a href="/ou-trouver" className="btn-secondary w-full">Où trouver un produit</a>
               <button onClick={() => setShowDetail(false)} className="btn-ghost w-full">Fermer</button>
             </div>
           </div>

@@ -35,7 +35,7 @@ export default function OuTrouverPage() {
       <PageHeader
         eyebrow="Où trouver"
         title="Trouver un produit"
-        lead="Pour chaque produit, le stockiste qui en a le plus en ce moment."
+        lead="Pour chaque produit, le stockiste le plus proche de chez vous qui l'a en stock."
       />
 
       {error && <div role="alert" className="alert-error">{error}</div>}
@@ -92,6 +92,12 @@ export default function OuTrouverPage() {
                 </div>
                 <div className="mt-3 pt-3 border-t border-line space-y-3">
                   <div className="min-w-0">
+                    {item.nearby && (
+                      <p className="inline-flex items-center gap-1.5 mb-1.5 rounded-full bg-gold/15 text-[#9A4A08] px-2.5 py-0.5 text-[13px] font-bold">
+                        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 21s7-7.5 7-12a7 7 0 1 0-14 0c0 4.5 7 12 7 12z" /><circle cx="12" cy="9" r="2.4" /></svg>
+                        {item.nearby === "commune" ? "Dans votre commune" : "Dans votre ville"}
+                      </p>
+                    )}
                     <p className="font-semibold text-[15px] text-ink break-words">{item.stockisteName}</p>
                     {place && <p className="text-[15px] text-ink-soft break-words">{place}</p>}
                   </div>
