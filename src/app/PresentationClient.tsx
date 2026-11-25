@@ -32,7 +32,7 @@ const FALLBACK_AVIS: PublicAvis[] = [
 
 const AVATAR_COLORS = ["var(--palm)", "var(--gold)", "var(--clay)"];
 
-export default function Presentation({ avis }: { avis: PublicAvis[] }) {
+export default function Presentation({ avis, userCount = null }: { avis: PublicAvis[]; userCount?: number | null }) {
   const [toastVisible, setToastVisible] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const displayedAvis = avis.length > 0 ? avis : FALLBACK_AVIS;
@@ -130,6 +130,13 @@ a{color:inherit;}
   cursor:pointer;font-family:inherit;display:inline-block;transition:all .2s ease;
 }
 .nav-cta:hover{ background:var(--forest-deep); }
+.nav-actions{display:flex;align-items:center;gap:14px;}
+.nav-count{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:var(--ink-soft);white-space:nowrap;}
+.nav-count svg{width:17px;height:17px;color:var(--gold);flex-shrink:0;}
+.nav-count b{color:var(--forest);font-weight:800;}
+@media (min-width:1141px){ .brand, .nav-links a{white-space:nowrap;} }
+.nav-inner{gap:20px;max-width:1240px;}
+@media (max-width:1320px){ .nav-links{gap:20px;font-size:14px;} }
 a:focus-visible, button:focus-visible{ outline:2px solid var(--gold); outline-offset:3px; border-radius:8px; }
 .nav-burger{display:none;background:none;border:none;cursor:pointer;padding:6px;color:var(--forest);align-items:center;justify-content:center;}
 .mobile-menu{
@@ -143,11 +150,11 @@ a:focus-visible, button:focus-visible{ outline:2px solid var(--gold); outline-of
   border-top:1px solid var(--line);
 }
 .mobile-menu a:first-child{border-top:none;}
-@media (max-width:920px){
+@media (max-width:1140px){
   .nav-links{display:none;}
   .nav-burger{display:inline-flex;}
 }
-@media (min-width:921px){.mobile-menu{display:none;}}
+@media (min-width:1141px){.mobile-menu{display:none;}}
 
 .hero{
   background:radial-gradient(circle at 18% -10%, #1F4F3A 0%, var(--forest) 45%, var(--forest-deep) 100%);
@@ -372,6 +379,11 @@ footer{padding:64px 0 36px;}
   .brand-mark{width: 28px; height: 28px;}
   .brand-mark svg{width: 14px; height: 14px;}
   .nav-cta{padding: 9px 14px; font-size: 12px;}
+  .nav-inner{gap:8px;}
+  .nav-actions{flex-direction:column;gap:3px;}
+  .nav-count{font-size:11.5px;gap:3px;}
+  .nav-count svg{width:13px;height:13px;}
+  .nav-count-label{display:none;}
   .hero h1{font-size:32px; margin: 16px 0;}
   .hero p.lede{font-size: 15px;}
   .lp-btn{padding: 12px 20px; font-size: 13.5px; width: 100%; justify-content: center;}
@@ -432,7 +444,16 @@ footer{padding:64px 0 36px;}
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
       )}
     </button>
-    <a href="/register" className="nav-cta text-center" style={{ textDecoration: 'none' }}>Inscription</a>
+    <div className="nav-actions">
+      <a href="/register" className="nav-cta text-center" style={{ textDecoration: 'none' }}>Inscription</a>
+      {userCount !== null && (
+        <span className="nav-count" title={`${userCount.toLocaleString('fr-FR')} partenaires et stockistes inscrits`} aria-label={`Utilisateurs : ${userCount.toLocaleString('fr-FR')}`}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 4.6a3.2 3.2 0 0 1 0 6.3M21 20c0-2.7-1.7-5-4-5.7"/></svg>
+          <span className="nav-count-label">Utilisateurs</span>
+          <span>(<b>{userCount.toLocaleString('fr-FR')}</b>)</span>
+        </span>
+      )}
+    </div>
   </div>
   <div className={`mobile-menu${mobileMenuOpen ? ' open' : ''}`}>
     <a href="#fonctionnalites" onClick={() => setMobileMenuOpen(false)}>Fonctionnalités</a>
