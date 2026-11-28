@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { pathologiesList } from "@/data/pathologies";
 import { getProducts } from "@/app/actions/products";
+import { readWithOffline } from "@/lib/offlineCache";
 import { PageHeader } from "@/components/ui";
 import VoiceSearchButton from "@/components/VoiceSearchButton";
 import { normalize } from "@/lib/fuzzy";
@@ -15,7 +16,7 @@ export default function HealthWellness() {
   const [dbProducts, setDbProducts] = useState<any[]>([]);
 
   useEffect(() => {
-    getProducts().then(res => {
+    readWithOffline("products", () => getProducts()).then(res => {
       if (res.success && res.data) {
         setDbProducts(res.data);
       }

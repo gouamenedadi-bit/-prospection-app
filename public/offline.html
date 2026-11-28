@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0C7A4E">
+<title>Pas de connexion · Prospections Longrich</title>
+<style>
+  :root { --forest:#0C7A4E; --ink:#17221C; --ink-soft:#3B4740; --cream:#F6FAF7; --line:#DCE8E1; }
+  * { box-sizing: border-box; }
+  body { margin:0; min-height:100vh; background:var(--cream); color:var(--ink); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+         display:flex; align-items:center; justify-content:center; padding:24px 16px; }
+  main { max-width:380px; width:100%; text-align:center; }
+  img { width:84px; height:84px; border-radius:50%; }
+  h1 { font-size:24px; margin:20px 0 8px; }
+  p { font-size:16px; line-height:1.5; color:var(--ink-soft); margin:0 0 12px; }
+  .btn { display:block; width:100%; border:0; border-radius:12px; padding:14px; font-size:16px; font-weight:700; text-decoration:none; cursor:pointer; margin-top:12px; }
+  .primary { background:var(--forest); color:#fff; }
+  .ghost { background:#fff; color:var(--forest); border:1px solid var(--line); }
+</style>
+</head>
+<body>
+<main>
+  <img src="/logo-longrich.png" alt="Logo Longrich">
+  <h1>Pas de connexion internet</h1>
+  <p>Cette page n'a pas encore été ouverte sur ce téléphone, elle n'est donc pas disponible hors connexion.</p>
+  <p>Les pages déjà ouvertes restent utilisables : accueil, produits, soins, grades, gains…</p>
+  <button class="btn primary" onclick="location.reload()">Réessayer</button>
+  <a class="btn ghost" href="/dashboard">Aller à l'accueil</a>
+</main>
+</body>
+</html>

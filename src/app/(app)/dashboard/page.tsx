@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import QuickAccessGrid from "@/components/QuickAccessGrid";
 import { getAnnonces } from "@/app/actions/annonces";
+import { readWithOffline } from "@/lib/offlineCache";
+import InstallAppCard from "@/components/InstallAppCard";
 import { annonceCategory, formatEventDate, type Annonce } from "@/lib/annonces";
 
 export default function Home() {
@@ -15,7 +17,7 @@ export default function Home() {
   const [annonce, setAnnonce] = useState<Annonce | null>(null);
 
   useEffect(() => {
-    getAnnonces(1).then((res) => {
+    readWithOffline("annonces:1", () => getAnnonces(1)).then((res) => {
       if (res.success && res.data) setAnnonce(res.data[0] ?? null);
     });
   }, []);
@@ -65,7 +67,7 @@ export default function Home() {
         </span>
         <span className="min-w-0 flex-1">
           <span className="block font-bold text-[17px] text-ink">Un produit manque ?</span>
-          <span className="block text-[15px] text-ink-soft">Voyez quel stockiste en a le plus.</span>
+          <span className="block text-[15px] text-ink-soft">Voyez le stockiste le plus proche qui l&apos;a.</span>
         </span>
         <span className="text-ink-soft/50" aria-hidden="true">›</span>
       </a>
@@ -82,6 +84,8 @@ export default function Home() {
           </span>
         </a>
       )}
+
+      <InstallAppCard />
 
       {/* Accès rapides */}
       <section>

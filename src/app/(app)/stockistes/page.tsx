@@ -5,6 +5,7 @@ import Map, { Marker, Popup, MapRef } from 'react-map-gl/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { getAllStockistes } from "@/app/actions/stockistes";
 import { getStockisteTopProducts } from "@/app/actions/inventory";
+import { readWithOffline } from "@/lib/offlineCache";
 
 type TopProduct = Extract<Awaited<ReturnType<typeof getStockisteTopProducts>>, { success: true }>["data"][number];
 import { PageHeader } from "@/components/ui";
@@ -54,7 +55,7 @@ export default function StockistesList() {
   useEffect(() => {
     async function loadStockistes() {
       setIsLoading(true);
-      const res = await getAllStockistes();
+      const res = await readWithOffline("stockistes", () => getAllStockistes());
       if (res.success && res.data) {
         setStockistes(res.data.map(s => ({
           ...s,
@@ -75,7 +76,7 @@ export default function StockistesList() {
     setShowDetail(true);
     setTopProducts(null);
     openIdRef.current = stockiste.id;
-    getStockisteTopProducts(stockiste.id).then((res) =>
+    readWithOffline(`stockiste-top:${stockiste.id}`, () => getStockisteTopProducts(stockiste.id)).then((res) =>
       // On ignore une réponse arrivée après l'ouverture d'une autre fiche.
       openIdRef.current === stockiste.id && setTopProducts(res.success ? { forId: stockiste.id, items: res.data } : { forId: stockiste.id, error: res.error }),
     );

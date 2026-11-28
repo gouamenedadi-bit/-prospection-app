@@ -55,9 +55,7 @@ export default function SideNav() {
         href="/dashboard"
         className="flex items-center gap-3 mr-4 px-2 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
       >
-        <span className="w-10 h-10 rounded-xl bg-gold text-forest-deep flex items-center justify-center font-heading text-xl leading-none" aria-hidden="true">
-          L
-        </span>
+        <img src="/logo-longrich.png" alt="" width={44} height={44} className="w-11 h-11 rounded-full bg-white ring-2 ring-cream/90 shrink-0" />
         <span className="leading-tight">
           <span className="block font-heading text-[21px]">Prospection</span>
           <span className="block text-xs text-cream/60">Longrich en Côte d&apos;Ivoire</span>

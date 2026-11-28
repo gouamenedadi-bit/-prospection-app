@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { PageHeader } from "@/components/ui";
 import { getAnnonces } from "@/app/actions/annonces";
+import { readWithOffline } from "@/lib/offlineCache";
 import { ANNONCE_CATEGORIES, annonceCategory, formatEventDate, type Annonce } from "@/lib/annonces";
 
 export default function AnnoncesPage() {
@@ -12,7 +13,7 @@ export default function AnnoncesPage() {
   const [filter, setFilter] = useState("all");
 
   useEffect(() => {
-    getAnnonces().then((res) => {
+    readWithOffline("annonces:all", () => getAnnonces()).then((res) => {
       if (res.success && res.data) setAnnonces(res.data);
       else setError(res.error || "Impossible de charger les annonces.");
       setIsLoading(false);

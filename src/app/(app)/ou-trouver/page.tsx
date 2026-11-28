@@ -6,6 +6,7 @@ import VoiceSearchButton from "@/components/VoiceSearchButton";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { whatsappForPhone } from "@/lib/contacts";
 import { getTopStocks } from "@/app/actions/inventory";
+import { readWithOffline } from "@/lib/offlineCache";
 import { normalize } from "@/lib/fuzzy";
 import { placeLabel } from "@/lib/places";
 
@@ -20,7 +21,7 @@ export default function OuTrouverPage() {
   const [voiceError, setVoiceError] = useState("");
 
   useEffect(() => {
-    getTopStocks().then((res) => {
+    readWithOffline("top-stocks", () => getTopStocks()).then((res) => {
       if (res.success) setItems(res.data);
       else setError(res.error);
       setIsLoading(false);

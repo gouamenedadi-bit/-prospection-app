@@ -6,6 +6,7 @@ import { useSession, signOut } from "next-auth/react";
 import { getMySubscriptionStatus } from "@/app/actions/subscription";
 import BottomNav from "@/components/BottomNav";
 import SideNav from "@/components/SideNav";
+import OfflineBanner from "@/components/OfflineBanner";
 
 const EXEMPT_PATHS = ["/login", "/register", "/register/partner", "/register/stockiste", "/abonnement", "/admin", "/forgot-password", "/reset-password"];
 
@@ -26,7 +27,7 @@ export default function AppLayout({
 
   useEffect(() => {
     if (status !== "authenticated") return;
-    getMySubscriptionStatus().then((res) => {
+    getMySubscriptionStatus().catch(() => ({ success: false as const })).then((res) => {
       if (res.success) {
         setSubStatus({ isExpired: res.isExpired!, daysLeft: res.daysLeft! });
       } else if ("deleted" in res && res.deleted && (role === "stockiste" || role === "partenaire")) {
@@ -48,7 +49,7 @@ export default function AppLayout({
       {/* Header */}
       <header className={`bg-forest text-cream px-4 h-14 sticky top-0 z-50 flex items-center justify-between ${desk ? "lg:hidden" : ""}`}>
         <a href="/dashboard" className="flex items-center gap-2.5 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold">
-          <span className="w-8 h-8 rounded-lg bg-gold text-forest-deep flex items-center justify-center font-heading text-lg leading-none" aria-hidden="true">L</span>
+          <img src="/logo-longrich.png" alt="" width={36} height={36} className="w-9 h-9 rounded-full bg-white ring-2 ring-cream/90 shrink-0" />
           <span className="leading-tight">
             <span className="block font-heading text-[17px]">Prospection</span>
             <span className="block font-mono text-[11px] uppercase tracking-[0.2em] text-gold">Longrich · Côte d&apos;Ivoire</span>
@@ -98,6 +99,7 @@ export default function AppLayout({
                 </button>
               </div>
             )}
+            <OfflineBanner />
             {children}
           </>
         )}

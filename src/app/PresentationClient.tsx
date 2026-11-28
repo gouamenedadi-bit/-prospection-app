@@ -118,10 +118,7 @@ a{color:inherit;}
 }
 .nav-inner{display:flex;align-items:center;justify-content:space-between;padding:16px 32px;max-width:1160px;margin:0 auto;}
 .brand{display:flex;align-items:center;gap:10px;font-family:'Fraunces',serif;font-weight:700;font-size:19px;color:var(--forest);}
-.brand-mark{
-  width:34px;height:34px;border-radius:9px;background:var(--forest);display:flex;align-items:center;justify-content:center;flex-shrink:0;
-}
-.brand-mark svg{width:18px;height:18px;}
+.brand-mark{width:40px;height:40px;border-radius:50%;flex-shrink:0;display:block;}
 .nav-links{display:flex;gap:30px;font-size:14.5px;font-weight:600;color:var(--ink-soft);}
 .nav-links a{text-decoration:none;transition:all .2s ease;display:inline-block;}
 .nav-links a:hover{color:var(--palm);}
@@ -376,8 +373,7 @@ footer{padding:64px 0 36px;}
   .hero-inner{padding:32px 20px 0;}
   .nav-inner{padding:14px 16px;}
   .brand{font-size: 16px;}
-  .brand-mark{width: 28px; height: 28px;}
-  .brand-mark svg{width: 14px; height: 14px;}
+  .brand-mark{width: 32px; height: 32px;}
   .nav-cta{padding: 9px 14px; font-size: 12px;}
   .nav-inner{gap:8px;}
   .nav-actions{flex-direction:column;gap:3px;}
@@ -421,7 +417,7 @@ footer{padding:64px 0 36px;}
       <nav className="nav">
   <div className="nav-inner">
     <div className="brand">
-      <span className="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#EF7B1A" strokeWidth="2"><path d="M12 21s7-7.5 7-12a7 7 0 1 0-14 0c0 4.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.4" fill="#EF7B1A" stroke="none"/></svg></span>
+      <img className="brand-mark" src="/logo-longrich.png" alt="" width={40} height={40} />
       Prospections Longrich
     </div>
     <div className="nav-links">
@@ -742,7 +738,7 @@ footer{padding:64px 0 36px;}
   <div className="wrap">
     <div className="foot-top">
       <div className="foot-brand">
-        <div className="brand"><span className="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#EF7B1A" strokeWidth="2"><path d="M12 21s7-7.5 7-12a7 7 0 1 0-14 0c0 4.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.4" fill="#EF7B1A" stroke="none"/></svg></span>Prospections Longrich</div>
+        <div className="brand"><img className="brand-mark" src="/logo-longrich.png" alt="" width={40} height={40} />Prospections Longrich</div>
         <p>L'application des partenaires et prospections Longrich en Côte d'Ivoire — localisation, catalogue, bien-être et paiement, réunis.</p>
       </div>
       <div className="foot-divider"></div>

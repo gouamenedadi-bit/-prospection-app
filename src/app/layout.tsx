@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Fraunces, Manrope, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -9,6 +9,13 @@ const plexMono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400", "500", "600
 export const metadata: Metadata = {
   title: "Prospection Longrich",
   description: "Plateforme de gestion pour les partenaires et stockistes Longrich en Côte d'Ivoire",
+  applicationName: "Prospections Longrich",
+  icons: { icon: "/icon-192.png", apple: "/apple-touch-icon.png" },
+  appleWebApp: { capable: true, title: "Longrich", statusBarStyle: "default" },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0C7A4E",
 };
 
 import Providers from "@/components/Providers";
