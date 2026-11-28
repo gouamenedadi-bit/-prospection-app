@@ -7,6 +7,7 @@ import { getMySubscriptionStatus } from "@/app/actions/subscription";
 import BottomNav from "@/components/BottomNav";
 import SideNav from "@/components/SideNav";
 import OfflineBanner from "@/components/OfflineBanner";
+import InstallHeaderButton from "@/components/InstallHeaderButton";
 
 const EXEMPT_PATHS = ["/login", "/register", "/register/partner", "/register/stockiste", "/abonnement", "/admin", "/forgot-password", "/reset-password"];
 
@@ -47,14 +48,15 @@ export default function AppLayout({
     {desk && <SideNav />}
     <div className={`w-full max-w-md bg-cream min-h-screen sm:shadow-[0_0_0_1px_rgb(220_232_225),0_20px_60px_-20px_rgb(7_60_40/0.25)] flex flex-col relative overflow-x-clip mx-auto ${desk ? "lg:max-w-none lg:mx-0 lg:flex-1 lg:min-w-0 lg:shadow-none" : ""}`}>
       {/* Header */}
-      <header className={`bg-forest text-cream px-4 h-14 sticky top-0 z-50 flex items-center justify-between ${desk ? "lg:hidden" : ""}`}>
+      <header className={`bg-forest text-cream px-4 h-14 sticky top-0 z-50 flex items-center justify-between gap-2 ${desk ? "lg:hidden" : ""}`}>
         <a href="/dashboard" className="flex items-center gap-2.5 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold">
           <img src="/logo-longrich.png" alt="" width={36} height={36} className="w-9 h-9 rounded-full bg-white ring-2 ring-cream/90 shrink-0" />
           <span className="leading-tight">
             <span className="block font-heading text-[17px]">Prospection</span>
-            <span className="block font-mono text-[11px] uppercase tracking-[0.2em] text-gold">Longrich · Côte d&apos;Ivoire</span>
+            <span className="block font-mono text-[11px] uppercase tracking-[0.08em] min-[400px]:tracking-[0.2em] whitespace-nowrap text-gold">Longrich · Côte d&apos;Ivoire</span>
           </span>
         </a>
+        <InstallHeaderButton />
       </header>
 
       {/* Main Content */}

@@ -42,6 +42,8 @@ export default function Home() {
         </p>
       </section>
 
+      <InstallAppCard />
+
       {/* Dernière annonce : masquée tant que rien n'est publié */}
       {annonce && (
         <section aria-label="Dernière annonce" className="card overflow-hidden rise-in" style={{ ["--i" as string]: 1 } as React.CSSProperties}>
@@ -84,8 +86,6 @@ export default function Home() {
           </span>
         </a>
       )}
-
-      <InstallAppCard />
 
       {/* Accès rapides */}
       <section>

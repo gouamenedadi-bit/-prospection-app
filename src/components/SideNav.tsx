@@ -1,5 +1,6 @@
 "use client";
 
+import InstallHeaderButton from "@/components/InstallHeaderButton";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { MEMBER_ONLY_IDS, NAV_ITEMS, NavItem, resolveHref } from "@/lib/navItems";
@@ -85,6 +86,8 @@ export default function SideNav() {
           })}
         </ul>
       </nav>
+
+      <InstallHeaderButton variant="side" />
 
       <div className="mr-4 mt-6 pt-5 border-t border-white/10">
         <div className="flex items-center gap-3 px-2">
