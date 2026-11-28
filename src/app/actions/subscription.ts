@@ -1,5 +1,6 @@
 "use server";
 
+import { appUrl } from "@/lib/appUrl";
 import { prisma } from "@/lib/prisma";
 import { getCurrentAccount, requireAdmin } from "@/lib/authz";
 import { activateSubscription } from "@/lib/subscription";
@@ -64,7 +65,7 @@ export async function initiatePayment() {
 
   if (apiKey && siteId) {
     const transactionRef = `sub-${payment.id}-${Date.now()}`;
-    const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+    const baseUrl = appUrl();
 
     try {
       const res = await fetch("https://api-checkout.cinetpay.com/v2/payment", {

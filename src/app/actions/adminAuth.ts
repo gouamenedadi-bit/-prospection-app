@@ -1,5 +1,6 @@
 "use server";
 
+import { appUrl } from "@/lib/appUrl";
 import crypto from "crypto";
 import bcrypt from "bcrypt";
 import { prisma } from "@/lib/prisma";
@@ -32,7 +33,7 @@ export async function requestAdminPasswordReset(email: string) {
         },
       });
 
-      const resetUrl = `${process.env.NEXTAUTH_URL}/admin/reset-password?token=${token}`;
+      const resetUrl = `${appUrl()}/admin/reset-password?token=${token}`;
 
       await sendEmail({
         to: admin.email,

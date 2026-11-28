@@ -1,5 +1,6 @@
 "use server";
 
+import { appUrl } from "@/lib/appUrl";
 import crypto from "crypto";
 import bcrypt from "bcrypt";
 import { prisma } from "@/lib/prisma";
@@ -33,7 +34,7 @@ export async function requestPasswordReset(rawEmail: string, role: "stockiste" |
         },
       });
 
-      const resetUrl = `${process.env.NEXTAUTH_URL}/reset-password?token=${token}&role=${role}`;
+      const resetUrl = `${appUrl()}/reset-password?token=${token}&role=${role}`;
       const name = role === "stockiste" ? (account as { name: string }).name : (account as { firstName: string }).firstName;
 
       await sendEmail({
